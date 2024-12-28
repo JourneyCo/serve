@@ -1,12 +1,12 @@
 package main
 
 import (
-	"serve/db"
-	"serve/web"
 	"database/sql"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
+	"serve/db"
+	"serve/web"
 )
 
 func main() {

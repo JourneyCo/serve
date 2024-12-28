@@ -1,8 +1,8 @@
 package db
 
 import (
-	"serve/model"
 	"database/sql"
+	"serve/model"
 )
 
 type DB interface {
