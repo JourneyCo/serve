@@ -1,22 +1,15 @@
 <!--<div style="color: #676767">-->
 <!--  <div style="color: black">-->
 <header>
-  <div class="flex-container">
-    <div></div>
-    <div style="align-self: center"></div>
-    <div>
-    </div>
-  </div>
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #676767;">
     <div class="container-fluid">
       <img src="assets/logowhite.png" alt="image">
       <h1>{{title | uppercase}}</h1>
       <div ngbDropdown>
-        <button class="btn btn-secondary dropdown-toggle" ngbDropdownToggle>
+        <button class="btn btn-light dropdown-toggle dropdowncolor" ngbDropdownToggle>
           Dropdown
         </button>
-        <div ngbDropdownMenu>
+        <div ngbDropdownMenu class="menudrop">
           <button ngbDropdownItem>Action 1</button>
           <button ngbDropdownItem>Action 2</button>
         </div>

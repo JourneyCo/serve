@@ -11,3 +11,13 @@ header {
   flex-direction: row;
   justify-content: space-between;
 }
+
+.menudrop {
+  background-color: #676767;
+  width:auto;
+  padding:20px;
+}
+
+.dropdowncolor {
+  color: #676767;
+}
