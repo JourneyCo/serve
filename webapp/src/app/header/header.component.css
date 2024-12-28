@@ -5,3 +5,9 @@ img {
 header {
   background-color: #676767;
 }
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
