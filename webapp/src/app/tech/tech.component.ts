@@ -3,8 +3,9 @@ import { TechService } from './tech.service';
 import { Technology } from './tech.model';
 
 @Component({
-  selector: 'app-tech',
-  templateUrl: './tech.component.html'
+    selector: 'app-tech',
+    templateUrl: './tech.component.html',
+    standalone: false
 })
 export class TechComponent implements OnInit {
 
