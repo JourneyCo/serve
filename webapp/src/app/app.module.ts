@@ -7,6 +7,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import { AppRoutingModule } from './app-routing.module';
 import {MapComponent} from "./components/map/map.component";
 import {ProjectsComponent} from "./pages/projects/projects.component";
+import {TableComponent} from "./components/table/table.component";
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import {ProjectsComponent} from "./pages/projects/projects.component";
   imports: [BrowserModule,
         NgbModule,
         AppRoutingModule,
-        MapComponent],
+        MapComponent,
+        TableComponent],
   providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
