@@ -10,9 +10,15 @@
           Dropdown
         </button>
         <div ngbDropdownMenu class="menudrop">
-          <button ngbDropdownItem>Admin</button>
-          <button ngbDropdownItem>My Info</button>
-          <button ngbDropdownItem>My Projects</button>
+          <button ngbDropdownItem>
+            <a routerLink="/">My Info</a>
+          </button>
+          <button ngbDropdownItem>
+            <a routerLink="/admin">Admin</a>
+          </button>
+          <button ngbDropdownItem>
+            <a routerLink="/projects">My Projects</a>
+          </button>
         </div>
       </div>
     </div>

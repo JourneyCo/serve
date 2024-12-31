@@ -1,0 +1,50 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="12">
+            <item index="0" class="java.lang.String" itemvalue="[(ngModel)]" />
+            <item index="1" class="java.lang.String" itemvalue="sortable" />
+            <item index="2" class="java.lang.String" itemvalue="(sort)" />
+            <item index="3" class="java.lang.String" itemvalue="[ngValue]" />
+            <item index="4" class="java.lang.String" itemvalue="[alt]" />
+            <item index="5" class="java.lang.String" itemvalue="[src]" />
+            <item index="6" class="java.lang.String" itemvalue="[disabled]" />
+            <item index="7" class="java.lang.String" itemvalue="ngbDropdownItem" />
+            <item index="8" class="java.lang.String" itemvalue="routerLink" />
+            <item index="9" class="java.lang.String" itemvalue="ngbDropdownMenu" />
+            <item index="10" class="java.lang.String" itemvalue="ngbDropdown" />
+            <item index="11" class="java.lang.String" itemvalue="ngbDropdownToggle" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="15">
+            <item index="0" class="java.lang.String" itemvalue="nobr" />
+            <item index="1" class="java.lang.String" itemvalue="noembed" />
+            <item index="2" class="java.lang.String" itemvalue="comment" />
+            <item index="3" class="java.lang.String" itemvalue="noscript" />
+            <item index="4" class="java.lang.String" itemvalue="embed" />
+            <item index="5" class="java.lang.String" itemvalue="script" />
+            <item index="6" class="java.lang.String" itemvalue="ngb-highlight" />
+            <item index="7" class="java.lang.String" itemvalue="ngb-pagination" />
+            <item index="8" class="java.lang.String" itemvalue="app-map" />
+            <item index="9" class="java.lang.String" itemvalue="app-table" />
+            <item index="10" class="java.lang.String" itemvalue="router-outlet" />
+            <item index="11" class="java.lang.String" itemvalue="app-header" />
+            <item index="12" class="java.lang.String" itemvalue="google-map" />
+            <item index="13" class="java.lang.String" itemvalue="map-advanced-marker" />
+            <item index="14" class="java.lang.String" itemvalue="app-root" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+  </profile>
+</component>

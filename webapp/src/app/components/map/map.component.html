@@ -2,10 +2,15 @@
 <google-map
   height="400px"
   width="750px"
-  [center]="center"
-  [zoom]="zoom"
+  [options] = "options"
   (mapClick)="moveMap($event)"
-  (mapMousemove)="move($event)" />
+  (mapMousemove)="move($event)">
+
+<!--  (mapClick)="addAdvancedMarker($event)">-->
+  @for (position of advancedMarkerPositions; track position) {
+  <map-advanced-marker [position]="position" [options]="advancedMarkerOptions" />
+  }
+</google-map>
 
 <div>Latitude: {{display?.lat}}</div>
 <div>Longitude: {{display?.lng}}</div>

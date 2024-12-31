@@ -4,8 +4,8 @@ services:
     image: postgres:15.4-alpine3.18
     environment:
       POSTGRES_PASSWORD: pass
-      POSTGRES_USER: goxygen
-      POSTGRES_DB: goxygen
+      POSTGRES_USER: journey
+      POSTGRES_DB: journey
     ports:
       - 5432:5432
     volumes:

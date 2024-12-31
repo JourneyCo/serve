@@ -1,5 +1,11 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat:500,600,700");
 
+:root {
+  --journeyGray: #676767;
+  --journeyLightGray: #ccc;
+  --journeyBlue: #497599;
+}
+
 * {
   font-family: Montserrat, sans-serif;
 }

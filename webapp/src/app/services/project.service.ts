@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/adjacent-overload-signatures */
 import { Injectable, PipeTransform } from '@angular/core';
-
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-
-import { Country } from '../components/table/project';
-import { COUNTRIES } from '../components/table/projects';
+import { Project } from '../components/table/project';
+import { PROJECTS } from '../components/table/projects';
 import { DecimalPipe } from '@angular/common';
 import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
 import { SortColumn, SortDirection } from '../directives/sortable.directive';
 
 interface SearchResult {
-  countries: Country[];
+  projects: Project[];
   total: number;
 }
 
@@ -24,35 +22,35 @@ interface State {
 
 const compare = (v1: string | number, v2: string | number) => (v1 < v2 ? -1 : v1 > v2 ? 1 : 0);
 
-function sort(countries: Country[], column: SortColumn, direction: string): Country[] {
+function sort(projects: Project[], column: SortColumn, direction: string): Project[] {
   if (direction === '' || column === '') {
-    return countries;
+    return projects;
   } else {
-    return [...countries].sort((a, b) => {
+    return [...projects].sort((a, b) => {
       const res = compare(a[column], b[column]);
       return direction === 'asc' ? res : -res;
     });
   }
 }
 
-function matches(country: Country, term: string, pipe: PipeTransform) {
+function matches(project: Project, term: string, pipe: PipeTransform) {
   return (
-    country.name.toLowerCase().includes(term.toLowerCase()) ||
-    pipe.transform(country.area).includes(term) ||
-    pipe.transform(country.population).includes(term)
+    project.name.toLowerCase().includes(term.toLowerCase()) ||
+    pipe.transform(project.required).includes(term) ||
+    pipe.transform(project.need).includes(term)
   );
 }
 
 @Injectable({ providedIn: 'root' })
-export class CountryService {
+export class ProjectService {
   private _loading$ = new BehaviorSubject<boolean>(true);
   private _search$ = new Subject<void>();
-  private _countries$ = new BehaviorSubject<Country[]>([]);
+  private _projects$ = new BehaviorSubject<Project[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
   private _state: State = {
     page: 1,
-    pageSize: 4,
+    pageSize: 25,
     searchTerm: '',
     sortColumn: '',
     sortDirection: '',
@@ -68,15 +66,15 @@ export class CountryService {
         tap(() => this._loading$.next(false)),
       )
       .subscribe((result) => {
-        this._countries$.next(result.countries);
+        this._projects$.next(result.projects);
         this._total$.next(result.total);
       });
 
     this._search$.next();
   }
 
-  get countries$() {
-    return this._countries$.asObservable();
+  get projects$() {
+    return this._projects$.asObservable();
   }
   get total$() {
     return this._total$.asObservable();
@@ -119,14 +117,14 @@ export class CountryService {
     const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
 
     // 1. sort
-    let countries = sort(COUNTRIES, sortColumn, sortDirection);
+    let projects = sort(PROJECTS, sortColumn, sortDirection);
 
     // 2. filter
-    countries = countries.filter((country) => matches(country, searchTerm, this.pipe));
-    const total = countries.length;
+    projects = projects.filter((project) => matches(project, searchTerm, this.pipe));
+    const total = projects.length;
 
     // 3. paginate
-    countries = countries.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
-    return of({ countries, total });
+    projects = projects.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
+    return of({ projects, total });
   }
 }

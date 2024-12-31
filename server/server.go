@@ -34,12 +34,12 @@ func main() {
 func dataSource() string {
 	//TODO: remove hardocding before prod
 	host := "localhost"
-	dbUser := "goxygen"
+	dbUser := "journey"
 	dbPass := "pass"
 	if os.Getenv("profile") == "prod" {
 		host = "db"
 		dbPass = os.Getenv("db_pass")
 	}
-	return "postgresql://" + host + ":5432/goxygen" +
+	return "postgresql://" + host + ":5432/journey" +
 		"?user=" + dbUser + "&sslmode=disable&password=" + dbPass
 }

@@ -1,7 +1,8 @@
-export interface Country {
+export interface Project {
   id: number;
   name: string;
-  flag: string;
-  area: number;
-  population: number;
+  latitude: number;
+  longitude: number;
+  required: number;
+  need: number;
 }

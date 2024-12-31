@@ -3,7 +3,7 @@ img {
 }
 
 header {
-  background-color: #676767;
+  background-color: var(--journeyGray);
 }
 
 .flex-container {
@@ -13,11 +13,35 @@ header {
 }
 
 .menudrop {
-  background-color: #676767;
+  background-color: white;
   width:auto;
   padding:20px;
 }
 
 .dropdowncolor {
-  color: #676767;
+  color: var(--journeyGray);
+}
+
+a:link {
+  color: var(--journeyGray);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--journeyGray);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--journeyGray);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--journeyGray);
+  background-color: transparent;
+  text-decoration: underline;
 }

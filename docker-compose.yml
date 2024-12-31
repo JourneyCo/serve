@@ -14,7 +14,7 @@ services:
     image: postgres:15.4-alpine3.18
     environment:
       POSTGRES_PASSWORD: pass
-      POSTGRES_USER: goxygen
-      POSTGRES_DB: goxygen
+      POSTGRES_USER: journey
+      POSTGRES_DB: journey
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql

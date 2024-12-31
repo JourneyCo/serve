@@ -5,8 +5,8 @@ import {ProjectsComponent} from "./pages/projects/projects.component";
 import {MapComponent} from "./components/map/map.component";
 
 const routes: Routes = [
-  { path: '', component: ProjectsComponent }, // Default route
-  { path: 'contact', component: MapComponent }
+  { path: '', component: MapComponent }, // Default route
+  { path: 'projects', component: ProjectsComponent }
 ];
 
 @NgModule({
