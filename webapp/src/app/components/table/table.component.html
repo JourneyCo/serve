@@ -32,7 +32,7 @@
       <td>
         <ngb-highlight [result]="project.name" [term]="service.searchTerm"></ngb-highlight>
       </td>
-      <td><ngb-highlight [result]="project.required | number" [term]="service.searchTerm"></ngb-highlight>></td>
+      <td><ngb-highlight [result]="project.required | number" [term]="service.searchTerm"></ngb-highlight></td>
       <td><ngb-highlight [result]="project.need | number" [term]="service.searchTerm"></ngb-highlight></td>
       <th scope="row">
         <button class="btn btn-primary" type="submit" [disabled]="project.need <= 0">Register</button>

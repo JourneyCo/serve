@@ -8,9 +8,14 @@
 
 <!--  (mapClick)="addAdvancedMarker($event)">-->
   @for (position of advancedMarkerPositions; track position) {
-  <map-advanced-marker [position]="position" [options]="advancedMarkerOptions" />
+    <map-advanced-marker
+      #marker="mapAdvancedMarker"
+      [position]="position"
+      (mapClick)="openInfoWindow(marker)">
+    </map-advanced-marker>
   }
+  <map-info-window>Info Window content</map-info-window>
 </google-map>
 
-<div>Latitude: {{display?.lat}}</div>
-<div>Longitude: {{display?.lng}}</div>
+<div>Latitude: {{display.lat}}</div>
+<div>Longitude: {{display.lng}}</div>

@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"os"
 	v1 "serve/api/v1"
-	"serve/db"
 	"serve/web"
 )
 
@@ -18,13 +19,19 @@ func main() {
 	}
 	defer d.Close()
 
+	_, err = gorm.Open(postgres.New(postgres.Config{
+		Conn: d,
+	}), &gorm.Config{})
+	if err != nil {
+		log.Fatal("gorm could not connect to db: ", err)
+	}
 	r := mux.NewRouter()
 	v := r.PathPrefix("/api/v1").Subrouter()
 	v1.Route(v)
 
 	// CORS is enabled only in prod profile
 	cors := os.Getenv("profile") == "prod"
-	app := web.NewApp(db.NewDB(d), cors)
+	app := web.NewApp(cors)
 
 	if err = app.Serve(); err != nil {
 		log.Println("error serving application: ", err)
