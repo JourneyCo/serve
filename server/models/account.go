@@ -1,6 +1,8 @@
-package model
+package models
 
-import "time"
+import (
+	"time"
+)
 
 type Account struct {
 	ID        int64      `json:"id"`

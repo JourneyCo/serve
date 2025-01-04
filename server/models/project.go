@@ -1,6 +1,8 @@
-package model
+package models
 
-import "time"
+import (
+	"time"
+)
 
 type Project struct {
 	ID        int64      `json:"id"`
