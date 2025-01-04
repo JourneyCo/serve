@@ -27,7 +27,7 @@
     </thead>
     <tbody>
     @for (project of projects$ | async; track project.id) {
-    <tr>
+    <tr (click)="rowClicked(project.id)" class="clickable">
 <!--      <th scope="row">{{ project.id }}</th>-->
       <td>
         <ngb-highlight [result]="project.name" [term]="service.searchTerm"></ngb-highlight>
@@ -35,7 +35,7 @@
       <td><ngb-highlight [result]="project.required | number" [term]="service.searchTerm"></ngb-highlight></td>
       <td><ngb-highlight [result]="project.need | number" [term]="service.searchTerm"></ngb-highlight></td>
       <th scope="row">
-        <button class="btn btn-primary" type="submit" [disabled]="project.need <= 0">Register</button>
+        <button class="btn btn-primary" type="submit" (click)="register(project.id)" [disabled]="project.need <= 0">Register</button>
       </th>
     </tr>
     } @empty {

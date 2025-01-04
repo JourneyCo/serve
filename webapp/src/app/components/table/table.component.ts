@@ -36,4 +36,12 @@ export class TableComponent {
     this.service.sortColumn = column;
     this.service.sortDirection = direction;
   }
+
+  rowClicked(id: number) {
+    console.log(id);
+  }
+
+  register(id: number) {
+    console.log("registering! : ", id)
+  }
 }

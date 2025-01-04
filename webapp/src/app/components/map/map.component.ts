@@ -17,7 +17,7 @@ export class MapComponent {
     zoom: 12,
     mapId: '18c474b41c1ac65a',
   };
-  display!: google.maps.LatLngLiteral;
+  display: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
 
   moveMap(event: google.maps.MapMouseEvent) {
     // @ts-ignore
