@@ -1,11 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"os"
 	v1 "serve/api/v1"
@@ -23,8 +22,8 @@ func main() {
 
 	// Connect to Database
 	fmt.Println("Connecting to database...")
-	_, err := gorm.Open(postgres.Open(dataSource()), &gorm.Config{}) // grab db
-
+	d, err := sql.Open("postgres", dataSource())
+	defer d.Close()
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
@@ -51,7 +50,6 @@ func dataSource() string {
 		host = "db"
 		dbPass = os.Getenv("db_pass")
 	}
-	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=prefer TimeZone=UTC", host, dbUser, dbPass, "journey", 5432)
-	//return "postgresql://" + host + ":5432/journey" +
-	//	"?user=" + dbUser + "&sslmode=disable&password=" + dbPass
+	return "postgresql://" + host + ":5432/journey" +
+		"?user=" + dbUser + "&sslmode=disable&password=" + dbPass
 }
