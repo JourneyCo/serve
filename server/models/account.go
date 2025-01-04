@@ -5,11 +5,11 @@ import (
 )
 
 type Account struct {
-	ID        int64      `json:"id"`
-	FirstName string     `json:"first"`
-	LastName  string     `json:"last"`
-	Email     string     `json:"email"`
-	Password  string     `json:"password"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
+	ID        int64
+	FirstName string
+	LastName  string
+	Email     string
+	Password  string
+	CreatedAt time.Time
+	UpdatedAt *time.Time
 }
