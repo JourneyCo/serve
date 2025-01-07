@@ -3,6 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
@@ -22,10 +25,24 @@ func main() {
 
 	// Connect to Database
 	fmt.Println("Connecting to database...")
-	d, err := sql.Open("postgres", dataSource())
-	defer d.Close()
+	db, err := sql.Open("postgres", dataSource())
+	defer db.Close()
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
+	}
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		log.Fatal("failed to get driver:", err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file:./migrations",
+		"postgres", driver)
+	if err != nil || m == nil {
+		log.Fatal("failed to create migration instance:", err)
+	}
+	if err = m.Up(); err != nil {
+		log.Fatal("error migrating up: ", err)
 	}
 
 	r := mux.NewRouter()

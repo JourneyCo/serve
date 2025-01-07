@@ -9,7 +9,7 @@ type Locations struct {
 	CreatedAt time.Time
 	UpdatedAt *time.Time
 	Address   string
-	Lattitude float64
+	Latitude  float64
 	Longitude float64
 	Info      string
 }

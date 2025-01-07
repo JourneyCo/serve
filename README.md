@@ -24,14 +24,12 @@ docker compose -f docker-compose-dev.yml up
 ```
 
 This starts a local PostgreSQL database on `localhost:5432`.
-The database will be populated with test records from the
-[init-db.sql](init-db.sql) file.
 
 Navigate to the `server` folder and start the back end:
 
 ```sh
 cd server
-go run server.go
+go run main.go
 ```
 The back end will serve on http://localhost:8080.
 
