@@ -7,6 +7,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
 	"os"
@@ -15,6 +16,9 @@ import (
 )
 
 func main() {
+	if os.Getenv("profile") != "prod" {
+		godotenv.Load() // load env's from .env file
+	}
 	// Getting environment variables
 	fmt.Println("Getting Env variables...")
 	//dbHost := cmp.Or(os.Getenv("DB_HOST"), "localhost")
