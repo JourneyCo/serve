@@ -24,7 +24,8 @@
       "dom"
     ],
     "paths": {
-      "@assets/*": ["assets/*"] // example only
+      "@components": ["src/app/components/index.ts"],
+      "@services": ["src/app/services/index.ts"]
     },
   },
   "angularCompilerOptions": {

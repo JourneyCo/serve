@@ -2,7 +2,7 @@ import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Component, QueryList, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Project } from './project';
-import { ProjectService } from '../../services/project.service';
+import { ProjectService } from '@services';
 import { NgbdSortableHeader, SortEvent } from '../../directives/sortable.directive';
 import { FormsModule } from '@angular/forms';
 import { NgbHighlight, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
