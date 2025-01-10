@@ -11,14 +11,12 @@ import (
 )
 
 type App struct {
-	handlers    map[string]http.HandlerFunc
 	Auth0Config auth0.Config
 	Router      *mux.Router
 }
 
 func New() App {
 	app := App{
-		handlers:    make(map[string]http.HandlerFunc),
 		Auth0Config: auth0.New(),
 	}
 

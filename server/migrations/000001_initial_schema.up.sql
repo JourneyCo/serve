@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS locations(
 
 CREATE TABLE IF NOT EXISTS projects(
     id serial PRIMARY KEY,
+    google_id TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     required TEXT NOT NULL,
     needed TEXT NOT NULL,

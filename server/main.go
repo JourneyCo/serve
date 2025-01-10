@@ -11,6 +11,7 @@ import (
 	"log"
 	"os"
 	"serve/app"
+	"serve/app/google"
 	"serve/helpers"
 )
 
@@ -42,6 +43,8 @@ func main() {
 	if err = m.Up(); err != nil {
 		log.Print("error migrating up: ", err)
 	}
+
+	google.FetchProjects()
 
 	// CORS is enabled only in prod profile
 	//cors := helpers.GetEnvVar("profile") == "prod"

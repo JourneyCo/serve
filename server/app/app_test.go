@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"serve/model"
+	"serve/models"
 	"testing"
 )
 
