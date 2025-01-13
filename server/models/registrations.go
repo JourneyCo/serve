@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Registrations struct {
+type Registration struct {
 	AccountID   int64
 	ProjectID   int64
 	QtyEnrolled int

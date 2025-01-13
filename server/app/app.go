@@ -1,27 +1,35 @@
 package app
 
 import (
+	"database/sql"
+	"github.com/unrolled/secure"
 	"log"
 	"net/http"
+	"serve/api/v1"
 	"time"
 
 	"github.com/gorilla/mux"
 	"serve/app/auth0"
-	"serve/app/router"
 )
 
 type App struct {
 	Auth0Config auth0.Config
 	Router      *mux.Router
+	Database    *sql.DB
 }
 
-func New() App {
+func New(db *sql.DB) App {
 	app := App{
 		Auth0Config: auth0.New(),
+		Database:    db,
 	}
 
-	app.Router = router.Route(app.Auth0Config.Domain, app.Auth0Config.Audience)
-
+	r := mux.NewRouter()
+	secureMiddleware := secure.New()
+	r.Use(secureMiddleware.Handler)
+	s := r.PathPrefix("/api/v1").Subrouter()
+	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, s)
+	app.Router = r
 	return app
 }
 

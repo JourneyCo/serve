@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Locations struct {
+type Location struct {
 	ID        int64
 	CreatedAt time.Time
 	UpdatedAt *time.Time

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Projects struct {
+type Project struct {
 	// ID is the serial number primary key generated from postgres
 	ID int64
 

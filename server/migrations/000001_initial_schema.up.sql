@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS locations(
    address TEXT NOT NULL,
    latitude TEXT NOT NULL,
    longitude TEXT NOT NULL,
-   info TEXT UNIQUE NOT NULL,
+   info TEXT NOT NULL,
    created_at TIMESTAMPTZ NOT NULL,
    updated_at TIMESTAMPTZ NOT NULL
 );
@@ -26,7 +26,6 @@ CREATE TABLE IF NOT EXISTS projects(
     needed TEXT NOT NULL,
     admin_id BIGINT NOT NULL,
     location_id BIGINT NOT NULL,
-    info TEXT UNIQUE NOT NULL,
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES accounts(id) ON DELETE RESTRICT,

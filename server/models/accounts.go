@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Accounts struct {
+type Account struct {
 	ID        int64
 	FirstName string
 	LastName  string
