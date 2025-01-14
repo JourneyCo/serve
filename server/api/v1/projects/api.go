@@ -68,13 +68,6 @@ func PublicApiHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, PublicMessage())
 }
 
-func ProtectedApiHandler(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Request received:", r.Method, r.URL.Path)
-		h.ServeHTTP(w, r)
-	})
-}
-
 func AdminApiHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, AdminMessage())
 }
