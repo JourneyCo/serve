@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 )
 
 func HandleCacheControl(next http.Handler) http.Handler {
@@ -20,19 +21,23 @@ func HandleCacheControl(next http.Handler) http.Handler {
 
 func JSONToCtx(int any, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		ctx := r.Context()
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			fmt.Printf("error reading body: %v", err)
 			return
 		}
-		if err = json.Unmarshal(body, &int); err != nil {
+
+		dto := reflect.New(reflect.TypeOf(int)).Interface()
+
+		if err = json.Unmarshal(body, &dto); err != nil {
 			fmt.Printf("error unmarshalling body: %v", err)
 			return
 		}
 
 		// Add JSON data to the context
-		ctx := context.WithValue(r.Context(), "dto", &int)
+		ctx = context.WithValue(ctx, "dto", &dto)
+		ctx = context.WithValue(ctx, "body", body)
 
 		// Pass the updated context to the next handler
 		next.ServeHTTP(w, r.WithContext(ctx))

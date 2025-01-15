@@ -17,7 +17,7 @@ func main() {
 	// Getting environment variables
 	fmt.Println("Getting Env variables...")
 
-	db := database.StartDB()
+	database.StartDB()
 
 	if err := google.FetchProjects(); err != nil {
 		log.Print(err) // we will just print the error - no need to fatal/panic
@@ -25,7 +25,7 @@ func main() {
 
 	// CORS is enabled only in prod profile
 	//cors := helpers.GetEnvVar("profile") == "prod"
-	a := app.New(db)
+	a := app.New()
 
 	if err := a.Serve(); err != nil {
 		log.Fatal("error serving application: ", err)

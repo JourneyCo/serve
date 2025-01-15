@@ -15,7 +15,7 @@ func Route(r *mux.Router) {
 
 	r.Path("").
 		Methods(http.MethodPost).
-		Handler(middleware.JSONToCtx(request{}, create(Show())))
+		Handler(middleware.JSONToCtx(Request{}, create(Show())))
 
 	// single project
 	p := r.Path("/{id:[0-9]+}").Subrouter()

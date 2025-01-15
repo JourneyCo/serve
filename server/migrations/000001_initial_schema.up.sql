@@ -10,10 +10,15 @@ CREATE TABLE IF NOT EXISTS accounts(
 
 CREATE TABLE IF NOT EXISTS locations(
    id serial PRIMARY KEY,
-   address TEXT NOT NULL,
    latitude TEXT NOT NULL,
    longitude TEXT NOT NULL,
    info TEXT NOT NULL,
+    street TEXT NOT NULL,
+    number INT NOT NULL,
+    city TEXT NOT NULL,
+    state TEXT NOT NULL,
+    postal_code TEXT NOT NULL,
+    formatted_address TEXT NOT NULL,
    created_at TIMESTAMPTZ NOT NULL,
    updated_at TIMESTAMPTZ NOT NULL
 );

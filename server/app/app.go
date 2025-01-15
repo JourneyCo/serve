@@ -2,14 +2,15 @@ package app
 
 import (
 	"database/sql"
-	"github.com/unrolled/secure"
 	"log"
 	"net/http"
 	"serve/api/v1"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/unrolled/secure"
 	"serve/app/auth0"
+	db "serve/app/database"
 )
 
 type App struct {
@@ -18,10 +19,10 @@ type App struct {
 	Database    *sql.DB
 }
 
-func New(db *sql.DB) App {
+func New() App {
 	app := App{
 		Auth0Config: auth0.New(),
-		Database:    db,
+		Database:    db.DB,
 	}
 
 	r := mux.NewRouter()

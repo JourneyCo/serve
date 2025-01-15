@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kelvins/geocoder"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
@@ -23,7 +24,7 @@ const (
 	readRange     = "Projects!A2:H"
 )
 
-// Retrieve a token, saves the token, then returns the generated client.
+// getClient Retrieve a token, saves the token, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
@@ -37,7 +38,7 @@ func getClient(config *oauth2.Config) *http.Client {
 	return config.Client(context.Background(), tok)
 }
 
-// Request a token from the web, then returns the retrieved token.
+// getTokenFromWeb Requests a token from the web, then returns the retrieved token.
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
@@ -57,7 +58,7 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	return tok
 }
 
-// Retrieves a token from a local file.
+// tokenFromFile Retrieves a token from a local file.
 func tokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	if err != nil {
@@ -69,7 +70,7 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-// Saves a token to a file path.
+// saveToken Saves a token to a file path.
 func saveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
@@ -81,6 +82,7 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
+// FetchProjects returns the projects that have been entered into a Google Sheet
 func FetchProjects() error {
 	ctx := context.Background()
 	b, err := os.ReadFile("google_creds.json")
@@ -116,12 +118,28 @@ func FetchProjects() error {
 		return err
 	}
 
-	fmt.Println("Name, Major:")
 	for _, row := range resp.Values {
-		// Print columns A and E, which correspond to indices 0 and 4.
-		fmt.Printf("%s, %s\n", row[0], row[4])
-		log.Printf("%s, %s\n", row[0], row[4])
+		for _, cell := range row {
+			log.Printf("%v ", cell)
+		}
+		print("\n")
 	}
 
 	return nil
+}
+
+// GetLatLong returns the lat and long for an address to be used by the google map API
+func GetLatLong(address geocoder.Address) (geocoder.Location, error) {
+
+	// Convert address to location (latitude, longitude)
+	location, err := geocoder.Geocoding(address)
+
+	if err != nil {
+		fmt.Println("Could not get the location: ", err)
+		return geocoder.Location{}, err
+	} else {
+		fmt.Println("Latitude: ", location.Latitude)
+		fmt.Println("Longitude: ", location.Longitude)
+	}
+	return location, nil
 }

@@ -22,7 +22,6 @@ type Config struct {
 }
 
 func New() Config {
-	//clientOriginUrl := helpers.GetEnvVar("CLIENT_ORIGIN_URL")
 	return Config{
 		Audience: helpers.GetEnvVar("AUTH0_AUDIENCE"),
 		Domain:   helpers.GetEnvVar("AUTH0_DOMAIN"),
@@ -69,14 +68,12 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 				if err := helpers.WriteJSON(w, http.StatusUnauthorized, errorMessage); err != nil {
 					log.Printf("Failed to write error message: %v", err)
 				}
-				return
 			}
 			if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
 				errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
 				if err := helpers.WriteJSON(w, http.StatusUnauthorized, errorMessage); err != nil {
 					log.Printf("Failed to write error message: %v", err)
 				}
-				return
 			}
 			lerrors.ServerError(w, err)
 		}
