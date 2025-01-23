@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"log"
 	"serve/app"
 	"serve/app/database"
 	"serve/app/google"
@@ -18,6 +19,7 @@ func main() {
 	fmt.Println("Getting Env variables...")
 
 	database.StartDB()
+	google.SetKey()
 
 	if err := google.FetchProjects(); err != nil {
 		log.Print(err) // we will just print the error - no need to fatal/panic

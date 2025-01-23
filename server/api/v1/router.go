@@ -1,8 +1,9 @@
 package v1
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 	"serve/api/v1/projects"
 	"serve/app/auth0"
 	"serve/app/errors"

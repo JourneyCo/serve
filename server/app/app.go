@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"serve/api/v1"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/unrolled/secure"
+	"serve/api/v1"
 	"serve/app/auth0"
 	db "serve/app/database"
 )

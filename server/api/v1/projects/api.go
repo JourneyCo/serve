@@ -10,14 +10,19 @@ import (
 	"net/http"
 	"reflect"
 
-	"serve/app/database"
+	"googlemaps.github.io/maps"
+	ldb "serve/app/database"
 	lerrors "serve/app/errors"
 	"serve/helpers"
 	"serve/models"
 	"time"
 )
 
-type ApiResponse struct {
+const (
+	USA = "United States"
+)
+
+type APIResponse struct {
 	Text string `json:"text"`
 }
 
@@ -32,7 +37,7 @@ func LogAMessage(h http.Handler) http.Handler {
 }
 
 // create will create a new project, along with a new location if it
-// does not already exist in the system
+// does not already exist in the system.
 func create(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -65,18 +70,18 @@ func create(h http.Handler) http.Handler {
 
 		now := time.Now()
 		project := models.Project{ //TODO: Remove hardcode once we can get dto into context
-			GoogleID:   "gold",
+			GoogleID:   dto.GoogleID,
 			Name:       "something",
 			Required:   123,
 			Needed:     13,
 			AdminID:    1,
-			LocationID: 1,
+			LocationID: l.ID,
 			Date:       &now,
 			CreatedAt:  now,
 			UpdatedAt:  &now,
 		}
 
-		project, err := database.PostProject(ctx, project)
+		project, err = ldb.PostProject(ctx, project)
 		if err != nil {
 			log.Printf("failed to post project: %v", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -85,8 +90,7 @@ func create(h http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "project", project)
 
-		r = r.WithContext(ctx)
-		return
+		r.WithContext(ctx)
 	})
 }
 
@@ -99,7 +103,7 @@ func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func sendMessage(rw http.ResponseWriter, r *http.Request, data ApiResponse) {
+func sendMessage(rw http.ResponseWriter, r *http.Request, data APIResponse) {
 	if r.Method == http.MethodGet {
 		err := helpers.WriteJSON(rw, http.StatusOK, data)
 		if err != nil {
@@ -110,7 +114,7 @@ func sendMessage(rw http.ResponseWriter, r *http.Request, data ApiResponse) {
 	}
 }
 
-func PublicApiHandler(rw http.ResponseWriter, r *http.Request) {
+func PublicAPIHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, PublicMessage())
 }
 
@@ -118,20 +122,20 @@ func AdminApiHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, AdminMessage())
 }
 
-func PublicMessage() ApiResponse {
-	return ApiResponse{
+func PublicMessage() APIResponse {
+	return APIResponse{
 		Text: "This is a public message.",
 	}
 }
 
-func ProtectedMessage() ApiResponse {
-	return ApiResponse{
+func ProtectedMessage() APIResponse {
+	return APIResponse{
 		Text: "This is a protected message.",
 	}
 }
 
-func AdminMessage() ApiResponse {
-	return ApiResponse{
+func AdminMessage() APIResponse {
+	return APIResponse{
 		Text: "This is an admin message.",
 	}
 }
@@ -144,7 +148,7 @@ func getExistingLocation(ctx context.Context) (models.Location, error) {
 		fmt.Println(dto)
 	}
 
-	a, err := database.GetLocationByAddress(ctx, dto.StreetNumber, dto.Street)
+	a, err := ldb.GetLocationByAddress(ctx, dto.StreetNumber, dto.Street)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no rows found")
 		return a, nil
@@ -153,6 +157,46 @@ func getExistingLocation(ctx context.Context) (models.Location, error) {
 		fmt.Printf("error looking up address in db: %v\n", err)
 		return a, err
 	}
-
 	return a, nil
+}
+
+func createLocation(ctx context.Context, dto Request) (models.Location, error, int) {
+
+	c, err := maps.NewClient(maps.WithAPIKey(helpers.GetEnvVar("GOOGLE_KEY")))
+	if err != nil {
+		log.Fatalf("fatal error: %s", err)
+	}
+
+	q := fmt.Sprintf("%d %s %s %s %s USA", dto.StreetNumber, dto.Street, dto.State, dto.City, dto.PostalCode)
+	r := &maps.TextSearchRequest{
+		Query: q,
+	}
+
+	result, err := c.TextSearch(context.Background(), r)
+	if err != nil {
+		log.Printf("error obtaining lat long: %v", err)
+		return models.Location{}, err, http.StatusInternalServerError
+	}
+
+	now := time.Time{}
+	loc := models.Location{
+		Latitude:         result.Results[0].Geometry.Location.Lat,
+		Longitude:        result.Results[0].Geometry.Location.Lng,
+		Info:             "",
+		Street:           dto.Street,
+		Number:           dto.StreetNumber,
+		City:             dto.City,
+		State:            dto.State,
+		PostalCode:       dto.PostalCode,
+		FormattedAddress: result.Results[0].FormattedAddress,
+		CreatedAt:        now,
+		UpdatedAt:        &now,
+	}
+
+	location, err := ldb.PostLocation(ctx, loc)
+	if err != nil {
+		return models.Location{}, err, http.StatusInternalServerError
+	}
+
+	return location, nil, http.StatusOK
 }

@@ -1,13 +1,12 @@
 package models
 
 import (
-	"github.com/kelvins/geocoder"
 	"time"
 )
 
 type Location struct {
-	// google's lat and long
-	geocoder.Location
+	Latitude  float64
+	Longitude float64
 
 	ID               int64
 	Info             string

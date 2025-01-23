@@ -7,6 +7,6 @@ import (
 
 func Show() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		helpers.WriteJSON(w, http.StatusOK, ApiResponse{})
+		helpers.WriteJSON(w, http.StatusOK, APIResponse{})
 	})
 }

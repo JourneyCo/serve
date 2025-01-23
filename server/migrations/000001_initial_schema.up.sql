@@ -43,4 +43,9 @@ CREATE TABLE IF NOT EXISTS registrations(
     quantity INT NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT
-)
+);
+
+INSERT INTO accounts (first, last, password, email, created_at, updated_at)
+VALUES ('admin', 'user', 'password', 'scarrington@gmail.com', '2022-10-10 11:30:30', '2022-10-10 11:30:30');
+
+

@@ -13,5 +13,5 @@ webapp/npm-debug.log*
 /.idea/sqldialects.xml
 server/.env
 server/google_creds.json
-server/token.json
+webapp/token.json
 

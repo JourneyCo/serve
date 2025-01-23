@@ -14,15 +14,21 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
+	"serve/helpers"
 )
 
 const (
 	// Prints the names and majors of students in a sample spreadsheet:
 	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-	//googleSheetID = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
 	googleSheetID = "1ZVkmOMblClYaiUsbEzfur-fsHxSus3l-bxwq-4qeKTU"
 	readRange     = "Projects!A2:H"
+	journeySheet  = "1QvHP4eax2ve4UIMcVuaTCGuGcOighVhgHm8RNE0qzis"
 )
+
+func SetKey() {
+	key := helpers.GetEnvVar("GOOGLE_KEY")
+	geocoder.ApiKey = key
+}
 
 // getClient Retrieve a token, saves the token, then returns the generated client.
 func getClient(config *oauth2.Config) *http.Client {
@@ -126,20 +132,4 @@ func FetchProjects() error {
 	}
 
 	return nil
-}
-
-// GetLatLong returns the lat and long for an address to be used by the google map API
-func GetLatLong(address geocoder.Address) (geocoder.Location, error) {
-
-	// Convert address to location (latitude, longitude)
-	location, err := geocoder.Geocoding(address)
-
-	if err != nil {
-		fmt.Println("Could not get the location: ", err)
-		return geocoder.Location{}, err
-	} else {
-		fmt.Println("Latitude: ", location.Latitude)
-		fmt.Println("Longitude: ", location.Longitude)
-	}
-	return location, nil
 }
