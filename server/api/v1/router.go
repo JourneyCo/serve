@@ -14,10 +14,6 @@ func Route(domain string, audience string, r *mux.Router) {
 
 	r.HandleFunc("/", errors.NotFoundHandler)
 
-	r.Path("/messages/protected").
-		Methods(http.MethodGet).
-		Handler(projects.LogAMessage(projects.Show()))
-
 	r.Path("/messages/admin").
 		Methods(http.MethodGet).
 		Handler(auth0.ValidateJWT(audience, domain, http.HandlerFunc(projects.AdminApiHandler)))

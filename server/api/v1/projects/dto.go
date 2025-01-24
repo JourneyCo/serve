@@ -16,14 +16,14 @@ type Request struct {
 	// Needed is the number of people still needed for the project
 	Needed int `json:"needed"`
 
-	Street       string     `json:"street"`
-	StreetNumber int        `json:"street_number"`
-	City         string     `json:"city"`
-	State        string     `json:"state"`
-	PostalCode   string     `json:"postal_code"`
+	Street       string     `json:"street,omitempty"`
+	StreetNumber int        `json:"street_number,omitempty"`
+	City         string     `json:"city,omitempty"`
+	State        string     `json:"state,omitempty"`
+	PostalCode   string     `json:"postal_code,omitempty"`
 	AdminID      int64      `json:"admin_id"`
-	LocationID   *int64     `json:"location_id"`
-	Date         *time.Time `json:"date"`
+	LocationID   *int64     `json:"location_id,omitempty"`
+	Date         *time.Time `json:"date,omitempty"`
 	CreatedAt    time.Time  `json:"created_at"`
-	UpdatedAt    *time.Time `json:"updated_at"`
+	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
 }

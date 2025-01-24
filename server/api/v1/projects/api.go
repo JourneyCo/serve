@@ -18,10 +18,6 @@ import (
 	"time"
 )
 
-const (
-	USA = "United States"
-)
-
 type APIResponse struct {
 	Text string `json:"text"`
 }
@@ -29,10 +25,20 @@ type APIResponse struct {
 func toCtx(rw http.ResponseWriter, r *http.Request) {
 }
 
-func LogAMessage(h http.Handler) http.Handler {
+func idxToCtx(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Request received:", r.Method, r.URL.Path)
-		h.ServeHTTP(w, r)
+		ctx := r.Context()
+		projects := []models.Project{}
+
+		projects, err := ldb.GetProjects(ctx)
+		if err != nil {
+			fmt.Printf("error retrieving projects: %v", err)
+			return
+		}
+
+		ctx = context.WithValue(ctx, "projects", projects)
+
+		h.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
@@ -41,37 +47,27 @@ func LogAMessage(h http.Handler) http.Handler {
 func create(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		//dto, ok := ctx.Value("dto").(*Request)
-		//if !ok {
-		//	fmt.Println(reflect.TypeOf(dto))
-		//}
 		body := ctx.Value("body").([]byte)
-
 		var dto Request
+
 		if err := json.Unmarshal(body, &dto); err != nil {
 			fmt.Printf("error unmarshalling body: %v", err)
 			return
 		}
 
-		// check to see if this is a new location or not
-		if dto.LocationID == nil {
-			a, err := getExistingLocation(ctx)
-			if err != nil {
-				fmt.Printf("error getting existing location: %v\n", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			if a.Number == 0 {
-				// do something
-			}
-		} else {
+		//TODO: Handle existing locations
 
+		l, err, status := createLocation(ctx, dto)
+		if err != nil {
+			log.Printf("error creating location: %v", err)
+			w.WriteHeader(status)
+			return
 		}
 
 		now := time.Now()
 		project := models.Project{ //TODO: Remove hardcode once we can get dto into context
 			GoogleID:   dto.GoogleID,
-			Name:       "something",
+			Name:       dto.Name,
 			Required:   123,
 			Needed:     13,
 			AdminID:    1,
@@ -90,17 +86,8 @@ func create(h http.Handler) http.Handler {
 
 		ctx = context.WithValue(ctx, "project", project)
 
-		r.WithContext(ctx)
+		h.ServeHTTP(w, r.WithContext(ctx))
 	})
-}
-
-// Wrapper function
-func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Request received:", r.Method, r.URL.Path)
-		next(w, r)
-		fmt.Println("Request completed")
-	}
 }
 
 func sendMessage(rw http.ResponseWriter, r *http.Request, data APIResponse) {
@@ -114,24 +101,8 @@ func sendMessage(rw http.ResponseWriter, r *http.Request, data APIResponse) {
 	}
 }
 
-func PublicAPIHandler(rw http.ResponseWriter, r *http.Request) {
-	sendMessage(rw, r, PublicMessage())
-}
-
 func AdminApiHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, AdminMessage())
-}
-
-func PublicMessage() APIResponse {
-	return APIResponse{
-		Text: "This is a public message.",
-	}
-}
-
-func ProtectedMessage() APIResponse {
-	return APIResponse{
-		Text: "This is a protected message.",
-	}
 }
 
 func AdminMessage() APIResponse {
@@ -160,6 +131,7 @@ func getExistingLocation(ctx context.Context) (models.Location, error) {
 	return a, nil
 }
 
+// createLocation will create a location in the database
 func createLocation(ctx context.Context, dto Request) (models.Location, error, int) {
 
 	c, err := maps.NewClient(maps.WithAPIKey(helpers.GetEnvVar("GOOGLE_KEY")))
@@ -172,7 +144,7 @@ func createLocation(ctx context.Context, dto Request) (models.Location, error, i
 		Query: q,
 	}
 
-	result, err := c.TextSearch(context.Background(), r)
+	result, err := c.TextSearch(ctx, r)
 	if err != nil {
 		log.Printf("error obtaining lat long: %v", err)
 		return models.Location{}, err, http.StatusInternalServerError
