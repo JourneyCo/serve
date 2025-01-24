@@ -2,12 +2,14 @@ package app
 
 import (
 	"database/sql"
+	"github.com/unrolled/secure"
 	"log"
 	"net/http"
+	"os"
+	"serve/app/middleware"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/unrolled/secure"
 	"serve/api/v1"
 	"serve/app/auth0"
 	db "serve/app/database"
@@ -28,8 +30,14 @@ func New() App {
 	r := mux.NewRouter()
 	secureMiddleware := secure.New()
 	r.Use(secureMiddleware.Handler)
+	cors := os.Getenv("profile") == "prod"
+	if !cors {
+		r.Use(middleware.DisableCORS)
+	}
+
 	s := r.PathPrefix("/api/v1").Subrouter()
 	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, s)
+
 	app.Router = r
 	return app
 }

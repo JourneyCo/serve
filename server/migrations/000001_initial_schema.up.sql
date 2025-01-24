@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS registrations(
 );
 
 INSERT INTO accounts (first, last, password, email, created_at, updated_at)
-VALUES ('admin', 'user', 'password', 'scarrington@gmail.com', '2022-10-10 11:30:30', '2022-10-10 11:30:30');
+VALUES ('admin', 'user', 'password', 'scarrington@gmail.com', LOCALTIMESTAMP, LOCALTIMESTAMP);
 
+INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
+VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
 

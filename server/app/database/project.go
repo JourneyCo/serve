@@ -48,7 +48,7 @@ func GetProjects(ctx context.Context) ([]models.Project, error) {
 
 	sqlStatement := `
 SELECT * FROM projects`
-	rows, err := tx.Query(sqlStatement)
+	rows, err := tx.QueryContext(ctx, sqlStatement)
 	if err != nil {
 		log.Printf("Error getting project: %v", err)
 		return projects, err

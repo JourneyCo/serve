@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"serve/api/v1/locations"
 
 	"github.com/gorilla/mux"
 	"serve/api/v1/projects"
@@ -20,6 +21,9 @@ func Route(domain string, audience string, r *mux.Router) {
 
 	s := r.Path("/projects").Subrouter()
 	projects.Route(s)
+
+	l := r.Path("/locations").Subrouter()
+	locations.Route(l)
 
 	r.Use(middleware.HandleCacheControl)
 }

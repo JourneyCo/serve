@@ -59,3 +59,48 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
 	log.Printf("Inserted location: %d, %v", l.ID, l.FormattedAddress)
 	return l, nil
 }
+
+func GetLocations(ctx context.Context) ([]models.Location, error) {
+	locations := []models.Location{}
+
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("Error beginning tx")
+		return locations, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	sqlStatement := `
+SELECT * FROM locations`
+	rows, err := tx.QueryContext(ctx, sqlStatement)
+	if err != nil {
+		log.Printf("Error getting locations: %v", err)
+		return locations, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var location models.Location
+		if err = rows.Scan(&location.ID, &location.Latitude, &location.Longitude, &location.Info, &location.Street, &location.Number, &location.City, &location.State, &location.PostalCode, &location.FormattedAddress, &location.CreatedAt, &location.UpdatedAt); err != nil {
+			log.Printf("Error scanning")
+			return locations, err
+		}
+		locations = append(locations, location)
+	}
+
+	// Rows.Err will report the last error encountered by Rows.Scan.
+	if err = rows.Err(); err != nil {
+		log.Printf("Error row err")
+		return locations, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		log.Printf("Error commiting tx")
+		return locations, err
+	}
+
+	return locations, nil
+}

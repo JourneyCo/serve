@@ -18,11 +18,9 @@ import (
 )
 
 const (
-	// Prints the names and majors of students in a sample spreadsheet:
-	// https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-	googleSheetID = "1ZVkmOMblClYaiUsbEzfur-fsHxSus3l-bxwq-4qeKTU"
-	readRange     = "Projects!A2:H"
-	journeySheet  = "1QvHP4eax2ve4UIMcVuaTCGuGcOighVhgHm8RNE0qzis"
+	testGoogleSheetID = "1ZVkmOMblClYaiUsbEzfur-fsHxSus3l-bxwq-4qeKTU"
+	readRange         = "Serve Day!A4:S"
+	journeySheet      = "1QvHP4eax2ve4UIMcVuaTCGuGcOighVhgHm8RNE0qzis"
 )
 
 func SetKey() {
@@ -112,7 +110,7 @@ func FetchProjects() error {
 		return err
 	}
 
-	resp, err := srv.Spreadsheets.Values.Get(googleSheetID, readRange).Do()
+	resp, err := srv.Spreadsheets.Values.Get(journeySheet, readRange).Do()
 	if err != nil {
 		log.Printf("Unable to retrieve data from sheet: %v", err)
 		return err
