@@ -15,10 +15,8 @@
   ></map-advanced-marker>
     }
   <map-info-window>
-    <h3>{{ selectedMarker?.marker.position }}</h3>
-    <p>{{ selectedMarker?.info }}</p>
+    <h4>{{ selectedMarker?.info }}</h4>
+    <p>{{ selectedMarker?.marker.position.lat }}</p>
+
   </map-info-window>
 </google-map>
-
-<div>Latitude: {{display.lat}}</div>
-<div>Longitude: {{display.lng}}</div>

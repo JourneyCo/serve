@@ -25,7 +25,8 @@
     ],
     "paths": {
       "@components": ["src/app/components/index.ts"],
-      "@services": ["src/app/services/index.ts"]
+      "@services": ["src/app/services/index.ts"],
+      "@models": ["src/app/models/index.ts"]
     },
   },
   "angularCompilerOptions": {

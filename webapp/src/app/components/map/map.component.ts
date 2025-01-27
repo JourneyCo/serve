@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {GoogleMap, MapAdvancedMarker, MapAnchorPoint, MapInfoWindow} from "@angular/google-maps";
 import {CommonModule} from "@angular/common";
 import {APIService} from "@services";
+import {Location} from "@models";
 
 @Component({
   selector: 'app-map',
@@ -23,11 +24,12 @@ export class MapComponent implements OnInit {
   };
   display: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
 
+
   constructor(private APIService: APIService) {}
 
   ngOnInit() {
     this.APIService.getLocations().subscribe(data => {
-      data.forEach((location)=> {
+      data.forEach((location: Location)=> {
       let loc: google.maps.LatLngLiteral = {
         lat: location.latitude,
         lng: location.longitude
@@ -54,14 +56,6 @@ export class MapComponent implements OnInit {
   move(event: google.maps.MapMouseEvent) {
     // @ts-ignore
     this.display = event.latLng.toJSON();
-  }
-
-  advancedMarkerOptions: google.maps.marker.AdvancedMarkerElementOptions = {gmpDraggable: false};
-  advancedMarkerPositions: google.maps.LatLngLiteral[] = [{lat: 39.491482, lng: -104.874878}];
-
-  addAdvancedMarker(event: google.maps.MapMouseEvent) {
-    // @ts-ignore
-    this.advancedMarkerPositions.push(event.latLng.toJSON());
   }
 
   openInfoWindow(marker: MapAdvancedMarker, m: any) {

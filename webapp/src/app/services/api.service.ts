@@ -18,4 +18,8 @@ export class APIService {
     return this.http.get<any[]>(`${this.apiUrl}/projects`);
   }
 
+  public getSystem(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/system`);
+  }
+
 }
