@@ -1,20 +1,23 @@
 <!-- google-maps-demo.component.html -->
 <google-map
+  *ngIf="markers.length > 0"
   height="400px"
   width="750px"
   [options] = "options"
   (mapClick)="moveMap($event)"
   (mapMousemove)="move($event)">
 
-<!--  (mapClick)="addAdvancedMarker($event)">-->
-  @for (position of advancedMarkerPositions; track position) {
-    <map-advanced-marker
-      #marker="mapAdvancedMarker"
-      [position]="position"
-      (mapClick)="openInfoWindow(marker)">
-    </map-advanced-marker>
-  }
-  <map-info-window>Info Window content</map-info-window>
+    @for (m of markers; track m.marker?.position) {
+  <map-advanced-marker
+    #marker="mapAdvancedMarker"
+    [position]="m.marker?.position"
+    (mapClick)="openInfoWindow(marker, m)"
+  ></map-advanced-marker>
+    }
+  <map-info-window>
+    <h3>{{ selectedMarker?.marker.position }}</h3>
+    <p>{{ selectedMarker?.info }}</p>
+  </map-info-window>
 </google-map>
 
 <div>Latitude: {{display.lat}}</div>

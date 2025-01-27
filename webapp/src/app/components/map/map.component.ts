@@ -1,16 +1,20 @@
-import {Component, ViewChild} from '@angular/core';
-import {GoogleMap, MapAdvancedMarker, MapInfoWindow } from "@angular/google-maps";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {GoogleMap, MapAdvancedMarker, MapAnchorPoint, MapInfoWindow} from "@angular/google-maps";
+import {CommonModule} from "@angular/common";
+import {APIService} from "@services";
 
 @Component({
   selector: 'app-map',
   templateUrl: './map.component.html',
   styleUrl: './map.component.css',
   standalone: true,
-  imports: [GoogleMap, MapAdvancedMarker, MapInfoWindow]
+  imports: [CommonModule, GoogleMap, MapInfoWindow, MapAdvancedMarker]
 })
-export class MapComponent {
-  @ViewChild(MapInfoWindow)
-  infoWindow!: MapInfoWindow;
+export class MapComponent implements OnInit {
+  @ViewChild(MapInfoWindow, { static: false })
+  infoWindow!: MapInfoWindow
+  markers: any[] = [];
+  selectedMarker: any;
 
   options: google.maps.MapOptions = {
     center: {lat: 39.491482, lng: -104.874878},
@@ -18,6 +22,29 @@ export class MapComponent {
     mapId: '18c474b41c1ac65a',
   };
   display: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
+
+  constructor(private APIService: APIService) {}
+
+  ngOnInit() {
+    this.APIService.getLocations().subscribe(data => {
+      data.forEach((location)=> {
+      let loc: google.maps.LatLngLiteral = {
+        lat: location.latitude,
+        lng: location.longitude
+      }
+      // @ts-ignore
+      let mark: google.maps.marker.AdvancedMarkerElement = {
+        position: loc,
+        title: location.info,
+      }
+      let m: any = {
+        marker: mark,
+        info: location.info
+      }
+      this.markers.push(m);
+    });
+    })
+  }
 
   moveMap(event: google.maps.MapMouseEvent) {
     // @ts-ignore
@@ -37,8 +64,8 @@ export class MapComponent {
     this.advancedMarkerPositions.push(event.latLng.toJSON());
   }
 
-  openInfoWindow(marker: MapAdvancedMarker) {
+  openInfoWindow(marker: MapAdvancedMarker, m: any) {
+    this.selectedMarker = m;
     this.infoWindow.open(marker);
   }
-
 }

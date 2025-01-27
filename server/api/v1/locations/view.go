@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"serve/helpers"
 	"serve/models"
+	"time"
 )
 
 func index() http.Handler {
@@ -12,10 +13,23 @@ func index() http.Handler {
 		ctx := r.Context()
 		locations := ctx.Value("locations").([]models.Location)
 
-		dto := []models.Location{}
+		dto := []any{}
 
 		for _, location := range locations {
-			l := models.Location{
+			l := struct {
+				Latitude         float64    `json:"latitude"`
+				Longitude        float64    `json:"longitude"`
+				ID               int64      `json:"id"`
+				Info             string     `json:"info"`
+				Street           string     `json:"street"`
+				Number           int        `json:"number"`
+				City             string     `json:"city"`
+				State            string     `json:"state"`
+				PostalCode       string     `json:"postal_code"`
+				FormattedAddress string     `json:"formatted_address"`
+				CreatedAt        time.Time  `json:"created_at"`
+				UpdatedAt        *time.Time `json:"updated_at"`
+			}{
 				Latitude:         location.Latitude,
 				Longitude:        location.Longitude,
 				ID:               location.ID,

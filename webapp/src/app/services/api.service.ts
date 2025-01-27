@@ -11,8 +11,11 @@ export class APIService {
 
 
     public getLocations(): Observable<any[]> {
-    console.log("hit");
       return this.http.get<any[]>(`${this.apiUrl}/locations`);
     }
+
+  public getProjects(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/projects`);
+  }
 
 }
