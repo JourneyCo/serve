@@ -59,7 +59,6 @@ export class ProjectsComponent implements AfterViewInit {
   }
 
   register(evt: any, row: Project) {
-    console.log("clocked");
     const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
     buttonElement.blur();
 
