@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
@@ -6,8 +6,9 @@ import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {Project} from "@models";
 import {APIService} from "@services";
-import {MapComponent} from "@components";
+import {MapComponent, RegisterDialogComponent} from "@components";
 import {DatePipe} from "@angular/common";
+import {MatDialog} from "@angular/material/dialog";
 
 
 @Component({
@@ -18,11 +19,11 @@ import {DatePipe} from "@angular/common";
   DatePipe],
 })
 export class ProjectsComponent implements AfterViewInit {
-  displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at']
+  displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   dataSource: MatTableDataSource<Project>;
   projects: Project[];
   clickedRow: Project | null;
-
+  dialog = inject(MatDialog);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -55,5 +56,25 @@ export class ProjectsComponent implements AfterViewInit {
       return
     }
     this.clickedRow = row;
+  }
+
+  register(evt: any, row: Project) {
+    console.log("clocked");
+    const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
+    buttonElement.blur();
+
+    const dialogRef = this.dialog.open(RegisterDialogComponent, {
+      data: row
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      // if (result !== undefined) {
+      //   this.animal.set(result);
+      // }
+    });
+    evt.stopPropagation();
+
+
   }
 }

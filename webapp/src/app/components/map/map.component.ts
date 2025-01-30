@@ -2,7 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {GoogleMap, MapAdvancedMarker, MapAnchorPoint, MapInfoWindow} from "@angular/google-maps";
 import {CommonModule} from "@angular/common";
 import {APIService} from "@services";
-import {Location} from "@models";
+import {Location, Project} from "@models";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-map',
@@ -28,24 +29,35 @@ export class MapComponent implements OnInit {
   constructor(private APIService: APIService) {}
 
   ngOnInit() {
-    this.APIService.getLocations().subscribe(data => {
-      data.forEach((location: Location)=> {
-      let loc: google.maps.LatLngLiteral = {
-        lat: location.latitude,
-        lng: location.longitude
-      }
-      // @ts-ignore
-      let mark: google.maps.marker.AdvancedMarkerElement = {
-        position: loc,
-        title: location.info,
-      }
-      let m: any = {
-        marker: mark,
-        info: location.info
-      }
-      this.markers.push(m);
+
+    const observable = forkJoin({
+      projects: this.APIService.getProjects(),
+      locations: this.APIService.getLocations(),
     });
-    })
+
+    observable.subscribe(data => {
+      data.locations.forEach((location: Location)=> {
+        let loc: google.maps.LatLngLiteral = {
+          lat: location.latitude,
+          lng: location.longitude
+        }
+        // @ts-ignore
+        let mark: google.maps.marker.AdvancedMarkerElement = {
+          position: loc,
+          title: location.info,
+        }
+        let m: any = {
+          marker: mark,
+          info: location.info
+        }
+        data.projects.forEach((project: Project) => {
+          if (project.location_id == location.id) {
+            m.project = project;
+          }
+        });
+        this.markers.push(m);
+      });
+    });
   }
 
   moveMap(event: google.maps.MapMouseEvent) {

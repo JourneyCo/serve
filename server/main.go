@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -13,10 +12,8 @@ import (
 )
 
 func main() {
-	godotenv.Load() // load env's from .env file
-
-	// Getting environment variables
-	fmt.Println("Getting Env variables...")
+	// load env's from .env file
+	godotenv.Load()
 
 	database.StartDB()
 	google.SetKey()
