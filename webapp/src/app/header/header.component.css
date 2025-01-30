@@ -45,3 +45,10 @@ a:active {
   background-color: transparent;
   text-decoration: underline;
 }
+
+.dropbtn {
+  color: white !important;
+
+  background-color: transparent;
+
+}

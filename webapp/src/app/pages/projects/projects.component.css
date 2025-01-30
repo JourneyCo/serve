@@ -1,0 +1,48 @@
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 40%;
+}
+
+.mat-column-id {
+  width: 5px;
+  text-align: center;
+}
+
+.mat-column-name {
+  width: 400px;
+}
+
+mat-header-cell, mat-cell {
+  justify-content: center;
+}
+
+mat-sort-header {
+  justify-content: center;
+}
+
+.mat-column-required {
+  text-align: center;
+}
+
+.mat-column-needed {
+  text-align: center;
+}
+
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.demo-row-is-clicked {
+  font-weight: bold;
+}
+
+::ng-deep .mat-sort-header-container:not(.mat-sort-header-sorted) .mat-sort-header-arrow {
+  opacity: 0.54 !important;
+  transform: translateY(0px) !important;
+}

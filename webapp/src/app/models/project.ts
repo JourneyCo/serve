@@ -1,4 +1,4 @@
-export type Project = {
+export interface Project {
   id?: number,
   google_id?: number,
   name: string,
