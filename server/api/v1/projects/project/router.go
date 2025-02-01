@@ -7,19 +7,13 @@ import (
 )
 
 func Route(r *mux.Router) {
-
-	u := r.Path("/register").Subrouter()
+	r.Use(toCtx)
 
 	r.Path("").
 		Methods(http.MethodGet).
 		Handler(show())
 
-	// user register
-	u.Path("").
-		Methods(http.MethodPut).
-		Handler(show())
-
-	// administer project
+	// administer edit a project
 	r.Path("").
 		Methods(http.MethodPut).
 		Handler(show())
@@ -27,6 +21,13 @@ func Route(r *mux.Router) {
 	r.Path("").
 		Methods(http.MethodDelete).
 		Handler(show())
+
+	u := r.Path("/register").Subrouter()
+
+	// user register under a project (limited edit)
+	u.Path("").
+		Methods(http.MethodPut).
+		Handler(middleware.JSONToCtx(Request{}, register(show())))
 
 	r.Use(middleware.HandleCacheControl)
 }

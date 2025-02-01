@@ -22,9 +22,6 @@ type APIResponse struct {
 	Text string `json:"text"`
 }
 
-func toCtx(rw http.ResponseWriter, r *http.Request) {
-}
-
 func idxToCtx(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -68,8 +65,8 @@ func create(h http.Handler) http.Handler {
 		project := models.Project{ //TODO: Remove hardcode once we can get dto into context
 			GoogleID:   dto.GoogleID,
 			Name:       dto.Name,
-			Required:   123,
-			Needed:     13,
+			Required:   dto.Required,
+			Needed:     dto.Needed,
 			AdminID:    1,
 			LocationID: l.ID,
 			Date:       &now,
@@ -92,16 +89,13 @@ func create(h http.Handler) http.Handler {
 
 func sendMessage(rw http.ResponseWriter, r *http.Request, data APIResponse) {
 	if r.Method == http.MethodGet {
-		err := helpers.WriteJSON(rw, http.StatusOK, data)
-		if err != nil {
-			lerrors.ServerError(rw, err)
-		}
+		helpers.WriteJSON(rw, data)
 	} else {
 		lerrors.NotFoundHandler(rw, r)
 	}
 }
 
-func AdminApiHandler(rw http.ResponseWriter, r *http.Request) {
+func AdminAPIHandler(rw http.ResponseWriter, r *http.Request) {
 	sendMessage(rw, r, AdminMessage())
 }
 
@@ -111,7 +105,7 @@ func AdminMessage() APIResponse {
 	}
 }
 
-// getExistingLocation will search the db to see if a location is already existing
+// getExistingLocation will search the db to see if a location is already existing.
 func getExistingLocation(ctx context.Context) (models.Location, error) {
 	dto, ok := ctx.Value("dto").(*Request)
 	if !ok {
@@ -131,7 +125,7 @@ func getExistingLocation(ctx context.Context) (models.Location, error) {
 	return a, nil
 }
 
-// createLocation will create a location in the database
+// createLocation will create a location in the database.
 func createLocation(ctx context.Context, dto Request) (models.Location, error, int) {
 
 	c, err := maps.NewClient(maps.WithAPIKey(helpers.GetEnvVar("GOOGLE_KEY")))

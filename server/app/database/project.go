@@ -19,7 +19,8 @@ func PostProject(ctx context.Context, p models.Project) (models.Project, error) 
 	sqlStatement := `
 INSERT INTO projects (name, required, needed, admin_id, location_id, created_at, updated_at, google_id)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`
-	if err = tx.QueryRow(sqlStatement, p.Name, p.Required, p.Needed, p.AdminID, p.LocationID, p.CreatedAt, p.UpdatedAt, p.GoogleID).Scan(&id); err != nil {
+	if err = tx.QueryRow(sqlStatement, p.Name, p.Required, p.Needed, p.AdminID, p.LocationID,
+		p.CreatedAt, p.UpdatedAt, p.GoogleID).Scan(&id); err != nil {
 		log.Printf("Error inserting project: %v", err)
 		return p, err
 	}
@@ -77,4 +78,40 @@ SELECT * FROM projects`
 	}
 
 	return projects, nil
+}
+
+func GetProject(ctx context.Context, id int64) (models.Project, error) {
+	project := models.Project{}
+
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("Error beginning tx")
+		return project, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	sqlStatement := `
+SELECT * FROM projects WHERE id = $1`
+	row := tx.QueryRowContext(ctx, sqlStatement, id)
+	if err = row.Scan(&project.ID, &project.GoogleID, &project.Name, &project.Required, &project.Needed,
+		&project.AdminID, &project.LocationID, &project.CreatedAt, &project.UpdatedAt); err != nil {
+		log.Printf("Error scanning")
+		return project, err
+	}
+
+	// Rows.Err will report the last error encountered by Rows.Scan.
+	if err = row.Err(); err != nil {
+		log.Printf("Error row err")
+		return project, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		log.Printf("Error committing tx")
+		return project, err
+	}
+
+	return project, nil
 }

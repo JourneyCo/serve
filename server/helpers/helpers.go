@@ -14,17 +14,20 @@ func GetEnvVar(key string) string {
 	return os.Getenv(key)
 }
 
-func WriteJSON(rw http.ResponseWriter, status int, data interface{}) error {
+func WriteJSON(rw http.ResponseWriter, data interface{}) {
 	js, err := json.Marshal(data)
 	if err != nil {
-		return err
+		log.Println("error marshaling json: ", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	rw.Header().Set("Content-Type", "application/json")
-	rw.WriteHeader(status)
+	rw.WriteHeader(http.StatusOK)
 	_, err = rw.Write(js)
 	if err != nil {
-		return err
+		log.Println("error writing json: ", err)
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
 	}
-	return nil
 }

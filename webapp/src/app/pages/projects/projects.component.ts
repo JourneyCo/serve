@@ -10,7 +10,6 @@ import {MapComponent, RegisterDialogComponent} from "@components";
 import {DatePipe} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
 
-
 @Component({
   selector: 'projects',
   styleUrl: 'projects.component.css',
@@ -30,10 +29,7 @@ export class ProjectsComponent implements AfterViewInit {
   constructor(
     private APIService: APIService,
   ) {
-    this.APIService.getProjects().subscribe(data => {
-      this.projects = data;
-      this.dataSource = new MatTableDataSource(this.projects);
-    });
+    this.loadProjects();
   }
 
   ngAfterViewInit() {
@@ -41,11 +37,18 @@ export class ProjectsComponent implements AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
+  loadProjects() {
+    this.APIService.getProjects().subscribe(data => {
+      this.projects = data;
+      this.dataSource = new MatTableDataSource(this.projects);
+    });
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
-    if (this.dataSource.paginator) {
+    if (this.dataSource?.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
@@ -63,17 +66,22 @@ export class ProjectsComponent implements AfterViewInit {
     buttonElement.blur();
 
     const dialogRef = this.dialog.open(RegisterDialogComponent, {
-      data: row
+      data: row,
+      height: '300px',
+      width: '500px',
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(result => {  // result is a form back from dialog
       console.log('The dialog was closed');
-      // if (result !== undefined) {
-      //   this.animal.set(result);
-      // }
+      if (!result) {
+        evt.stopPropagation();
+        return
+      }
+      const rawFormValues = result.getRawValue();
+      console.log(rawFormValues);
+      //TODO: Put on project
+      this.loadProjects();
     });
     evt.stopPropagation();
-
-
   }
 }

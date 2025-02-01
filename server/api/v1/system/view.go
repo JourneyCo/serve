@@ -1,7 +1,6 @@
 package system
 
 import (
-	"log"
 	"net/http"
 
 	"serve/helpers"
@@ -16,8 +15,6 @@ func show() http.Handler {
 			GoogleMapKey: helpers.GetEnvVar("GOOGLE_KEY"),
 		}
 
-		if err := helpers.WriteJSON(w, http.StatusOK, dto); err != nil {
-			log.Println(err)
-		}
+		helpers.WriteJSON(w, dto)
 	})
 }

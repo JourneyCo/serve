@@ -2,17 +2,17 @@ package app
 
 import (
 	"database/sql"
-	"github.com/unrolled/secure"
 	"log"
 	"net/http"
 	"os"
-	"serve/app/middleware"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/unrolled/secure"
 	"serve/api/v1"
 	"serve/app/auth0"
 	db "serve/app/database"
+	"serve/app/middleware"
 )
 
 type App struct {

@@ -43,9 +43,11 @@ func PostLocation(ctx context.Context, l models.Location) (models.Location, erro
 
 	var id int64
 	sqlStatement := `
-INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
+INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code,
+                       formatted_address, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
-	if err = tx.QueryRow(sqlStatement, l.Latitude, l.Longitude, l.Info, l.Street, l.Number, l.City, l.State, l.PostalCode, l.FormattedAddress, l.CreatedAt, l.UpdatedAt).Scan(&id); err != nil {
+	if err = tx.QueryRow(sqlStatement, l.Latitude, l.Longitude, l.Info, l.Street, l.Number,
+		l.City, l.State, l.PostalCode, l.FormattedAddress, l.CreatedAt, l.UpdatedAt).Scan(&id); err != nil {
 		return models.Location{}, err
 	}
 	// Get the ID of the order item just created.
@@ -83,7 +85,9 @@ SELECT * FROM locations`
 
 	for rows.Next() {
 		var location models.Location
-		if err = rows.Scan(&location.ID, &location.Latitude, &location.Longitude, &location.Info, &location.Street, &location.Number, &location.City, &location.State, &location.PostalCode, &location.FormattedAddress, &location.CreatedAt, &location.UpdatedAt); err != nil {
+		if err = rows.Scan(&location.ID, &location.Latitude, &location.Longitude, &location.Info,
+			&location.Street, &location.Number, &location.City, &location.State, &location.PostalCode,
+			&location.FormattedAddress, &location.CreatedAt, &location.UpdatedAt); err != nil {
 			log.Printf("Error scanning")
 			return locations, err
 		}
@@ -98,7 +102,7 @@ SELECT * FROM locations`
 
 	// Commit the transaction.
 	if err = tx.Commit(); err != nil {
-		log.Printf("Error commiting tx")
+		log.Printf("Error committing tx")
 		return locations, err
 	}
 

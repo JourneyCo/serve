@@ -1,7 +1,6 @@
 package projects
 
 import (
-	"log"
 	"net/http"
 	"serve/helpers"
 	"serve/models"
@@ -30,9 +29,7 @@ func index() http.Handler {
 			dto = append(dto, p)
 		}
 
-		if err := helpers.WriteJSON(w, http.StatusOK, dto); err != nil {
-			log.Println(err)
-		}
+		helpers.WriteJSON(w, dto)
 	})
 }
 
@@ -54,8 +51,6 @@ func show() http.Handler {
 			UpdatedAt:  project.UpdatedAt,
 		}
 
-		if err := helpers.WriteJSON(w, http.StatusOK, dto); err != nil {
-			log.Println(err)
-		}
+		helpers.WriteJSON(w, dto)
 	})
 }

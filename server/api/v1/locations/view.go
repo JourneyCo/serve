@@ -1,7 +1,6 @@
 package locations
 
 import (
-	"log"
 	"net/http"
 	"serve/helpers"
 	"serve/models"
@@ -46,8 +45,6 @@ func index() http.Handler {
 			dto = append(dto, l)
 		}
 
-		if err := helpers.WriteJSON(w, http.StatusOK, dto); err != nil {
-			log.Println(err)
-		}
+		helpers.WriteJSON(w, dto)
 	})
 }

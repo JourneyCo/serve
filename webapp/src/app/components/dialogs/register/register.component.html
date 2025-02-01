@@ -1,24 +1,51 @@
-<h2 mat-dialog-title>Favorite Animal</h2>
-<mat-dialog-content>
+<h2 mat-dialog-title>{{data.name}}</h2>
+<mat-dialog-content class="container mt-3">
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-  <div>{{data.name}}</div>
-  <div>
-    <label for="first-name">First Name: </label>
-    <input id="first-name" type="text" formControlName="firstName">
+  <div class="row">
+    <div class="col-6">
+      <label for="first_name">First Name: </label>
+    </div>
+    <div class="col-6">
+      <input id="first_name" type="text" formControlName="first_name">
+        <div *ngIf="registerForm.get('first_name')?.invalid && (registerForm.get('first_name')?.dirty)">
+          <small *ngIf="registerForm.get('first_name')?.errors?.['required']">First name is required.</small>
+          <small *ngIf="registerForm.get('first_name')?.errors?.['min']">First name must be a min of 4 characters</small>
+        </div>
+    </div>
+    <div class="w-100"></div>
+      <div class="col-6">
+        <label for="last_name">Last Name: </label>
+      </div>
+      <div class="col-6">
+        <input id="last_name" type="text" formControlName="last_name">
+        <div *ngIf="registerForm.get('last_name')?.invalid && (registerForm.get('last_name')?.dirty)">
+          <small *ngIf="registerForm.get('last_name')?.errors?.['required']">Last name is required.</small>
+        </div>
+      </div>
+    <div class="w-100"></div>
+      <div class="col-6">
+        <label for="registering"># To Register: </label>
+      </div>
+      <div class="col-6">
+        <input id="registering" type="number" formControlName="registering">
+        <div *ngIf="registerForm.get('registering')?.invalid && (registerForm.get('registering')?.dirty)">
+          <small *ngIf="registerForm.get('registering')?.errors?.['required']">Number to register is required.</small>
+        </div>
+      </div>
+    <div class="w-100"></div>
+      <div class="col-6">
+        <label for="phone">Phone Number: </label>
+      </div>
+      <div class="col-6">
+        <input id="phone" type="text" formControlName="phoneNumber">
+        <div *ngIf="registerForm.get('phone')?.invalid && (registerForm.get('phone')?.dirty)">
+          <small *ngIf="registerForm.get('phone')?.errors?.['required']">Phone number is required.</small>
+        </div>
+      </div>
   </div>
-  <div>
-    <label for="last-name">Last Name: </label>
-    <input id="last-name" type="text" formControlName="lastName">
-  </div>
-  <div>
-    <label for="registering"># To Register: </label>
-    <input id="registering" type="text" formControlName="registering">
-  </div>
-  <div>
-    <label for="phone">Phone Number: </label>
-    <input id="phone" type="text" formControlName="phoneNumber">
-  </div>
-    <p>Complete the form to enable button.</p>
-    <button type="submit" [disabled]="!registerForm.valid">Submit</button>
+
+    <p class="mt-3">Complete the form to enable button.</p>
+    <button type="button" matDialogClose> Cancel</button>
+    <button type="submit" [disabled]="!registerForm.valid" [matDialogClose]="registerForm">Submit</button>
   </form>
 </mat-dialog-content>

@@ -86,7 +86,7 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-// FetchProjects returns the projects that have been entered into a Google Sheet
+// FetchProjects returns the projects that have been entered into a Google Sheet.
 func FetchProjects() error {
 	ctx := context.Background()
 	b, err := os.ReadFile("google_creds.json")

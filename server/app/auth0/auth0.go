@@ -55,9 +55,7 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 
 		if authHeaderParts := strings.Fields(r.Header.Get("Authorization")); len(authHeaderParts) > 0 && strings.ToLower(authHeaderParts[0]) != "bearer" {
 			errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
-			if err = helpers.WriteJSON(w, http.StatusUnauthorized, errorMessage); err != nil {
-				log.Printf("Failed to write error message: %v", err)
-			}
+			helpers.WriteJSON(w, errorMessage)
 			return
 		}
 
@@ -65,15 +63,11 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 			log.Printf("Encountered error while validating JWT: %v", err)
 			if errors.Is(err, jwtmiddleware.ErrJWTMissing) {
 				errorMessage := lerrors.ErrorMessage{Message: missingJWTErrorMessage}
-				if err := helpers.WriteJSON(w, http.StatusUnauthorized, errorMessage); err != nil {
-					log.Printf("Failed to write error message: %v", err)
-				}
+				helpers.WriteJSON(w, errorMessage)
 			}
 			if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
 				errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
-				if err := helpers.WriteJSON(w, http.StatusUnauthorized, errorMessage); err != nil {
-					log.Printf("Failed to write error message: %v", err)
-				}
+				helpers.WriteJSON(w, errorMessage)
 			}
 			lerrors.ServerError(w, err)
 		}

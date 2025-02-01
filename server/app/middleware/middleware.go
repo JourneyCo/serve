@@ -19,7 +19,7 @@ func HandleCacheControl(next http.Handler) http.Handler {
 	})
 }
 
-func JSONToCtx(int any, next http.Handler) http.Handler {
+func JSONToCtx(ifc any, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		body, err := io.ReadAll(r.Body)
@@ -28,7 +28,7 @@ func JSONToCtx(int any, next http.Handler) http.Handler {
 			return
 		}
 
-		dto := reflect.New(reflect.TypeOf(int)).Interface()
+		dto := reflect.New(reflect.TypeOf(ifc)).Interface()
 
 		if err = json.Unmarshal(body, &dto); err != nil {
 			fmt.Printf("error unmarshalling body: %v", err)
@@ -44,7 +44,7 @@ func JSONToCtx(int any, next http.Handler) http.Handler {
 	})
 }
 
-// DisableCORS disables CORS
+// DisableCORS disables CORS.
 func DisableCORS(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")

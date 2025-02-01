@@ -2,11 +2,11 @@ package v1
 
 import (
 	"net/http"
-	"serve/api/v1/locations"
-	"serve/api/v1/system"
 
 	"github.com/gorilla/mux"
+	"serve/api/v1/locations"
 	"serve/api/v1/projects"
+	"serve/api/v1/system"
 	"serve/app/auth0"
 	"serve/app/errors"
 	"serve/app/middleware"
@@ -18,7 +18,7 @@ func Route(domain string, audience string, r *mux.Router) {
 
 	r.Path("/messages/admin").
 		Methods(http.MethodGet).
-		Handler(auth0.ValidateJWT(audience, domain, http.HandlerFunc(projects.AdminApiHandler)))
+		Handler(auth0.ValidateJWT(audience, domain, http.HandlerFunc(projects.AdminAPIHandler)))
 
 	s := r.Path("/projects").Subrouter()
 	projects.Route(s)
