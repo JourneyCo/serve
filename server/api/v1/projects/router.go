@@ -19,7 +19,7 @@ func Route(r *mux.Router) {
 		Handler(middleware.JSONToCtx(Request{}, create(show())))
 
 	// single project
-	p := r.Path("/{id:[0-9]+}").Subrouter()
+	p := r.PathPrefix("/{id:[0-9]+}").Subrouter()
 	project.Route(p)
 
 	r.Use(middleware.HandleCacheControl)

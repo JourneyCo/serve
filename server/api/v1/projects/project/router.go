@@ -1,8 +1,9 @@
 package project
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 	"serve/app/middleware"
 )
 
