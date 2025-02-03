@@ -10,3 +10,9 @@ export interface Project {
   created_at: Date,
   updated_at?: Date,
 }
+
+export interface Registration {
+  id: number,
+  registering: number,
+  user_id: number
+}

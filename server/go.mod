@@ -5,6 +5,7 @@ go 1.23.4
 require (
 	github.com/auth0/go-jwt-middleware/v2 v2.2.2
 	github.com/golang-migrate/migrate/v4 v4.18.1
+	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/kelvins/geocoder v0.0.0-20231112130812-98d82c75e49b
@@ -12,6 +13,7 @@ require (
 	github.com/unrolled/secure v1.17.0
 	golang.org/x/oauth2 v0.25.0
 	google.golang.org/api v0.216.0
+	googlemaps.github.io/maps v1.7.0
 )
 
 require (
@@ -42,6 +44,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250102185135-69823020774d // indirect
 	google.golang.org/grpc v1.69.2 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
-	googlemaps.github.io/maps v1.7.0 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect
 )

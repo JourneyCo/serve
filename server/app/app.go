@@ -4,20 +4,19 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/secure"
 	"serve/api/v1"
 	"serve/app/auth0"
 	db "serve/app/database"
-	"serve/app/middleware"
 )
 
 type App struct {
 	Auth0Config auth0.Config
-	Router      *mux.Router
+	Router      http.Handler
 	Database    *sql.DB
 }
 
@@ -28,17 +27,26 @@ func New() App {
 	}
 
 	r := mux.NewRouter()
+	// cors := os.Getenv("profile") == "prod"
+	// if !cors {
+	// Use handlers.CORS to configure CORS settings
+
+	// r.Use(middleware.DisableCORS)
+	// }
 	secureMiddleware := secure.New()
 	r.Use(secureMiddleware.Handler)
-	cors := os.Getenv("profile") == "prod"
-	if !cors {
-		r.Use(middleware.DisableCORS)
-	}
 
 	s := r.PathPrefix("/api/v1").Subrouter()
 	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, s)
 
-	app.Router = r
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"https://yourdomain.com", "http://localhost:3000"}),   // Allowed origins
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),           // Allowed methods
+		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Allowed headers
+		handlers.AllowCredentials(), // Allow credentials
+	)(r)
+
+	app.Router = corsHandler
 	return app
 }
 

@@ -62,13 +62,13 @@ func register(h http.Handler) http.Handler {
 			}
 			toRegister := *dto.Registering
 
-			if proj.Needed >= 0 || toRegister > proj.Needed {
+			if proj.Needed <= 0 || toRegister > proj.Needed {
 				log.Printf("project has a need of %d but user attempted to register %d", proj.Needed, toRegister)
 				w.WriteHeader(http.StatusRequestedRangeNotSatisfiable)
 				return
 			}
 
-			proj.Needed = proj.Needed - toRegister
+			proj.Needed -= toRegister
 			proj.UpdatedAt = &now
 
 			project, err := db.PutProject(ctx, proj)

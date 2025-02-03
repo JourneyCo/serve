@@ -19,6 +19,8 @@ type Request struct {
 	// Registering is the number of people that are registering for a project
 	Registering *int `json:"registering,omitempty"`
 
+	UserID *int64 `json:"user_id,omitempty"`
+
 	Street       *string    `json:"street,omitempty"`
 	StreetNumber *int       `json:"street_number,omitempty"`
 	City         *string    `json:"city,omitempty"`

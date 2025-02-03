@@ -1,7 +1,8 @@
 import {inject, Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment.development";
 import {Observable} from "rxjs";
+import {Registration} from "@models";
 
 
 @Injectable()
@@ -20,6 +21,14 @@ export class APIService {
 
   public getSystem(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/system`);
+  }
+
+  public putProject(r: Registration): Observable<any> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-Type', 'application/json');
+    const body = JSON.stringify(r);
+    const s = r.id.toString();
+    return this.http.put<any>(`${this.apiUrl}/projects/`+ s + '/register', body, { headers: headers});
   }
 
 }

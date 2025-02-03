@@ -4,7 +4,7 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {Project} from "@models";
+import {Project, Registration} from "@models";
 import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
 import {DatePipe} from "@angular/common";
@@ -78,9 +78,16 @@ export class ProjectsComponent implements AfterViewInit {
         return
       }
       const rawFormValues = result.getRawValue();
-      console.log(rawFormValues);
-      //TODO: Put on project
-      this.loadProjects();
+      console.log(rawFormValues)
+      const registration: Registration = {
+        id: rawFormValues.id,
+        registering: rawFormValues.registering,
+        user_id: 1, //TODO: remove hardcode
+      }
+      this.APIService.putProject(registration).subscribe(data => {
+        this.loadProjects()
+        }
+      )
     });
     evt.stopPropagation();
   }
