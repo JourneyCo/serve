@@ -135,19 +135,14 @@ func PutProject(ctx context.Context, project models.Project) (models.Project, er
 	defer tx.Rollback()
 
 	sqlStatement := `
-SELECT * FROM projects WHERE id = $1`
-	row := tx.QueryRowContext(ctx, sqlStatement, project.ID)
-	if err = row.Scan(
-		&project.ID, &project.GoogleID, &project.Name, &project.Required, &project.Needed,
-		&project.AdminID, &project.LocationID, &project.CreatedAt, &project.UpdatedAt,
-	); err != nil {
-		log.Printf("Error scanning")
-		return project, err
-	}
-
-	// Rows.Err will report the last error encountered by Rows.Scan.
-	if err = row.Err(); err != nil {
-		log.Printf("Error row err")
+UPDATE projects SET (google_id, name, required, needed, admin_id, location_id, updated_at) = ($1, $2, $3, $4, $5, $6, $7) WHERE id = $8`
+	_, err = tx.ExecContext(
+		ctx, sqlStatement, project.GoogleID, project.Name, project.Required, project.Needed, project.AdminID,
+		project.LocationID,
+		project.UpdatedAt, project.ID,
+	)
+	if err != nil {
+		log.Printf("Error executing update")
 		return project, err
 	}
 
