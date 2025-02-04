@@ -1,11 +1,33 @@
-<app-map></app-map>
+<div class="row" *ngIf="locations && projects">
+  <div class="col-6">
+    <app-map [locations]="locations" [projects]="projects" [events]="eventsSubject.asObservable()"></app-map>
+  </div>
+  <div class="col-1"></div>
+  <div class="card col-4" *ngIf="this.clickedRow?.name">
+    <div class="card-header">
+      Featured
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Name: {{ this.clickedRow?.name}}</li>
+      <li class="list-group-item">Required: {{ this.clickedRow?.required}}</li>
+      <li class="list-group-item">Needed: {{ this.clickedRow?.needed}}</li>
+      <li class="list-group-item">Loc Id: {{ this.clickedRow?.location_id}}</li>
+      <li class="list-group-item">Created At: {{ this.clickedRow?.created_at | date:'medium'}}</li>
+      <li class="list-group-item">Updated At: {{ this.clickedRow?.updated_at | date:'medium'}}</li>
+      <li class="list-group-item">A third item</li>
+      <li class="list-group-item">A third item</li>
+    </ul>
+  </div>
+  <div class="col-1"></div>
+</div>
+
 <mat-form-field class="mt-5">
   <mat-label>Filter</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Journey" #input>
 </mat-form-field>
 
 <div>
-  <table [dataSource]="dataSource" mat-table matSort class="w-100">
+  <table [dataSource]="dataSource" mat-table matSort matSortActive="id" matSortDirection="asc" class="w-100">
 
     <!-- ID Column -->
     <ng-container matColumnDef="id">
@@ -53,7 +75,10 @@
     <ng-container matColumnDef="register">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button (click)="register($event, row)">Register</button> </td>
+        <button (click)="register($event, row)" *ngIf="row.needed" >Register</button>
+        <button (click)="register($event, row)" *ngIf="!row.needed" disabled>Full</button>
+
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -66,7 +91,7 @@
     </tr>
   </table>
 
-  <mat-paginator [length]="projects.length" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+  <mat-paginator [length]="projects?.length" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
 </div>
 
 

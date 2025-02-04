@@ -1,11 +1,12 @@
 <!-- google-maps-demo.component.html -->
 <google-map
-  *ngIf="markers.length > 0"
   height="400px"
   width="750px"
   [options] = "options"
   (mapClick)="moveMap($event)"
-  (mapMousemove)="move($event)">
+  (mapMousemove)="move($event)"
+  [center]="center"
+  [zoom]="zoom">
 
     @for (m of markers; track m.marker?.position) {
   <map-advanced-marker

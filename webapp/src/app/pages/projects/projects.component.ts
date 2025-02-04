@@ -1,35 +1,42 @@
-import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, inject, Output, signal, ViewChild, WritableSignal} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
-import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatTable, MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {Project, Registration} from "@models";
+import {Location, Project, Registration} from "@models";
 import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
-import {DatePipe} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
+import {forkJoin, Subject, Subscription} from "rxjs";
 
 @Component({
   selector: 'projects',
   styleUrl: 'projects.component.css',
   templateUrl: 'projects.component.html',
-  imports: [MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
+  imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
   DatePipe],
 })
 export class ProjectsComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   dataSource: MatTableDataSource<Project>;
   projects: Project[];
+  private eventsSubscription: Subscription;
   clickedRow: Project | null;
   dialog = inject(MatDialog);
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatTable) table: MatTable<any>;
+  locations: Location[];
+  locationMap = new Map<number, any>();
+  eventsSubject: Subject<any> = new Subject<any>();
 
   constructor(
     private APIService: APIService,
   ) {
-    this.loadProjects();
+    this.loadProjects(true);
+    this.loadLocations();
   }
 
   ngAfterViewInit() {
@@ -37,10 +44,24 @@ export class ProjectsComponent implements AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  loadProjects() {
+  loadProjects(init: boolean) {
     this.APIService.getProjects().subscribe(data => {
       this.projects = data;
-      this.dataSource = new MatTableDataSource(this.projects);
+      if (init) {
+        this.dataSource = new MatTableDataSource(this.projects);
+      } else {
+        this.dataSource.data = [...this.projects];
+      }
+    });
+  }
+
+  loadLocations() {
+    this.APIService.getLocations().subscribe(data => {
+      this.locations = data;
+      this.locations.forEach(location => {
+        let id = location.id ? location.id : 0;
+        this.locationMap.set(id, location);
+      })
     });
   }
 
@@ -59,6 +80,10 @@ export class ProjectsComponent implements AfterViewInit {
       return
     }
     this.clickedRow = row;
+    let id = row.location_id ? row.location_id : 0;
+    // @ts-ignore
+    const clickedLocation = this.locationMap.get(id);
+    this.eventsSubject.next(clickedLocation);
   }
 
   register(evt: any, row: Project) {
@@ -72,20 +97,20 @@ export class ProjectsComponent implements AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {  // result is a form back from dialog
-      console.log('The dialog was closed');
       if (!result) {
         evt.stopPropagation();
         return
       }
       const rawFormValues = result.getRawValue();
-      console.log(rawFormValues)
       const registration: Registration = {
         id: rawFormValues.id,
         registering: rawFormValues.registering,
         user_id: 1, //TODO: remove hardcode
       }
       this.APIService.putProject(registration).subscribe(data => {
-        this.loadProjects()
+        this.loadProjects(false);
+        this.table.renderRows();
+        this.paginator.firstPage();
         }
       )
     });

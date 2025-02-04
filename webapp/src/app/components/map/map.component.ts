@@ -1,9 +1,8 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {GoogleMap, MapAdvancedMarker, MapAnchorPoint, MapInfoWindow} from "@angular/google-maps";
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {GoogleMap, MapAdvancedMarker, MapInfoWindow} from "@angular/google-maps";
 import {CommonModule} from "@angular/common";
-import {APIService} from "@services";
 import {Location, Project} from "@models";
-import {forkJoin} from "rxjs";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-map',
@@ -12,57 +11,67 @@ import {forkJoin} from "rxjs";
   standalone: true,
   imports: [CommonModule, GoogleMap, MapInfoWindow, MapAdvancedMarker]
 })
-export class MapComponent implements OnInit {
-  @ViewChild(MapInfoWindow, { static: false })
-  infoWindow!: MapInfoWindow
+export class MapComponent implements OnInit, OnDestroy {
+  @ViewChild(MapInfoWindow, { static: false }) infoWindow!: MapInfoWindow;
+  @ViewChild('mapRef') mapRef: GoogleMap;
+  @Input() locations: any[];
+  @Input() projects: any[];
+  @Input() events: Observable<void>;
+  private eventsSubscription: Subscription
+
+  center: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
   markers: any[] = [];
   selectedMarker: any;
+  zoom = 12;
 
   options: google.maps.MapOptions = {
-    center: {lat: 39.491482, lng: -104.874878},
-    zoom: 12,
     mapId: '18c474b41c1ac65a',
   };
   display: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
 
 
-  constructor(private APIService: APIService) {}
+  constructor() {}
 
   ngOnInit() {
-
-    const observable = forkJoin({
-      projects: this.APIService.getProjects(),
-      locations: this.APIService.getLocations(),
-    });
-
-    observable.subscribe(data => {
-      data.locations.forEach((location: Location)=> {
-        let loc: google.maps.LatLngLiteral = {
-          lat: location.latitude,
-          lng: location.longitude
+    this.eventsSubscription = this.events.subscribe((data) => {
+      this.moveToClickedRow(data);
+      }
+    );
+    this.locations.forEach((location: Location)=> {
+      let loc: google.maps.LatLngLiteral = {
+        lat: location.latitude,
+        lng: location.longitude
+      }
+      // @ts-ignore
+      let mark: google.maps.marker.AdvancedMarkerElement = {
+        position: loc,
+        title: location.info,
+      }
+      let m: any = {
+        marker: mark,
+        info: location.info
+      }
+      this.projects.forEach((project: Project) => {
+        if (project.location_id == location.id) {
+          m.project = project;
         }
-        // @ts-ignore
-        let mark: google.maps.marker.AdvancedMarkerElement = {
-          position: loc,
-          title: location.info,
-        }
-        let m: any = {
-          marker: mark,
-          info: location.info
-        }
-        data.projects.forEach((project: Project) => {
-          if (project.location_id == location.id) {
-            m.project = project;
-          }
-        });
-        this.markers.push(m);
       });
+      this.markers.push(m);
     });
+  }
+
+  ngOnDestroy() {
+    this.eventsSubscription.unsubscribe();
   }
 
   moveMap(event: google.maps.MapMouseEvent) {
     // @ts-ignore
     this.center = event.latLng.toJSON();
+  }
+
+  moveToClickedRow(location: any ) {
+    const l = new google.maps.LatLng(location.latitude, location.longitude);
+    this.center = l.toJSON();
   }
 
   move(event: google.maps.MapMouseEvent) {
