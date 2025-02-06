@@ -45,7 +45,9 @@
   </div>
 
     <p class="mt-3">Complete the form to enable button.</p>
-    <button type="button" matDialogClose> Cancel</button>
-    <button type="submit" [disabled]="!registerForm.valid" [matDialogClose]="registerForm">Submit</button>
+    <div class="d-flex flex-row-reverse mt-3">
+      <button type="submit" [disabled]="!registerForm.valid" [matDialogClose]="registerForm">Submit</button>
+      <button class="mx-4" type="button" matDialogClose> Cancel</button>
+    </div>
   </form>
 </mat-dialog-content>

@@ -5,7 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
 )
+
+func Contains(s []string, e string) bool {
+	return slices.Contains(s, e)
+}
 
 func GetEnvVar(key string) string {
 	if os.Getenv(key) == "" {

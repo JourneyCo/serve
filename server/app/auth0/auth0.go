@@ -1,11 +1,11 @@
 package auth0
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/http"
 	"net/url"
-	"serve/helpers"
 	"strings"
 	"time"
 
@@ -13,6 +13,7 @@ import (
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	lerrors "serve/app/errors"
+	"serve/helpers"
 )
 
 type Config struct {
@@ -30,53 +31,96 @@ func New() Config {
 }
 
 const (
-	missingJWTErrorMessage = "Requires authentication"
-	invalidJWTErrorMessage = "Bad credentials"
+	missingJWTErrorMessage       = "Requires authentication"
+	invalidJWTErrorMessage       = "Bad credentials"
+	permissionDeniedErrorMessage = "Permission denied"
 )
 
-func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		issuerURL, err := url.Parse("https://" + domain + "/")
-		if err != nil {
-			log.Fatalf("Failed to parse the issuer url: %v", err)
+type CustomClaims struct {
+	Permissions []string `json:"permissions"`
+}
+
+func (c CustomClaims) Validate(ctx context.Context) error {
+	return nil
+}
+
+func (c CustomClaims) HasPermissions(expectedClaims []string) bool {
+	if len(expectedClaims) == 0 {
+		return false
+	}
+	for _, scope := range expectedClaims {
+		if !helpers.Contains(c.Permissions, scope) {
+			return false
 		}
+	}
+	return true
+}
 
-		provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
-
-		jwtValidator, err := validator.New(
-			provider.KeyFunc,
-			validator.RS256,
-			issuerURL.String(),
-			[]string{audience},
-		)
-		if err != nil {
-			log.Fatalf("Failed to set up the jwt validator")
-		}
-
-		if authHeaderParts := strings.Fields(r.Header.Get("Authorization")); len(authHeaderParts) > 0 && strings.ToLower(authHeaderParts[0]) != "bearer" {
-			errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
-			helpers.WriteJSON(w, errorMessage)
-			return
-		}
-
-		errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-			log.Printf("Encountered error while validating JWT: %v", err)
-			if errors.Is(err, jwtmiddleware.ErrJWTMissing) {
-				errorMessage := lerrors.ErrorMessage{Message: missingJWTErrorMessage}
+func ValidatePermissions(expectedClaims []string, next http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			token := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+			claims := token.CustomClaims.(*CustomClaims)
+			if !claims.HasPermissions(expectedClaims) {
+				errorMessage := lerrors.ErrorMessage{Message: permissionDeniedErrorMessage}
 				helpers.WriteJSON(w, errorMessage)
+				return
 			}
-			if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
+			next.ServeHTTP(w, r)
+		},
+	)
+}
+
+func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			issuerURL, err := url.Parse("https://" + domain + "/")
+			if err != nil {
+				log.Fatalf("Failed to parse the issuer url: %v", err)
+			}
+
+			provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+
+			jwtValidator, err := validator.New(
+				provider.KeyFunc,
+				validator.RS256,
+				issuerURL.String(),
+				[]string{audience},
+				validator.WithCustomClaims(
+					func() validator.CustomClaims {
+						return new(CustomClaims)
+					},
+				),
+			)
+			if err != nil {
+				log.Fatalf("Failed to set up the jwt validator")
+			}
+
+			if authHeaderParts := strings.Fields(r.Header.Get("Authorization")); len(authHeaderParts) > 0 && strings.ToLower(authHeaderParts[0]) != "bearer" {
 				errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
 				helpers.WriteJSON(w, errorMessage)
+				return
 			}
-			lerrors.ServerError(w, err)
-		}
 
-		middleware := jwtmiddleware.New(
-			jwtValidator.ValidateToken,
-			jwtmiddleware.WithErrorHandler(errorHandler),
-		)
+			errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
+				log.Printf("Encountered error while validating JWT: %v", err)
+				if errors.Is(err, jwtmiddleware.ErrJWTMissing) {
+					errorMessage := lerrors.ErrorMessage{Message: missingJWTErrorMessage}
+					helpers.WriteJSON(w, errorMessage)
+				}
+				if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
+					errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
+					helpers.WriteJSON(w, errorMessage)
+				}
+				lerrors.ServerError(w, err)
+			}
 
-		middleware.CheckJWT(next).ServeHTTP(w, r)
-	})
+			middleware := jwtmiddleware.New(
+				jwtValidator.ValidateToken,
+				jwtmiddleware.WithErrorHandler(errorHandler),
+			)
+
+			middleware.CheckJWT(next).ServeHTTP(w, r)
+		},
+	)
 }

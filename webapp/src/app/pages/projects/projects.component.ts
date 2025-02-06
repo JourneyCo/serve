@@ -9,7 +9,7 @@ import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
 import {DatePipe, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
-import {forkJoin, Subject, Subscription} from "rxjs";
+import {Subject, Subscription} from "rxjs";
 
 @Component({
   selector: 'projects',
