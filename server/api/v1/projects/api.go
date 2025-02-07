@@ -9,13 +9,12 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"time"
 
 	"googlemaps.github.io/maps"
 	ldb "serve/app/database"
-	lerrors "serve/app/errors"
 	"serve/helpers"
 	"serve/models"
-	"time"
 )
 
 type APIResponse struct {
@@ -23,86 +22,82 @@ type APIResponse struct {
 }
 
 func idxToCtx(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		projects := []models.Project{}
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			projects := []models.Project{}
 
-		projects, err := ldb.GetProjects(ctx)
-		if err != nil {
-			fmt.Printf("error retrieving projects: %v", err)
-			return
-		}
+			projects, err := ldb.GetProjects(ctx)
+			if err != nil {
+				fmt.Printf("error retrieving projects: %v", err)
+				return
+			}
 
-		ctx = context.WithValue(ctx, "projects", projects)
+			ctx = context.WithValue(ctx, "projects", projects)
 
-		h.ServeHTTP(w, r.WithContext(ctx))
-	})
+			h.ServeHTTP(w, r.WithContext(ctx))
+		},
+	)
 }
 
 // create will create a new project, along with a new location if it
 // does not already exist in the system.
 func create(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		body := ctx.Value("body").([]byte)
-		var dto Request
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			body := ctx.Value("body").([]byte)
+			var dto Request
 
-		if err := json.Unmarshal(body, &dto); err != nil {
-			fmt.Printf("error unmarshalling body: %v", err)
-			return
-		}
+			if err := json.Unmarshal(body, &dto); err != nil {
+				fmt.Printf("error unmarshalling body: %v", err)
+				return
+			}
 
-		//TODO: Handle existing locations
+			// TODO: Handle existing locations
 
-		l, err, status := createLocation(ctx, dto)
-		if err != nil {
-			log.Printf("error creating location: %v", err)
-			w.WriteHeader(status)
-			return
-		}
+			l, err, status := createLocation(ctx, dto)
+			if err != nil {
+				log.Printf("error creating location: %v", err)
+				w.WriteHeader(status)
+				return
+			}
 
-		now := time.Now()
-		project := models.Project{ //TODO: Remove hardcode once we can get dto into context
-			GoogleID:   dto.GoogleID,
-			Name:       dto.Name,
-			Required:   dto.Required,
-			Needed:     dto.Needed,
-			AdminID:    1,
-			LocationID: l.ID,
-			Date:       &now,
-			CreatedAt:  now,
-			UpdatedAt:  &now,
-		}
+			now := time.Now()
+			project := models.Project{
+				// TODO: Remove hardcode once we can get dto into context
+				GoogleID:   dto.GoogleID,
+				Name:       dto.Name,
+				Required:   dto.Required,
+				Needed:     dto.Needed,
+				AdminID:    1,
+				LocationID: l.ID,
+				Date:       &now,
+				CreatedAt:  now,
+				UpdatedAt:  &now,
+			}
 
-		project, err = ldb.PostProject(ctx, project)
-		if err != nil {
-			log.Printf("failed to post project: %v", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+			project, err = ldb.PostProject(ctx, project)
+			if err != nil {
+				log.Printf("failed to post project: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 
-		ctx = context.WithValue(ctx, "project", project)
+			ctx = context.WithValue(ctx, "project", project)
 
-		h.ServeHTTP(w, r.WithContext(ctx))
-	})
+			h.ServeHTTP(w, r.WithContext(ctx))
+		},
+	)
 }
 
-func sendMessage(rw http.ResponseWriter, r *http.Request, data APIResponse) {
-	if r.Method == http.MethodGet {
-		helpers.WriteJSON(rw, data)
-	} else {
-		lerrors.NotFoundHandler(rw, r)
-	}
-}
-
-func AdminAPIHandler(rw http.ResponseWriter, r *http.Request) {
-	sendMessage(rw, r, AdminMessage())
-}
-
-func AdminMessage() APIResponse {
-	return APIResponse{
-		Text: "This is an admin message.",
-	}
+func SendMessage() http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			dto := APIResponse{Text: "This is an admin message."}
+			helpers.WriteJSON(w, dto)
+		},
+	)
 }
 
 // getExistingLocation will search the db to see if a location is already existing.

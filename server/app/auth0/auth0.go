@@ -12,7 +12,6 @@ import (
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
-	lerrors "serve/app/errors"
 	"serve/helpers"
 )
 
@@ -31,9 +30,7 @@ func New() Config {
 }
 
 const (
-	missingJWTErrorMessage       = "Requires authentication"
-	invalidJWTErrorMessage       = "Bad credentials"
-	permissionDeniedErrorMessage = "Permission denied"
+	Admin = 200
 )
 
 type CustomClaims struct {
@@ -62,8 +59,7 @@ func ValidatePermissions(expectedClaims []string, next http.Handler) http.Handle
 			token := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
 			claims := token.CustomClaims.(*CustomClaims)
 			if !claims.HasPermissions(expectedClaims) {
-				errorMessage := lerrors.ErrorMessage{Message: permissionDeniedErrorMessage}
-				helpers.WriteJSON(w, errorMessage)
+				w.WriteHeader(http.StatusForbidden)
 				return
 			}
 			next.ServeHTTP(w, r)
@@ -97,22 +93,24 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 			}
 
 			if authHeaderParts := strings.Fields(r.Header.Get("Authorization")); len(authHeaderParts) > 0 && strings.ToLower(authHeaderParts[0]) != "bearer" {
-				errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
-				helpers.WriteJSON(w, errorMessage)
+				log.Printf("invalid JWT - jwt not found")
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 
 			errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
 				log.Printf("Encountered error while validating JWT: %v", err)
 				if errors.Is(err, jwtmiddleware.ErrJWTMissing) {
-					errorMessage := lerrors.ErrorMessage{Message: missingJWTErrorMessage}
-					helpers.WriteJSON(w, errorMessage)
+					log.Printf("missing JWT")
+					w.WriteHeader(http.StatusBadRequest)
+					return
 				}
 				if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
-					errorMessage := lerrors.ErrorMessage{Message: invalidJWTErrorMessage}
-					helpers.WriteJSON(w, errorMessage)
+					log.Print("invalid JWT")
+					w.WriteHeader(http.StatusBadRequest)
+					return
 				}
-				lerrors.ServerError(w, err)
+				w.WriteHeader(http.StatusInternalServerError)
 			}
 
 			middleware := jwtmiddleware.New(
