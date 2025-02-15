@@ -23,7 +23,7 @@ export class APIService {
     return this.http.get<any>(`${this.apiUrl}/system`);
   }
 
-  public putProject(r: Registration): Observable<any> {
+  public putRegistration(r: Registration): Observable<any> {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json');
     const body = JSON.stringify(r);

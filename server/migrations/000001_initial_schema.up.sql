@@ -41,8 +41,10 @@ CREATE TABLE IF NOT EXISTS registrations(
     project_id BIGINT NOT NULL,
     account_id BIGINT NOT NULL,
     quantity INT NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
-    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT,
+    UNIQUE (project_id, account_id)
 );
 
 INSERT INTO accounts (first, last, password, email, created_at, updated_at)

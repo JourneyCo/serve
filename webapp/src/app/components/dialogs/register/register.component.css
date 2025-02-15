@@ -1,0 +1,13 @@
+.journey-title {
+  text-align: center;
+  color: var(--journeyBlue);
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+h2 {
+  text-align: center;
+  color: var(--journeyBlue);
+  font-weight: 800;
+  text-transform: capitalize;
+}

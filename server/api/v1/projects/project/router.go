@@ -3,11 +3,12 @@ package project
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"serve/app/auth0"
 	"serve/app/middleware"
+	"serve/app/router"
 )
 
-func Route(r *mux.Router) {
+func Route(r router.ServeRouter) {
 	r.Use(toCtx)
 
 	r.Path("").
@@ -15,11 +16,13 @@ func Route(r *mux.Router) {
 		Handler(show())
 
 	// administer edit a project
-	r.Path("").
+	r.RBAC(auth0.Admin).
+		Path("").
 		Methods(http.MethodPut).
 		Handler(show())
 
-	r.Path("").
+	r.RBAC(auth0.Admin).
+		Path("").
 		Methods(http.MethodDelete).
 		Handler(show())
 

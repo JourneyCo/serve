@@ -12,6 +12,7 @@ import (
 	"serve/api/v1"
 	"serve/app/auth0"
 	db "serve/app/database"
+	"serve/app/router"
 )
 
 type App struct {
@@ -26,7 +27,7 @@ func New() App {
 		Database:    db.DB,
 	}
 
-	r := mux.NewRouter()
+	r := router.ServeRouter{Router: mux.NewRouter()}
 	// cors := os.Getenv("profile") == "prod"
 	// if !cors {
 	// Use handlers.CORS to configure CORS settings
@@ -36,8 +37,8 @@ func New() App {
 	secureMiddleware := secure.New()
 	r.Use(secureMiddleware.Handler)
 
-	s := r.PathPrefix("/api/v1").Subrouter()
-	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, s)
+	lp := r.SubPath("/api/v1")
+	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, lp)
 
 	corsHandler := handlers.CORS(
 		handlers.AllowedOrigins([]string{"https://yourdomain.com", "http://localhost:3000"}),   // Allowed origins

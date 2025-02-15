@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css?family=Montserrat:500,600,700");
 
+
+/* Journey Colors */
 :root {
   --journeyGray: #676767;
   --journeyLightGray: #ccc;
@@ -11,16 +13,14 @@
 }
 
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-    font-size: larger;
+  margin: 0;
+  /*font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',*/
+  /*'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',*/
+  /*sans-serif;*/
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: larger;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 h1 {
@@ -32,9 +32,30 @@ h1 {
   text-transform: capitalize;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html { height: 100%; }
 
-w-100 {
+/* Forms */
+
+.form-error {
+  margin-bottom: 10px !important;
+  color: red;
+}
+
+
+/* Helpers */
+
+.w-100 {
   width: 100%
+}
+
+.journey-blue {
+  color: var(--journeyBlue);
+}
+
+.journey-gray {
+  color: var(--journeyGray);
+}
+
+.journey-lightgray {
+  color: var(--journeyLightGray);
 }

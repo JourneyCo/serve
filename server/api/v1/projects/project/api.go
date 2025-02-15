@@ -55,6 +55,12 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
+			if dto.UserID == nil {
+				log.Print("request did not include user id")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
 			if dto.Registering == nil {
 				log.Print("request did not include members to register")
 				w.WriteHeader(http.StatusBadRequest)
@@ -78,7 +84,22 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
+			reg := models.Registration{
+				AccountID:   *dto.UserID,
+				ProjectID:   proj.ID,
+				UpdatedAt:   &now,
+				QtyEnrolled: toRegister,
+			}
+
+			registration, err := db.PutRegistration(ctx, reg)
+			if err != nil {
+				log.Printf("failed to put registration: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
 			ctx = context.WithValue(ctx, "project", project)
+			ctx = context.WithValue(ctx, "registration", registration)
 
 			h.ServeHTTP(w, r.WithContext(ctx))
 		},

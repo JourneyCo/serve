@@ -18,6 +18,8 @@ import {Subject, Subscription} from "rxjs";
   imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
   DatePipe],
 })
+
+
 export class ProjectsComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   dataSource: MatTableDataSource<Project>;
@@ -92,8 +94,8 @@ export class ProjectsComponent implements AfterViewInit {
 
     const dialogRef = this.dialog.open(RegisterDialogComponent, {
       data: row,
-      height: '300px',
-      width: '500px',
+      height: '325px',
+      width: '600px',
     });
 
     dialogRef.afterClosed().subscribe(result => {  // result is a form back from dialog
@@ -107,7 +109,7 @@ export class ProjectsComponent implements AfterViewInit {
         registering: rawFormValues.registering,
         user_id: 1, //TODO: remove hardcode
       }
-      this.APIService.putProject(registration).subscribe(data => {
+      this.APIService.putRegistration(registration).subscribe(data => {
         this.loadProjects(false);
         this.table.renderRows();
         this.paginator.firstPage();

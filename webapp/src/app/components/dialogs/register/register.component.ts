@@ -22,7 +22,7 @@ export class RegisterDialogComponent implements OnInit {
         // Validators.minLength(4),
       ]),
       last_name: new FormControl('', [Validators.required]),
-      registering: new FormControl('', [Validators.required]),
+      registering: new FormControl('', [Validators.required, Validators.max(this.data.needed)]),
       phoneNumber: new FormControl('', [Validators.required]),
     });
   }

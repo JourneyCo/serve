@@ -3,24 +3,26 @@ package projects
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"serve/api/v1/projects/project"
+	"serve/app/auth0"
 	"serve/app/middleware"
+	"serve/app/router"
 )
 
-func Route(r *mux.Router) {
+func Route(r router.ServeRouter) {
 
 	r.Path("").
 		Methods(http.MethodGet).
 		Handler(idxToCtx(index()))
 
-	r.Path("").
+	r.RBAC(auth0.Admin).
+		Path("").
 		Methods(http.MethodPost).
 		Handler(middleware.JSONToCtx(Request{}, create(show())))
 
 	// single project
-	p := r.PathPrefix("/{id:[0-9]+}").Subrouter()
-	project.Route(p)
+	l := r.SubPath("/{id:[0-9]+}")
+	project.Route(l)
 
 	r.Use(middleware.HandleCacheControl)
 }
