@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="API" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="serve" />
+    <working_directory value="$PROJECT_DIR$/server" />
+    <kind value="FILE" />
+    <package value="serve" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/server/main.go" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Database" run_configuration_type="docker-deploy" />
+    </method>
+  </configuration>
+</component>
