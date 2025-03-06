@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS registrations(
     project_id BIGINT NOT NULL,
     account_id BIGINT NOT NULL,
     quantity INT NOT NULL,
+    lead BOOLEAN DEFAULT false,
     updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
     FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT,

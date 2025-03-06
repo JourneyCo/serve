@@ -84,11 +84,17 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
+			var ld bool
+			if dto.Lead != nil && *dto.Lead == true {
+				ld = true
+			}
+
 			reg := models.Registration{
 				AccountID:   *dto.UserID,
 				ProjectID:   proj.ID,
 				UpdatedAt:   &now,
 				QtyEnrolled: toRegister,
+				Lead:        ld,
 			}
 
 			registration, err := db.PutRegistration(ctx, reg)

@@ -19,6 +19,9 @@ type Request struct {
 	// Registering is the number of people that are registering for a project
 	Registering *int `json:"registering,omitempty"`
 
+	// Lead indicates whether the registrant is interested in leading a project
+	Lead *bool `json:"lead"`
+
 	UserID *int64 `json:"user_id,omitempty"`
 
 	Street       *string    `json:"street,omitempty"`
