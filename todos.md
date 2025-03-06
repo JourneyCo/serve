@@ -7,7 +7,7 @@
 
 
 ### Project Stories
-- Are you willing to be a project lead?
+- Are you willing to be a project lead? (Need to Test)
 - Oauth User(s)
 - Ability to email
 - Number of registrants under the age of 18

@@ -29,7 +29,8 @@ func StartDB() {
 
 	m, err := migrate.NewWithDatabaseInstance(
 		"file:./migrations",
-		"postgres", driver)
+		"postgres", driver,
+	)
 	if err != nil || m == nil {
 		log.Fatal("failed to create migration instance:", err)
 	}
@@ -40,13 +41,13 @@ func StartDB() {
 }
 
 func dataSource() string {
-	//TODO: remove hardcoding before prod
+	// TODO: remove hardcoding before prod
 	host := helpers.GetEnvVar("DB_HOST")
-	dbUser := helpers.GetEnvVar("DB_USER")
-	dbPass := helpers.GetEnvVar("DB_PASS")
+	// dbUser := helpers.GetEnvVar("DB_USER")
+	// dbPass := helpers.GetEnvVar("DB_PASS")
 	if os.Getenv("profile") == "prod" {
 		host = "database"
 	}
-	return "postgresql://" + host + ":5432/journey" +
-		"?user=" + dbUser + "&sslmode=disable&password=" + dbPass
+	return "postgresql://" + host + ":5432/serve" +
+		"?user=" + "postgres" + "&sslmode=disable&password=" + "pass"
 }

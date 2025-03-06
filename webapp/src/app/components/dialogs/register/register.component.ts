@@ -2,11 +2,12 @@ import {Component, inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogClose, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
 import {Form, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgIf, CommonModule} from "@angular/common";
+import {MatFormFieldModule} from "@angular/material/form-field";
 
 @Component({
   selector: 'register-modal',
   templateUrl: 'register.component.html',
-  imports: [MatDialogTitle, MatDialogContent, ReactiveFormsModule, NgIf, MatDialogClose],
+  imports: [MatDialogTitle, MatDialogContent, ReactiveFormsModule, NgIf, MatDialogClose, MatFormFieldModule],
 })
 
 export class RegisterDialogComponent implements OnInit {
@@ -24,6 +25,7 @@ export class RegisterDialogComponent implements OnInit {
       last_name: new FormControl('', [Validators.required]),
       registering: new FormControl('', [Validators.required, Validators.max(this.data.needed)]),
       phoneNumber: new FormControl('', [Validators.required]),
+      lead: new FormControl(false),
     });
   }
 

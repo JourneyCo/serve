@@ -14,5 +14,5 @@ services:
     image: postgres:15.4-alpine3.18
     environment:
       POSTGRES_PASSWORD: pass
-      POSTGRES_USER: journey
-      POSTGRES_DB: journey
+      POSTGRES_USER: postgres
+      POSTGRES_DB: serve

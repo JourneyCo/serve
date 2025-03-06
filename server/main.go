@@ -18,12 +18,13 @@ func main() {
 	database.StartDB()
 	google.SetKey()
 
-	if err := google.FetchProjects(); err != nil {
-		log.Print(err) // we will just print the error - no need to fatal/panic
-	}
+	// Removed Google Sheets Code - // TODO: Confirm after April testing to remove all of this code
+	// if err := google.FetchProjects(); err != nil {
+	// 	log.Print(err) // we will just print the error - no need to fatal/panic
+	// }
 
 	// CORS is enabled only in prod profile
-	//cors := helpers.GetEnvVar("profile") == "prod"
+	// cors := helpers.GetEnvVar("profile") == "prod"
 	a := app.New()
 
 	if err := a.Serve(); err != nil {
