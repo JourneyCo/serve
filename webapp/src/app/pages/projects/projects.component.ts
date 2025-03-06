@@ -94,8 +94,8 @@ export class ProjectsComponent implements AfterViewInit {
 
     const dialogRef = this.dialog.open(RegisterDialogComponent, {
       data: row,
-      height: '325px',
-      width: '600px',
+      height: '400px',
+      width: '700px',
     });
 
     dialogRef.afterClosed().subscribe(result => {  // result is a form back from dialog

@@ -38,20 +38,23 @@
         <label for="phone">Phone Number: </label>
       </div>
       <div class="col-6 text-end">
-        <input id="phone" type="tel" formControlName="phoneNumber" placeholder="123-45-6789" pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}">
-        <div class="form-error" *ngIf="registerForm.get('phone')?.invalid && (registerForm.get('phone')?.dirty)">
-          <small *ngIf="registerForm.get('phone')?.errors?.['required']">Phone number is required.</small>
+        <input id="phone" type="tel" formControlName="phoneNumber" placeholder="123-45-6789" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+        <div class="form-error" *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty)">
+          <small *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</small>
+          <small *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Phone number must be in XXX-XXX-XXXX format.</small>
         </div>
       </div>
     <div class="w-100"></div>
     <div class="col-6 mt-2">
-      <label for="lead">Are You Willing To Be A Project Lead? </label>
+      <label for="ld">Are You Willing To Be A Project Lead? </label>
     </div>
     <div class="col-6 text-center mt-2">
-      <input id="lead" type="checkbox" formControlName="lead">
+      <input id="ld" type="checkbox" formControlName="lead">
+      <div class="form-error" *ngIf="registerForm.get('lead')?.invalid">
+        <small>lead is invalid.</small>
+      </div>
     </div>
   </div>
-
     <p class="mt-3 text-end">Complete the form to enable button.</p>
     <div class="d-flex flex-row-reverse mt-3">
       <button type="submit" [disabled]="!registerForm.valid" [matDialogClose]="registerForm">Submit</button>
