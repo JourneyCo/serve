@@ -54,3 +54,5 @@ VALUES ('admin', 'user', 'password', 'scarrington@gmail.com', LOCALTIMESTAMP, LO
 INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
 VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
 
+INSERT INTO projects (google_id, name, required, needed, admin_id, location_id, created_at, updated_at)
+VALUES ('google1', 'Base Project Example', 200, 159, 1, 1, LOCALTIMESTAMP, LOCALTIMESTAMP);
