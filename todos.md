@@ -13,6 +13,7 @@
 - Number of registrants under the age of 18
 - Check rollback errors
 - Add unit testing
+- Emailer - We need to figure out if we are already sending emails and if we can use existing info to do this
 - Emailer
   - Send confirmation
   - 2 Weeks before

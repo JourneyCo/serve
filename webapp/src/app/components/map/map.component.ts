@@ -33,11 +33,11 @@ export class MapComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit() {
-    this.eventsSubscription = this.events.subscribe((data) => {
+    this.eventsSubscription = this.events?.subscribe((data) => {
       this.moveToClickedRow(data);
       }
     );
-    this.locations.forEach((location: Location)=> {
+    this.locations?.forEach((location: Location)=> {
       let loc: google.maps.LatLngLiteral = {
         lat: location.latitude,
         lng: location.longitude
@@ -61,12 +61,13 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.eventsSubscription.unsubscribe();
+    if (this.eventsSubscription) {
+      this.eventsSubscription.unsubscribe();
+    }
   }
 
   moveMap(event: google.maps.MapMouseEvent) {
-    // @ts-ignore
-    this.center = event.latLng.toJSON();
+    this.center = event.latLng!.toJSON();
   }
 
   moveToClickedRow(location: any ) {
@@ -75,8 +76,7 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   move(event: google.maps.MapMouseEvent) {
-    // @ts-ignore
-    this.display = event.latLng.toJSON();
+    this.display = event.latLng!.toJSON();
   }
 
   openInfoWindow(marker: MapAdvancedMarker, m: any) {

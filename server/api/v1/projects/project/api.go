@@ -55,11 +55,12 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
-			if dto.UserID == nil {
-				log.Print("request did not include user id")
-				w.WriteHeader(http.StatusBadRequest)
-				return
-			}
+			// TODO: Just get account ID from session token
+			// if dto.AccountID == nil {
+			// 	log.Print("request did not include user id")
+			// 	w.WriteHeader(http.StatusBadRequest)
+			// 	return
+			// }
 
 			if dto.Registering == nil {
 				log.Print("request did not include members to register")
@@ -90,11 +91,11 @@ func register(h http.Handler) http.Handler {
 			}
 
 			reg := models.Registration{
-				AccountID:   *dto.UserID,
+				AccountID:   1, // TODO: Change from hardcoded when oauth users implemented
 				ProjectID:   proj.ID,
 				UpdatedAt:   &now,
 				QtyEnrolled: toRegister,
-				Lead:        ld,
+				Lead:        &ld,
 			}
 
 			registration, err := db.PutRegistration(ctx, reg)

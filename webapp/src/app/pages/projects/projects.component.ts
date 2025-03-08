@@ -22,7 +22,7 @@ import {Subject, Subscription} from "rxjs";
 
 export class ProjectsComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
-  dataSource: MatTableDataSource<Project>;
+  dataSource: MatTableDataSource<Project> = new MatTableDataSource();
   projects: Project[];
   private eventsSubscription: Subscription;
   clickedRow: Project | null;

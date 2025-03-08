@@ -13,6 +13,7 @@ import (
 
 	"googlemaps.github.io/maps"
 	ldb "serve/app/database"
+	"serve/app/test"
 	"serve/helpers"
 	"serve/models"
 )
@@ -64,17 +65,26 @@ func create(h http.Handler) http.Handler {
 			}
 
 			now := time.Now()
+			short, err := test.GetRandomString(10)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 			project := models.Project{
 				// TODO: Remove hardcode once we can get dto into context
-				GoogleID:   dto.GoogleID,
-				Name:       dto.Name,
-				Required:   dto.Required,
-				Needed:     dto.Needed,
-				AdminID:    1,
-				LocationID: l.ID,
-				Date:       &now,
-				CreatedAt:  now,
-				UpdatedAt:  &now,
+				Name:             dto.Name,
+				Required:         dto.Required,
+				Needed:           dto.Needed,
+				LeaderID:         1,
+				LocationID:       l.ID,
+				StartTime:        now,
+				EndTime:          now,
+				Category:         "something", // TODO: Enumerate this after client feedback
+				AgesID:           nil,         // TODO: Future work
+				Wheelchair:       true,
+				ShortDescription: short,
+				LongDescription:  &short,
+				CreatedAt:        now,
 			}
 
 			project, err = ldb.PostProject(ctx, project)

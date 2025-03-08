@@ -12,7 +12,7 @@ type req struct {
 	AccountID   int64      `json:"account_id"`
 	ProjectID   int64      `json:"project_id"`
 	QtyEnrolled int        `json:"qty_enrolled"`
-	Lead        bool       `json:"lead"`
+	Lead        *bool      `json:"lead"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
 

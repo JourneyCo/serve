@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RouterLink } from "@angular/router";
-// import { googlemap_key } from './../../googlemap_config.json'
 
 @Component({
     selector: 'app-root',
@@ -9,10 +8,4 @@ import { RouterLink } from "@angular/router";
     standalone: false,
 })
 export class AppComponent {
-
-  // key = googlemap_key
-  constructor(
-  ) {
-    // console.log(this.key)
-  }
 }
