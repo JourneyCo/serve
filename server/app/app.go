@@ -32,8 +32,6 @@ func New() App {
 	// if !cors {
 	// Use handlers.CORS to configure CORS settings
 
-	// r.Use(middleware.DisableCORS)
-	// }
 	secureMiddleware := secure.New()
 	r.Use(secureMiddleware.Handler)
 
