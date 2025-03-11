@@ -1,15 +1,18 @@
-import {inject, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../environments/environment.development";
 import {Observable} from "rxjs";
 import {Registration} from "@models";
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class APIService {
   private apiUrl = environment.apiUrl;
-  private readonly http: HttpClient = inject(HttpClient)
 
+  constructor(private http: HttpClient) {
+  }
 
   public getLocations(): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}/locations`);

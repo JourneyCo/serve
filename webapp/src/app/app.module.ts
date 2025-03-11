@@ -1,21 +1,20 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {AppComponent} from './app.component';
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {HTTP_INTERCEPTORS } from '@angular/common/http';
 import {HeaderComponent} from './header/header.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AppRoutingModule} from './app-routing.module';
 import {MapComponent} from "@components";
 import {ProjectsComponent} from "./pages/projects/projects.component";
-import {AuthModule} from "@auth0/auth0-angular";
+import {AuthHttpInterceptor, authHttpInterceptorFn, AuthModule} from "@auth0/auth0-angular";
 import {environment as env} from "../environments/environment.development"
-import {APIService} from "@services";
+import {APIService } from "@services";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap: [AppComponent],
+  bootstrap: [AppModule],
   imports: [BrowserModule,
     NgbModule,
     AppRoutingModule,
@@ -27,9 +26,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     HeaderComponent,
   ],
   providers:
-    [provideHttpClient(withInterceptorsFromDi()),
+    [
       APIService,
       provideAnimationsAsync(),
+      { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
   ]
 })
 export class AppModule { }

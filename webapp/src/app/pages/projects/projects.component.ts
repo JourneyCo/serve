@@ -35,15 +35,13 @@ export class ProjectsComponent implements AfterViewInit {
   locations: Location[];
   locationMap = new Map<number, any>();
   eventsSubject: Subject<any> = new Subject<any>();
-
+  private APIService = inject(APIService);
   private auth = inject(AuthService);
   title = 'Decoded ID Token';
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
 
-  constructor(
-    private APIService: APIService,
-  ) {
+  constructor() {
     this.loadProjects(true);
     this.loadLocations();
   }
