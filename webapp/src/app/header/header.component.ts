@@ -3,6 +3,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatMenuModule} from "@angular/material/menu";
 import {AuthService} from "@auth0/auth0-angular";
 import {RouterLink} from "@angular/router";
+import {DOCUMENT} from "@angular/common";
 
 @Component({
     selector: 'app-header',
@@ -16,6 +17,7 @@ export class HeaderComponent implements OnInit {
 
   title = "serve"
   private auth = inject(AuthService);
+  private doc = inject(DOCUMENT)
   constructor() { }
 
   ngOnInit(): void {
@@ -24,10 +26,18 @@ export class HeaderComponent implements OnInit {
   handleLogin(): void {
     this.auth.loginWithRedirect({
       appState: {
-        target: '/profile',
+        target: '/projects',
       },
       authorizationParams: {
         prompt: 'login',
+      },
+    });
+  }
+
+  handleLogout(): void {
+    this.auth.logout({
+      logoutParams: {
+        returnTo: this.doc.location.origin,
       },
     });
   }

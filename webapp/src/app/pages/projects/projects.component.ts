@@ -7,16 +7,18 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {Location, Project, Registration} from "@models";
 import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
-import {DatePipe, NgIf} from "@angular/common";
+import {CommonModule, DatePipe, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
-import {Subject, Subscription} from "rxjs";
+import {map, Subject, Subscription} from "rxjs";
+import {AuthService} from "@auth0/auth0-angular";
+import {CodeSnippetComponent} from "../../components/code-snippet.component";
 
 @Component({
   selector: 'projects',
   styleUrl: 'projects.component.css',
   templateUrl: 'projects.component.html',
   imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
-  DatePipe],
+  DatePipe, CommonModule, CodeSnippetComponent],
 })
 
 
@@ -33,6 +35,11 @@ export class ProjectsComponent implements AfterViewInit {
   locations: Location[];
   locationMap = new Map<number, any>();
   eventsSubject: Subject<any> = new Subject<any>();
+
+  private auth = inject(AuthService);
+  title = 'Decoded ID Token';
+  user$ = this.auth.user$;
+  code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
 
   constructor(
     private APIService: APIService,

@@ -9,6 +9,7 @@
         <button mat-menu-item routerLink="/" routerLinkActive="active">My Info</button>
         <button mat-menu-item routerLink="/admin" routerLinkActive="active">Admin</button>
         <button mat-menu-item routerLink="/projects" routerLinkActive="active">My Projects</button>
+        <button mat-menu-item (click)="handleLogout()">Log Out</button>
       </mat-menu>
     </div>
   </nav>

@@ -12,7 +12,3 @@ webapp/npm-debug.log*
 /.idea/dataSources.xml
 /.idea/sqldialects.xml
 server/.env
-server/NOT_USED_GOOGLESHEET_oauth_google_creds.json
-server/NOTUSEDgoogle_sheet_token.json
-webapp/token.json
-
