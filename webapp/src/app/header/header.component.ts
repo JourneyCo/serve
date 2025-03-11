@@ -3,13 +3,13 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatMenuModule} from "@angular/material/menu";
 import {AuthService} from "@auth0/auth0-angular";
 import {RouterLink} from "@angular/router";
-import {DOCUMENT} from "@angular/common";
+import {CommonModule, DOCUMENT} from "@angular/common";
 
 @Component({
     selector: 'app-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.css'],
-    imports: [MatButtonModule, MatMenuModule, RouterLink]
+    imports: [CommonModule, MatButtonModule, MatMenuModule, RouterLink]
 })
 
 
@@ -18,10 +18,13 @@ export class HeaderComponent implements OnInit {
   title = "serve"
   private auth = inject(AuthService);
   private doc = inject(DOCUMENT)
-  constructor() { }
+  constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
   }
+
+
+  // TODO: Hide Log-In button if user is already logged in
 
   handleLogin(): void {
     this.auth.loginWithRedirect({

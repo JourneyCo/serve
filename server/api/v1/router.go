@@ -19,8 +19,8 @@ func Route(domain string, audience string, r router.ServeRouter) {
 		Methods(http.MethodGet).
 		Handler(auth0.ValidateJWT(audience, domain, projects.SendMessage()))
 
-	y := r.SubPath("/projects")
-	projects.Route(y)
+	p := r.SubPath("/projects")
+	projects.Route(p)
 
 	l := r.PathPrefix("/locations").Subrouter()
 	locations.Route(l)

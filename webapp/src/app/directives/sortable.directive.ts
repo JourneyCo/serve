@@ -1,5 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from '@angular/core';
-import { Project } from '../components/table/project';
+import {Project} from "@models";
 
 export type SortColumn = keyof Project | '';
 export type SortDirection = 'asc' | 'desc' | '';

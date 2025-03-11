@@ -11,7 +11,7 @@ export class APIService {
   private readonly http: HttpClient = inject(HttpClient)
 
 
-    public getLocations(): Observable<any[]> {
+  public getLocations(): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}/locations`);
     }
 

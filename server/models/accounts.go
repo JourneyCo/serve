@@ -5,7 +5,8 @@ import (
 )
 
 type Account struct {
-	ID             int64
+	// ID is the user ID that auth0 provides. This ID is mapped to the auth0 token under the 'sub' claim.
+	ID             string
 	FirstName      string
 	LastName       string
 	Email          string

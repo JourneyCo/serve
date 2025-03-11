@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS accounts(
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     first TEXT NOT NULL,
     last TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS projects(
    status status NOT NULL,
    required TEXT NOT NULL,
    needed TEXT NOT NULL,
-   leader_id BIGINT NOT NULL,
+   leader_id TEXT NOT NULL,
    location_id BIGINT NOT NULL,
    start_time TIMESTAMPTZ NOT NULL,
    end_time TIMESTAMPTZ NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS projects(
 
 CREATE TABLE IF NOT EXISTS registrations(
     project_id BIGINT NOT NULL,
-    account_id BIGINT NOT NULL,
+    account_id TEXT NOT NULL,
     quantity INT NOT NULL,
     lead BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
@@ -78,8 +78,8 @@ CREATE TABLE IF NOT EXISTS project_tools(
      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT
 );
 
-INSERT INTO accounts (first, last, email, cellphone, created_at, updated_at)
-VALUES ('admin', 'user', 'scarrington@gmail.com', '303-947-7791',  LOCALTIMESTAMP, LOCALTIMESTAMP);
+INSERT INTO accounts (id, first, last, email, cellphone, created_at, updated_at)
+VALUES ('exampleid' , 'admin', 'user', 'scarrington@gmail.com', '303-947-7791',  LOCALTIMESTAMP, LOCALTIMESTAMP);
 
 INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
 VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
