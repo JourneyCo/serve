@@ -91,7 +91,7 @@ func register(h http.Handler) http.Handler {
 			}
 
 			reg := models.Registration{
-				AccountID:   1, // TODO: Change from hardcoded when oauth users implemented
+				AccountID:   "exampleid", // TODO: Change from hardcoded when oauth users implemented
 				ProjectID:   proj.ID,
 				UpdatedAt:   &now,
 				QtyEnrolled: toRegister,

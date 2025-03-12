@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Registration struct {
-	AccountID   int64
+	AccountID   string
 	ProjectID   int64
 	QtyEnrolled int
 	Lead        *bool

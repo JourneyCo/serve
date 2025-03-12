@@ -30,7 +30,8 @@ func idxToCtx(h http.Handler) http.Handler {
 
 			projects, err := ldb.GetProjects(ctx)
 			if err != nil {
-				fmt.Printf("error retrieving projects: %v", err)
+				log.Printf("error retrieving projects: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
@@ -75,7 +76,7 @@ func create(h http.Handler) http.Handler {
 				Name:             dto.Name,
 				Required:         dto.Required,
 				Needed:           dto.Needed,
-				LeaderID:         1,
+				LeaderID:         "exampleid",
 				LocationID:       l.ID,
 				StartTime:        now,
 				EndTime:          now,

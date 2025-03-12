@@ -9,7 +9,7 @@ import (
 )
 
 type req struct {
-	AccountID   int64      `json:"account_id"`
+	AccountID   string     `json:"account_id"`
 	ProjectID   int64      `json:"project_id"`
 	QtyEnrolled int        `json:"qty_enrolled"`
 	Lead        *bool      `json:"lead"`

@@ -20,7 +20,7 @@ type Project struct {
 	Needed int
 
 	// LeaderID is the account ID of the project lead
-	LeaderID int64
+	LeaderID string
 
 	Status string
 

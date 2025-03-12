@@ -13,5 +13,5 @@ export interface Project {
 export interface Registration {
   id: number,
   registering: number,
-  user_id: number
+  user_id: string,
 }

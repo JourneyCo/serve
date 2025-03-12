@@ -26,7 +26,6 @@ export class ProjectsComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   dataSource: MatTableDataSource<Project> = new MatTableDataSource();
   projects: Project[];
-  private eventsSubscription: Subscription;
   clickedRow: Project | null;
   dialog = inject(MatDialog);
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -40,10 +39,19 @@ export class ProjectsComponent implements AfterViewInit {
   title = 'Decoded ID Token';
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
+  user_id = '';
 
   constructor() {
     this.loadProjects(true);
     this.loadLocations();
+  }
+
+  ngOnInit() {
+    this.user$.subscribe(user=> {
+      if (user?.sub) {
+        this.user_id = user?.sub
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -97,8 +105,13 @@ export class ProjectsComponent implements AfterViewInit {
     const buttonElement = document.activeElement as HTMLElement; // Get the currently focused element
     buttonElement.blur();
 
+    const data = {
+      ...row,
+      user_id: this.user_id,
+    }
+
     const dialogRef = this.dialog.open(RegisterDialogComponent, {
-      data: row,
+      data: data,
       height: '400px',
       width: '700px',
     });
@@ -112,7 +125,7 @@ export class ProjectsComponent implements AfterViewInit {
       const registration: Registration = {
         id: rawFormValues.id,
         registering: rawFormValues.registering,
-        user_id: 1, //TODO: remove hardcode
+        user_id: this.user_id,
       }
       this.APIService.putRegistration(registration).subscribe(data => {
         this.loadProjects(false);

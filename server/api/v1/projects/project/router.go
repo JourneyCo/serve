@@ -27,6 +27,7 @@ func Route(r router.ServeRouter) {
 		Handler(show())
 
 	u := r.Path("/register").Subrouter()
+	u.Use(auth0.ValidateToken)
 
 	// user register under a project (limited edit)
 	u.Path("").

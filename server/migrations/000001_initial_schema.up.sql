@@ -85,4 +85,4 @@ INSERT INTO locations (latitude, longitude, info, street, number, city, state, p
 VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
 
 INSERT INTO projects (name, enabled, status, required, needed, start_time, end_time, leader_id, location_id, short_description, created_at, updated_at)
-VALUES ('Base Project Example', true, 'open',  200, 159, LOCALTIMESTAMP, LOCALTIMESTAMP, 1, 1, 'Baseline Project Description', LOCALTIMESTAMP, LOCALTIMESTAMP);
+VALUES ('Base Project Example', true, 'open',  200, 159, LOCALTIMESTAMP, LOCALTIMESTAMP, 'exampleid', 1, 'Baseline Project Description', LOCALTIMESTAMP, LOCALTIMESTAMP);

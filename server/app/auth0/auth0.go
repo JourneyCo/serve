@@ -21,12 +21,15 @@ type Config struct {
 	Domain   string
 }
 
+var config Config
+
 func New() Config {
-	return Config{
+	config = Config{
 		Audience: helpers.GetEnvVar("AUTH0_AUDIENCE"),
 		Domain:   helpers.GetEnvVar("AUTH0_DOMAIN"),
 		port:     helpers.GetEnvVar("AUTH0_PORT"),
 	}
+	return config
 }
 
 const (
@@ -67,10 +70,11 @@ func ValidatePermissions(expectedClaims []string, next http.Handler) http.Handle
 	)
 }
 
-func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
+// ValidateToken will validate the auth0 token
+func ValidateToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			issuerURL, err := url.Parse("https://" + domain + "/")
+			issuerURL, err := url.Parse("https://" + config.Domain + "/")
 			if err != nil {
 				log.Fatalf("Failed to parse the issuer url: %v", err)
 			}
@@ -81,7 +85,7 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 				provider.KeyFunc,
 				validator.RS256,
 				issuerURL.String(),
-				[]string{audience},
+				[]string{config.Audience},
 				validator.WithCustomClaims(
 					func() validator.CustomClaims {
 						return new(CustomClaims)
@@ -122,3 +126,59 @@ func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
 		},
 	)
 }
+
+// func ValidateJWT(audience, domain string, next http.Handler) http.Handler {
+// 	return http.HandlerFunc(
+// 		func(w http.ResponseWriter, r *http.Request) {
+// 			issuerURL, err := url.Parse("https://" + domain + "/")
+// 			if err != nil {
+// 				log.Fatalf("Failed to parse the issuer url: %v", err)
+// 			}
+//
+// 			provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+//
+// 			jwtValidator, err := validator.New(
+// 				provider.KeyFunc,
+// 				validator.RS256,
+// 				issuerURL.String(),
+// 				[]string{audience},
+// 				validator.WithCustomClaims(
+// 					func() validator.CustomClaims {
+// 						return new(CustomClaims)
+// 					},
+// 				),
+// 			)
+// 			if err != nil {
+// 				log.Fatalf("Failed to set up the jwt validator")
+// 			}
+//
+// 			if authHeaderParts := strings.Fields(r.Header.Get("Authorization")); len(authHeaderParts) > 0 && strings.ToLower(authHeaderParts[0]) != "bearer" {
+// 				log.Printf("invalid JWT - jwt not found")
+// 				w.WriteHeader(http.StatusBadRequest)
+// 				return
+// 			}
+//
+// 			errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
+// 				log.Printf("Encountered error while validating JWT: %v", err)
+// 				if errors.Is(err, jwtmiddleware.ErrJWTMissing) {
+// 					log.Printf("missing JWT")
+// 					w.WriteHeader(http.StatusBadRequest)
+// 					return
+// 				}
+// 				if errors.Is(err, jwtmiddleware.ErrJWTInvalid) {
+// 					log.Print("invalid JWT")
+// 					w.WriteHeader(http.StatusBadRequest)
+// 					return
+// 				}
+// 				w.WriteHeader(http.StatusInternalServerError)
+// 			}
+//
+// 			middleware := jwtmiddleware.New(
+// 				jwtValidator.ValidateToken,
+// 				jwtmiddleware.WithErrorHandler(errorHandler),
+// 			)
+//
+// 			middleware.CheckJWT(next).ServeHTTP(w, r)
+// 		},
+// 	)
+// }

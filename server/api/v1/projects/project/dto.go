@@ -32,7 +32,7 @@ type Request struct {
 	UpdatedAt        *time.Time `json:"updated_at,omitempty"`
 	Enabled          *bool      `json:"enabled"`
 	Status           *string    `json:"status"`
-	LeaderID         *int64     `json:"leader_id"`
+	LeaderID         *string    `json:"leader_id"`
 	StartTime        *time.Time `json:"start_time"`
 	EndTime          *time.Time `json:"end_time"`
 	Category         *string    `json:"category"`

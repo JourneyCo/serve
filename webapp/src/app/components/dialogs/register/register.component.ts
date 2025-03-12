@@ -18,6 +18,7 @@ export class RegisterDialogComponent implements OnInit {
   ngOnInit(): void {
     this.registerForm = new FormGroup({
       id: new FormControl(this.data.id),
+      user_id: new FormControl(this.data.user_id),
       first_name: new FormControl('', [
         Validators.required,
         // Validators.minLength(4),
