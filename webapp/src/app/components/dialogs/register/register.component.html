@@ -38,7 +38,7 @@
         <label for="phone">Phone Number: </label>
       </div>
       <div class="col-6 text-end">
-        <input id="phone" type="tel" formControlName="phoneNumber" placeholder="123-45-6789" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
+        <input id="phone" type="tel" formControlName="phoneNumber" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}">
         <div class="form-error" *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty)">
           <small *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</small>
           <small *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Phone number must be in XXX-XXX-XXXX format.</small>

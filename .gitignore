@@ -12,3 +12,4 @@ webapp/npm-debug.log*
 /.idea/dataSources.xml
 /.idea/sqldialects.xml
 server/.env
+server/public.key

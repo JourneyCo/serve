@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"serve/app/auth0"
 	db "serve/app/database"
 	"serve/models"
 )
@@ -49,18 +50,18 @@ func register(h http.Handler) http.Handler {
 			body := ctx.Value("body").([]byte)
 			var dto Request
 			now := time.Now()
+			session := ctx.Value("session").(auth0.Session)
 
 			if err := json.Unmarshal(body, &dto); err != nil {
 				fmt.Printf("error unmarshalling body: %v", err)
 				return
 			}
 
-			// TODO: Just get account ID from session token
-			// if dto.AccountID == nil {
-			// 	log.Print("request did not include user id")
-			// 	w.WriteHeader(http.StatusBadRequest)
-			// 	return
-			// }
+			if session.UserID == "" {
+				log.Print("session does not include user id")
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
 
 			if dto.Registering == nil {
 				log.Print("request did not include members to register")
@@ -91,7 +92,7 @@ func register(h http.Handler) http.Handler {
 			}
 
 			reg := models.Registration{
-				AccountID:   "exampleid", // TODO: Change from hardcoded when oauth users implemented
+				AccountID:   session.UserID,
 				ProjectID:   proj.ID,
 				UpdatedAt:   &now,
 				QtyEnrolled: toRegister,
@@ -104,6 +105,8 @@ func register(h http.Handler) http.Handler {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
+
+			log.Printf("user %s registered for project %s", reg.AccountID, proj.Name)
 
 			ctx = context.WithValue(ctx, "project", project)
 			ctx = context.WithValue(ctx, "registration", registration)

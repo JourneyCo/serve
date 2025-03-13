@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"googlemaps.github.io/maps"
-	ldb "serve/app/database"
+	db "serve/app/database"
 	"serve/app/test"
 	"serve/helpers"
 	"serve/models"
@@ -28,7 +28,7 @@ func idxToCtx(h http.Handler) http.Handler {
 			ctx := r.Context()
 			projects := []models.Project{}
 
-			projects, err := ldb.GetProjects(ctx)
+			projects, err := db.GetProjects(ctx)
 			if err != nil {
 				log.Printf("error retrieving projects: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -88,7 +88,7 @@ func create(h http.Handler) http.Handler {
 				CreatedAt:        now,
 			}
 
-			project, err = ldb.PostProject(ctx, project)
+			project, err = db.PostProject(ctx, project)
 			if err != nil {
 				log.Printf("failed to post project: %v", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -119,7 +119,7 @@ func getExistingLocation(ctx context.Context) (models.Location, error) {
 		fmt.Println(dto)
 	}
 
-	a, err := ldb.GetLocationByAddress(ctx, dto.StreetNumber, dto.Street)
+	a, err := db.GetLocationByAddress(ctx, dto.StreetNumber, dto.Street)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		fmt.Println("no rows found")
 		return a, nil
@@ -165,7 +165,7 @@ func createLocation(ctx context.Context, dto Request) (models.Location, error, i
 		UpdatedAt:        &now,
 	}
 
-	location, err := ldb.PostLocation(ctx, loc)
+	location, err := db.PostLocation(ctx, loc)
 	if err != nil {
 		return models.Location{}, err, http.StatusInternalServerError
 	}

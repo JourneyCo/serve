@@ -10,7 +10,6 @@ import (
 )
 
 func Route(r router.ServeRouter) {
-
 	r.Path("").
 		Methods(http.MethodGet).
 		Handler(idxToCtx(index()))

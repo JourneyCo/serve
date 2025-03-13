@@ -7,6 +7,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"serve/app"
+	"serve/app/auth0"
 	"serve/app/database"
 	"serve/app/google"
 )
@@ -17,6 +18,7 @@ func main() {
 
 	database.StartDB()
 	google.SetKey()
+	auth0.SetPublicKeyPEM()
 
 	a := app.New()
 

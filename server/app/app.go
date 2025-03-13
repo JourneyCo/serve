@@ -35,8 +35,8 @@ func New() App {
 	secureMiddleware := secure.New()
 	r.Use(secureMiddleware.Handler)
 
-	lp := r.SubPath("/api/v1")
-	v1.Route(app.Auth0Config.Domain, app.Auth0Config.Audience, lp)
+	api := r.SubPath("/api/v1")
+	v1.Route(api)
 
 	corsHandler := handlers.CORS(
 		handlers.AllowedOrigins([]string{"https://yourdomain.com", "http://localhost:3000"}),   // Allowed origins

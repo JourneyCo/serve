@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS project_tools(
 );
 
 INSERT INTO accounts (id, first, last, email, cellphone, created_at, updated_at)
-VALUES ('exampleid' , 'admin', 'user', 'scarrington@gmail.com', '303-947-7791',  LOCALTIMESTAMP, LOCALTIMESTAMP);
+VALUES ('exampleid' , 'admin', 'user', 'adminserve@gmail.com', '303-947-7791',  LOCALTIMESTAMP, LOCALTIMESTAMP);
 
 INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
 VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
