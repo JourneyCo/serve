@@ -22,15 +22,26 @@
           <small *ngIf="registerForm.get('last_name')?.errors?.['required']">Last name is required.</small>
         </div>
       </div>
+    <div class="w-100"></div>
+    <div class="col-6">
+      <label for="email">E-Mail: </label>
+    </div>
+    <div class="col-6 text-end">
+      <input id="email" type="text" formControlName="email">
+      <div class="form-error" *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty)">
+        <small *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</small>
+        <small *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email entered.</small>
+      </div>
+    </div>
       <div class="w-100"></div>
       <div class="col-6">
-        <label for="registering"># To Register: </label>
+        <label for="qty_enroll"># To Register: </label>
       </div>
       <div class="col-6 text-end">
-        <input id="registering" type="number" formControlName="registering">
-        <div class="form-error" *ngIf="registerForm.get('registering')?.invalid && (registerForm.get('registering')?.dirty)">
-          <small *ngIf="registerForm.get('registering')?.errors?.['required']">Number to register is required.</small>
-          <small *ngIf="registerForm.get('registering')?.errors?.['max']">Registrants cannot exceed {{data.needed}}.</small>
+        <input id="qty_enroll" type="number" formControlName="qty_enroll">
+        <div class="form-error" *ngIf="registerForm.get('qty_enroll')?.invalid && (registerForm.get('qty_enroll')?.dirty)">
+          <small *ngIf="registerForm.get('qty_enroll')?.errors?.['required']">Number to register is required.</small>
+          <small *ngIf="registerForm.get('qty_enroll')?.errors?.['max']">Registrants cannot exceed {{data.needed}}.</small>
         </div>
       </div>
       <div class="w-100"></div>

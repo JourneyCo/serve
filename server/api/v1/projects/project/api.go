@@ -63,12 +63,12 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
-			if dto.Registering == nil {
+			if dto.QtyEnroll == nil {
 				log.Print("request did not include members to register")
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			toRegister := *dto.Registering
+			toRegister := *dto.QtyEnroll
 
 			if proj.Needed <= 0 || toRegister > proj.Needed {
 				log.Printf("project has a need of %d but user attempted to register %d", proj.Needed, toRegister)

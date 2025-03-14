@@ -60,7 +60,9 @@ SELECT * FROM registrations`
 
 	for rows.Next() {
 		var r models.Registration
-		if err = rows.Scan(&r.AccountID, &r.ProjectID, &r.QtyEnrolled, &r.UpdatedAt); err != nil {
+		if err = rows.Scan(
+			&r.ProjectID, &r.AccountID, &r.QtyEnrolled, &r.Lead, &r.CreatedAt, &r.UpdatedAt,
+		); err != nil {
 			log.Printf("Error scanning")
 			return registrations, err
 		}

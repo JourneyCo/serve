@@ -11,7 +11,7 @@ import (
 type req struct {
 	AccountID   string     `json:"account_id"`
 	ProjectID   int64      `json:"project_id"`
-	QtyEnrolled int        `json:"qty_enrolled"`
+	QtyEnrolled int        `json:"qty_enroll"`
 	Lead        *bool      `json:"lead"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }

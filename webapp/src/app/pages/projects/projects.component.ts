@@ -25,7 +25,7 @@ import {CodeSnippetComponent} from "../../components/code-snippet.component";
 export class ProjectsComponent implements AfterViewInit {
   displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   dataSource: MatTableDataSource<Project> = new MatTableDataSource();
-  projects: Project[];
+  projects: Project[] = [];
   clickedRow: Project | null;
   dialog = inject(MatDialog);
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -40,18 +40,22 @@ export class ProjectsComponent implements AfterViewInit {
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
   user_id = '';
+  registrations: Registration[];
+  registrationMap: Map<number, boolean>;
 
   constructor() {
-    this.loadProjects(true);
-    this.loadLocations();
   }
 
   ngOnInit() {
+    this.registrationMap = new Map<number, boolean>();
     this.user$.subscribe(user=> {
       if (user?.sub) {
         this.user_id = user?.sub
       }
+      this.loadRegistrations();
     });
+    this.loadProjects(true);
+    this.loadLocations();
   }
 
   ngAfterViewInit() {
@@ -78,6 +82,16 @@ export class ProjectsComponent implements AfterViewInit {
         this.locationMap.set(id, location);
       })
     });
+  }
+
+  loadRegistrations() {
+    this.APIService.getRegistrations().subscribe(data => {
+      data.filter((registration: Registration) => registration.account_id >= this.user_id).
+      forEach((reg: Registration) => {
+        this.registrationMap.set(reg.project_id, true)
+        console.log(this.registrationMap);
+      });
+    })
   }
 
   applyFilter(event: Event) {
@@ -123,9 +137,10 @@ export class ProjectsComponent implements AfterViewInit {
       }
       const rawFormValues = result.getRawValue();
       const registration: Registration = {
-        id: rawFormValues.id,
-        registering: rawFormValues.registering,
-        user_id: this.user_id,
+        project_id: rawFormValues.id,
+        qty_enroll: rawFormValues.qty_enroll,
+        account_id: this.user_id,
+        lead: rawFormValues.lead,
       }
       this.APIService.putRegistration(registration).subscribe(data => {
         this.loadProjects(false);

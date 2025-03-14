@@ -15,8 +15,8 @@ type Request struct {
 	// Needed is the number of people still needed for the project
 	Needed *int `json:"needed"`
 
-	// Registering is the number of people that are registering for a project
-	Registering *int `json:"registering,omitempty"`
+	// QtyEnrolled is the number of people that are registering for a project
+	QtyEnroll *int `json:"qty_enroll,omitempty"`
 
 	// Lead indicates whether the registrant is interested in leading a project
 	Lead *bool `json:"lead"`

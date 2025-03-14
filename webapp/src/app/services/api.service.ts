@@ -26,12 +26,15 @@ export class APIService {
     return this.http.get<any>(`${this.apiUrl}/system`);
   }
 
+  public getRegistrations(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/registrations`);
+  }
+
   public putRegistration(r: Registration): Observable<any> {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json');
     const body = JSON.stringify(r);
-    const s = r.id.toString();
-    return this.http.put<any>(`${this.apiUrl}/projects/`+ s + '/register', body, { headers: headers});
+    return this.http.put<any>(`${this.apiUrl}/projects/`+ r.project_id + '/register', body, { headers: headers});
   }
 
 }

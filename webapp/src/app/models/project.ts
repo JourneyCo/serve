@@ -3,7 +3,7 @@ export interface Project {
   name: string,
   required: number,
   needed: number,
-  leader_id: number,
+  leader_id: string,
   location_id: number,
   date?: number,
   created_at: Date,
@@ -11,7 +11,9 @@ export interface Project {
 }
 
 export interface Registration {
-  id: number,
-  registering: number,
-  user_id: string,
+  account_id: string,
+  project_id: number,
+  qty_enroll: number,
+  lead?: boolean,
+  updated_at?: Date
 }
