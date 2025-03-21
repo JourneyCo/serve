@@ -14,6 +14,10 @@ export class APIService {
   constructor(private http: HttpClient) {
   }
 
+  public getLocation(id: number): Observable<any> {
+    return this.http.get<any[]>(`${this.apiUrl}/locations/`+id);
+  }
+
   public getLocations(): Observable<any[]> {
       return this.http.get<any[]>(`${this.apiUrl}/locations`);
     }
@@ -22,8 +26,8 @@ export class APIService {
     return this.http.get<any[]>(`${this.apiUrl}/projects`);
   }
 
-  public getSystem(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/system`);
+  public getProject(id: number): Observable<any> {
+    return this.http.get<any[]>(`${this.apiUrl}/projects/`+id);
   }
 
   public getRegistrations(): Observable<any> {

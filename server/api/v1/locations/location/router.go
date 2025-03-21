@@ -1,12 +1,13 @@
-package system
+package location
 
 import (
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"serve/app/router"
 )
 
-func Route(r *mux.Router) {
+func Route(r router.ServeRouter) {
+	r.Use(toCtx)
 
 	r.Path("").
 		Methods(http.MethodGet).

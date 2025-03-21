@@ -7,23 +7,25 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {Location, Project, Registration} from "@models";
 import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
-import {CommonModule, DatePipe, NgIf} from "@angular/common";
+import {CommonModule, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
 import {map, Subject, Subscription} from "rxjs";
 import {AuthService} from "@auth0/auth0-angular";
 import {CodeSnippetComponent} from "../../components/code-snippet.component";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'projects',
   styleUrl: 'projects.component.css',
   templateUrl: 'projects.component.html',
   imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
-  DatePipe, CommonModule, CodeSnippetComponent],
+  CommonModule, CodeSnippetComponent],
 })
 
 
 export class ProjectsComponent implements AfterViewInit {
-  displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
+  // displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
+  displayedColumns: string[] = ['name', 'required', 'needed', 'register']
   dataSource: MatTableDataSource<Project> = new MatTableDataSource();
   projects: Project[] = [];
   clickedRow: Project | null;
@@ -36,6 +38,7 @@ export class ProjectsComponent implements AfterViewInit {
   eventsSubject: Subject<any> = new Subject<any>();
   private APIService = inject(APIService);
   private auth = inject(AuthService);
+  private readonly router = inject(Router);
   title = 'Decoded ID Token';
   user$ = this.auth.user$;
   code$ = this.user$.pipe(map((user) => JSON.stringify(user, null, 2)));
@@ -89,7 +92,6 @@ export class ProjectsComponent implements AfterViewInit {
       data.filter((registration: Registration) => registration.account_id >= this.user_id).
       forEach((reg: Registration) => {
         this.registrationMap.set(reg.project_id, true)
-        console.log(this.registrationMap);
       });
     })
   }
@@ -110,9 +112,10 @@ export class ProjectsComponent implements AfterViewInit {
     }
     this.clickedRow = row;
     let id = row.location_id ? row.location_id : 0;
-    // @ts-ignore
     const clickedLocation = this.locationMap.get(id);
     this.eventsSubject.next(clickedLocation);
+    const rowID = row ? row.id : null;
+    this.router.navigate(['/projects/', rowID ]);
   }
 
   register(evt: any, row: Project) {

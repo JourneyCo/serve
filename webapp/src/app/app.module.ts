@@ -10,6 +10,7 @@ import {AuthHttpInterceptor, authHttpInterceptorFn, AuthModule} from "@auth0/aut
 import {environment as env} from "../environments/environment.development"
 import {APIService } from "@services";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {ProjectComponent} from "./pages/projects/project/project.component";
 
 @NgModule({
   declarations: [],
@@ -24,6 +25,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     }),
     ProjectsComponent,
     HeaderComponent,
+    ProjectComponent,
   ],
   providers:
     [

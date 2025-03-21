@@ -1,7 +1,7 @@
 <!-- google-maps-demo.component.html -->
 <google-map
   height="400px"
-  width="750px"
+  width="100%"
   [options] = "options"
   (mapClick)="moveMap($event)"
   (mapMousemove)="move($event)"
@@ -19,5 +19,7 @@
     <h4>{{ selectedMarker?.info }}</h4>
     <p>{{ selectedMarker?.project?.name}}</p>
     <p>{{ selectedMarker?.marker.position.lat }}</p>
+    <p>Project: </p>
+    <p>Directions: </p>
   </map-info-window>
 </google-map>

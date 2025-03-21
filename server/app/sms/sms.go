@@ -2,9 +2,30 @@ package sms
 
 import (
 	"log"
+	"regexp"
+	"strings"
 )
 
-func Send() {
+// phoneRegex accepts only XXX-XXX-XXXX where 0<=X<=9
+const phoneRegex = "^[0-9]{3}[-]?[0-9]{3}[-]?[0-9]{4}$"
+
+// Send composes and sends a text message out to the given number
+// via twillio
+func Send(number string) {
+
+	matched, err := regexp.MatchString(phoneRegex, number)
+	if err != nil {
+		log.Print("error matching regez to number: ", err)
+		return
+	}
+	if !matched {
+		log.Printf("number doesnt fit regex: %s", number)
+		return
+	}
+
+	// append +1 and remove the hyphens from the phone number
+	number = "+1" + strings.ReplaceAll(number, "+", "")
+
 	// client := twilio.NewRestClientWithParams(
 	// 	twilio.ClientParams{
 	// 		Username: accountSid,
@@ -25,6 +46,6 @@ func Send() {
 	// 	fmt.Println("Response: " + string(response))
 	// }
 
-	log.Printf("sms services has been called - not active at this time")
+	log.Printf("sms services has been called - mock send to %s", number)
 
 }

@@ -1,1 +1,19 @@
-<p>event works!</p>
+<div class="row" *ngIf="location && project">
+  <div class="card col-4">
+    <div class="card-header">
+      Featured
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Name: {{ this.project.name}}</li>
+      <li class="list-group-item">Required: {{ this.project.required}}</li>
+      <li class="list-group-item">Needed: {{ this.project.needed}}</li>
+      <li class="list-group-item">Loc Id: {{ this.project.location_id}}</li>
+      <li class="list-group-item">Created At: {{ this.project.created_at | date:'medium'}}</li>
+      <li class="list-group-item">Updated At: {{ this.project.updated_at | date:'medium'}}</li>
+    </ul>
+  </div>
+  <div class="col-1"></div>
+  <div class="col-6">
+    <app-map [locations]="locations" [projects]="projects" [events]="eventsSubject.asObservable()"></app-map>
+  </div>
+</div>

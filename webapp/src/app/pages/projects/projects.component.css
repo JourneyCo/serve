@@ -20,14 +20,6 @@ mat-sort-header {
   justify-content: center;
 }
 
-.mat-column-required {
-  text-align: center;
-}
-
-.mat-column-needed {
-  text-align: center;
-}
-
 .mat-mdc-row .mat-mdc-cell {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -36,10 +28,6 @@ mat-sort-header {
 
 .mat-mdc-row:hover .mat-mdc-cell {
   border-color: currentColor;
-}
-
-.demo-row-is-clicked {
-  font-weight: bold;
 }
 
 ::ng-deep .mat-sort-header-container:not(.mat-sort-header-sorted) .mat-sort-header-arrow {

@@ -16,7 +16,7 @@
 - Emailer - We need to figure out if we are already sending emails and if we can use existing info to do this
 - Emailer
   - Send confirmation
-  - 2 Weeks before
+  - At time of signup
   - 1 Week before
   - 1 day before
   - Can we send text messages? Is it ok to text you?
@@ -32,4 +32,6 @@
 - July 6th - Church out - projects are taken out
 - Open-ended Need numbers
 - Soft number and hard number (discuss more?)
+- Don't need date (its all on serve day), don't need created/updated
+- long description on caret dropdown
 - 

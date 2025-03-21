@@ -33,6 +33,45 @@ func GetLocationByAddress(ctx context.Context, number int, street string) (model
 	return lm, nil
 }
 
+// GetLocation will search for a location in the database by street number and street name
+func GetLocation(ctx context.Context, id int) (models.Location, error) {
+	var lm models.Location
+
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		return lm, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	sqlStatement := `
+SELECT * FROM locations WHERE id = $1`
+	row := tx.QueryRowContext(ctx, sqlStatement, id)
+	if err = row.Scan(
+		&lm.ID, &lm.Latitude, &lm.Longitude, &lm.Info,
+		&lm.Street, &lm.Number, &lm.City, &lm.State, &lm.PostalCode,
+		&lm.FormattedAddress, &lm.CreatedAt, &lm.UpdatedAt,
+	); err != nil {
+		log.Printf("Error scanning")
+		return lm, err
+	}
+
+	// Rows.Err will report the last error encountered by Rows.Scan.
+	if err = row.Err(); err != nil {
+		log.Printf("Error row err")
+		return lm, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		return models.Location{}, err
+	}
+
+	log.Printf("Inserted location: %v", lm.FormattedAddress)
+	return lm, nil
+}
+
 func PostLocation(ctx context.Context, l models.Location) (models.Location, error) {
 	tx, err := DB.BeginTx(ctx, nil)
 	if err != nil {
