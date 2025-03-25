@@ -12,7 +12,6 @@ type req struct {
 	AccountID   string     `json:"account_id"`
 	ProjectID   int64      `json:"project_id"`
 	QtyEnrolled int        `json:"qty_enroll"`
-	Lead        *bool      `json:"lead"`
 	UpdatedAt   *time.Time `json:"updated_at"`
 }
 
@@ -28,7 +27,6 @@ func index() http.Handler {
 					AccountID:   r.AccountID,
 					ProjectID:   r.ProjectID,
 					QtyEnrolled: r.QtyEnrolled,
-					Lead:        r.Lead,
 					UpdatedAt:   r.UpdatedAt,
 				}
 				dto = append(dto, registration)

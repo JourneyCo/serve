@@ -68,7 +68,6 @@ SELECT * FROM locations WHERE id = $1`
 		return models.Location{}, err
 	}
 
-	log.Printf("Inserted location: %v", lm.FormattedAddress)
 	return lm, nil
 }
 

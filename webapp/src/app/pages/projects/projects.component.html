@@ -57,7 +57,7 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
         <button (click)="register($event, row)" *ngIf="row.needed && !registrationMap.has(row.id)" >Register</button>
-        <button (click)="register($event, row)" *ngIf="!row.needed" disabled>Full</button>
+        <button (click)="register($event, row)" *ngIf="!row.needed && !registrationMap.has(row.id)" disabled>Full</button>
         <button (click)="register($event, row)" *ngIf="registrationMap.has(row.id)" >Modify</button>
       </td>
     </ng-container>

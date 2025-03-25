@@ -14,6 +14,10 @@ export class APIService {
   constructor(private http: HttpClient) {
   }
 
+  public getAccount(id: string): Observable<any> {
+    return this.http.get<any[]>(`${this.apiUrl}/accounts/`+id);
+  }
+
   public getLocation(id: number): Observable<any> {
     return this.http.get<any[]>(`${this.apiUrl}/locations/`+id);
   }

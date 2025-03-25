@@ -1,10 +1,11 @@
 CREATE TABLE IF NOT EXISTS accounts(
     id TEXT PRIMARY KEY,
-    first TEXT NOT NULL,
-    last TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    cellphone TEXT NOT NULL,
-    text_permission BOOLEAN NOT NULL DEFAULT FALSE,
+    first TEXT DEFAULT '',
+    last TEXT DEFAULT '',
+    email TEXT UNIQUE,
+    cellphone TEXT DEFAULT '',
+    text_permission BOOLEAN DEFAULT false,
+    lead BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
     updated_at TIMESTAMPTZ
 );
@@ -58,7 +59,6 @@ CREATE TABLE IF NOT EXISTS registrations(
     project_id BIGINT NOT NULL,
     account_id TEXT NOT NULL,
     quantity INT NOT NULL,
-    lead BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
     updated_at TIMESTAMPTZ,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,

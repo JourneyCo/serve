@@ -40,4 +40,9 @@ type Request struct {
 	Wheelchair       *bool      `json:"wheelchair"`
 	ShortDescription *string    `json:"short_description"`
 	LongDescription  *string    `json:"long_description,omitempty"`
+	FirstName        *string    `json:"first"`
+	LastName         *string    `json:"last"`
+	Cellphone        *string    `json:"cellphone"`
+	TextPermission   *bool      `json:"text_permission"`
+	Email            *string    `json:"email"`
 }

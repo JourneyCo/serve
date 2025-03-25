@@ -76,6 +76,7 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
+			// TODO: Needs to adjust accounts correctly
 			proj.Needed -= toRegister
 			proj.UpdatedAt = &now
 
@@ -86,17 +87,11 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
-			var ld bool
-			if dto.Lead != nil && *dto.Lead == true {
-				ld = true
-			}
-
 			reg := models.Registration{
 				AccountID:   session.UserID,
 				ProjectID:   proj.ID,
 				UpdatedAt:   &now,
 				QtyEnrolled: toRegister,
-				Lead:        &ld,
 			}
 
 			registration, err := db.PutRegistration(ctx, reg)
@@ -106,7 +101,25 @@ func register(h http.Handler) http.Handler {
 				return
 			}
 
-			log.Printf("user %s registered for project %s", reg.AccountID, proj.Name)
+			u := models.Account{
+				ID:             session.UserID,
+				FirstName:      dto.FirstName,
+				LastName:       dto.LastName,
+				Email:          dto.Email,
+				CellPhone:      dto.Cellphone,
+				TextPermission: dto.TextPermission,
+				Lead:           dto.Lead,
+				UpdatedAt:      &now,
+			}
+
+			user, err := db.PutAccount(ctx, u)
+			if err != nil {
+				log.Printf("failed to put account: %v", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			log.Printf("user %s is registered for project %s", user.ID, proj.Name)
 
 			ctx = context.WithValue(ctx, "project", project)
 			ctx = context.WithValue(ctx, "registration", registration)

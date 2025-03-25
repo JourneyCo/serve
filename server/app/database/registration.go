@@ -18,9 +18,9 @@ func PutRegistration(ctx context.Context, r models.Registration) (models.Registr
 	defer tx.Rollback()
 
 	sqlStatement := `
-INSERT INTO registrations (project_id, account_id, quantity, lead, updated_at) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (project_id, account_id) DO UPDATE SET quantity=excluded.quantity, lead=excluded.lead, updated_at=excluded.updated_at`
+INSERT INTO registrations (project_id, account_id, quantity, updated_at) VALUES ($1, $2, $3, $4) ON CONFLICT (project_id, account_id) DO UPDATE SET quantity=excluded.quantity, updated_at=excluded.updated_at`
 	_, err = tx.ExecContext(
-		ctx, sqlStatement, r.ProjectID, r.AccountID, r.QtyEnrolled, r.Lead, r.UpdatedAt,
+		ctx, sqlStatement, r.ProjectID, r.AccountID, r.QtyEnrolled, r.UpdatedAt,
 	)
 
 	if err != nil {
@@ -61,7 +61,7 @@ SELECT * FROM registrations`
 	for rows.Next() {
 		var r models.Registration
 		if err = rows.Scan(
-			&r.ProjectID, &r.AccountID, &r.QtyEnrolled, &r.Lead, &r.CreatedAt, &r.UpdatedAt,
+			&r.ProjectID, &r.AccountID, &r.QtyEnrolled, &r.CreatedAt, &r.UpdatedAt,
 		); err != nil {
 			log.Printf("Error scanning")
 			return registrations, err

@@ -4,7 +4,7 @@ import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTable, MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import {Location, Project, Registration} from "@models";
+import {Account, Location, Project, Registration} from "@models";
 import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
 import {CommonModule, NgIf} from "@angular/common";
@@ -45,6 +45,7 @@ export class ProjectsComponent implements AfterViewInit {
   user_id = '';
   registrations: Registration[];
   registrationMap: Map<number, boolean>;
+  user: Account;
 
   constructor() {
   }
@@ -54,6 +55,7 @@ export class ProjectsComponent implements AfterViewInit {
     this.user$.subscribe(user=> {
       if (user?.sub) {
         this.user_id = user?.sub
+        this.getUser(user?.sub);
       }
       this.loadRegistrations();
     });
@@ -85,6 +87,12 @@ export class ProjectsComponent implements AfterViewInit {
         this.locationMap.set(id, location);
       })
     });
+  }
+
+  getUser(id: string) {
+    this.APIService.getAccount(id).subscribe(data => {
+      this.user = data;
+    })
   }
 
   loadRegistrations() {
@@ -124,6 +132,7 @@ export class ProjectsComponent implements AfterViewInit {
 
     const data = {
       ...row,
+      user: this.user,
       user_id: this.user_id,
     }
 
@@ -141,12 +150,17 @@ export class ProjectsComponent implements AfterViewInit {
       const rawFormValues = result.getRawValue();
       const registration: Registration = {
         project_id: rawFormValues.id,
+        first: rawFormValues.first_name,
+        last: rawFormValues.last_name,
+        email: rawFormValues.email,
+        cellphone: rawFormValues.phoneNumber,
         qty_enroll: rawFormValues.qty_enroll,
         account_id: this.user_id,
         lead: rawFormValues.lead,
       }
       this.APIService.putRegistration(registration).subscribe(data => {
         this.loadProjects(false);
+        this.loadRegistrations();
         this.table.renderRows();
         this.paginator.firstPage();
         }

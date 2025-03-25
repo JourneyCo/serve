@@ -1,10 +1,11 @@
 import {Component, inject, OnInit} from '@angular/core';
 import {MapComponent} from "@components";
 import { APIService } from '@services';
-import {Location, Project} from "@models";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Location, Project, Account } from "@models";
+import {ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 import {CommonModule} from "@angular/common";
+import {AuthService} from "@auth0/auth0-angular";
 
 @Component({
   selector: 'app-project',
@@ -21,6 +22,12 @@ export class ProjectComponent implements OnInit {
   locations: Location[] = [];
   eventsSubject: Subject<any> = new Subject<any>();
   private readonly router = inject(ActivatedRoute);
+  directionURL: string;
+  leader: Account;
+  leadermailto: string;
+  private auth = inject(AuthService);
+  user$ = this.auth.user$;
+
 
 ngOnInit() {
   const id = Number(this.router.snapshot.paramMap.get('id'));
@@ -28,20 +35,27 @@ ngOnInit() {
   this.loadLocation(id);
 }
 
-
   loadProject(id: number) {
     this.APIService.getProject(id).subscribe(data => {
       this.project = data;
       this.projects.push(this.project);
+      this.getLeader(this.project.leader_id)
     });
   }
 
   loadLocation(id: number) {
     this.APIService.getLocation(id).subscribe(data => {
       this.location = data;
-      this.locations.push(this.location)
+      this.locations.push(this.location);
+      const encoded = encodeURIComponent(this.location.formatted_address);
+      this.directionURL = "https://www.google.com/maps/dir/?api=1&destination=" + encoded
     });
   }
 
-
+  getLeader(id: string) {
+    this.APIService.getAccount(id).subscribe(data => {
+      this.leader = data;
+      this.leadermailto = "mailto:" + this.leader.email;
+    })
+  }
 }

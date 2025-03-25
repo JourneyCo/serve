@@ -26,7 +26,7 @@ SELECT * FROM accounts WHERE id = $1`
 	row := tx.QueryRowContext(ctx, sqlStatement, id)
 	if err = row.Scan(
 		&account.ID, &account.FirstName, &account.LastName, &account.Email, &account.CellPhone, &account.TextPermission,
-		&account.CreatedAt, &account.UpdatedAt,
+		&account.Lead, &account.CreatedAt, &account.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			log.Printf("account does not exist in db %s", id)
@@ -49,6 +49,55 @@ SELECT * FROM accounts WHERE id = $1`
 	}
 
 	return account, nil
+}
+
+// GetAccounts returns all accounts
+func GetAccounts(ctx context.Context) ([]models.Account, error) {
+	accounts := []models.Account{}
+
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("error beginning tx")
+		return accounts, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	sqlStatement := `
+SELECT * FROM accounts`
+	rows, err := tx.QueryContext(ctx, sqlStatement)
+	if err != nil {
+		log.Printf("error getting accounts: %v", err)
+		return accounts, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var account models.Account
+		if err = rows.Scan(
+			&account.ID, &account.FirstName, &account.LastName, &account.Email, &account.CellPhone,
+			&account.TextPermission, &account.CreatedAt, &account.UpdatedAt,
+		); err != nil {
+			log.Printf("error scanning while getting accounts")
+			return accounts, err
+		}
+		accounts = append(accounts, account)
+	}
+
+	// Rows.Err will report the last error encountered by Rows.Scan.
+	if err = rows.Err(); err != nil {
+		log.Printf("error row err while getting accounts")
+		return accounts, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		log.Printf("error committing tx while getting accounts")
+		return accounts, err
+	}
+
+	return accounts, nil
 }
 
 func PostAccount(ctx context.Context, account models.Account) (models.Account, error) {
@@ -79,5 +128,38 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`
 	}
 
 	log.Printf("inserted account: %v", account.ID)
+	return account, nil
+}
+
+// PutAccount changes an existing account
+func PutAccount(ctx context.Context, account models.Account) (models.Account, error) {
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("error beginning tx while putting account")
+		return account, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	// TODO: UpdatedAt not working
+	sqlStatement := `
+	UPDATE accounts SET (first, last, email, cellphone, text_permission, lead) = ($1, $2, $3, $4, $5, $6) WHERE id = $7`
+	_, err = tx.ExecContext(
+		ctx, sqlStatement, account.FirstName, account.LastName, account.Email, account.CellPhone,
+		account.TextPermission, account.Lead, account.ID,
+	)
+
+	if err != nil {
+		log.Printf("error executing update while putting account")
+		return account, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		log.Printf("error committing tx while putting account")
+		return account, err
+	}
+
 	return account, nil
 }

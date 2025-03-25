@@ -49,18 +49,6 @@ type Session struct {
 	UpdatedAt *time.Time
 }
 
-type userInfo struct {
-	Sub           string    `json:"sub"`
-	GivenName     string    `json:"given_name"`
-	FamilyName    string    `json:"family_name"`
-	Nickname      string    `json:"nickname"`
-	Name          string    `json:"name"`
-	Picture       string    `json:"picture"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	Email         string    `json:"email"`
-	EmailVerified bool      `json:"email_verified"`
-}
-
 var config Config
 
 func New() Config {
@@ -276,11 +264,11 @@ func CreateSession(h http.Handler) http.Handler {
 
 			s = Session{
 				UserID:    account.ID,
-				First:     &account.FirstName,
-				Last:      &account.LastName,
-				Email:     &account.Email,
-				CellPhone: &account.CellPhone,
-				TextPerm:  &account.TextPermission,
+				First:     account.FirstName,
+				Last:      account.LastName,
+				Email:     account.Email,
+				CellPhone: account.CellPhone,
+				TextPerm:  account.TextPermission,
 				CreatedAt: account.CreatedAt,
 				UpdatedAt: account.UpdatedAt,
 			}
