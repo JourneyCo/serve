@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, inject, Output, signal, ViewChild, WritableSignal} from '@angular/core';
+import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTable, MatTableDataSource, MatTableModule} from '@angular/material/table';
@@ -9,9 +9,8 @@ import {APIService} from "@services";
 import {MapComponent, RegisterDialogComponent} from "@components";
 import {CommonModule, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
-import {map, Subject, Subscription} from "rxjs";
+import {map, Subject} from "rxjs";
 import {AuthService} from "@auth0/auth0-angular";
-import {CodeSnippetComponent} from "../../components/code-snippet.component";
 import {Router} from "@angular/router";
 
 @Component({
@@ -19,12 +18,11 @@ import {Router} from "@angular/router";
   styleUrl: 'projects.component.css',
   templateUrl: 'projects.component.html',
   imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
-  CommonModule, CodeSnippetComponent],
+  CommonModule],
 })
 
 
 export class ProjectsComponent implements AfterViewInit {
-  // displayedColumns: string[] = ['id', 'name', 'required', 'needed', 'date', 'created_at', 'updated_at', 'register']
   displayedColumns: string[] = ['name', 'required', 'needed', 'register']
   dataSource: MatTableDataSource<Project> = new MatTableDataSource();
   projects: Project[] = [];
@@ -52,7 +50,7 @@ export class ProjectsComponent implements AfterViewInit {
 
   ngOnInit() {
     this.registrationMap = new Map<number, boolean>();
-    this.user$.subscribe(user=> {
+    this.user$.subscribe(user => {
       if (user?.sub) {
         this.user_id = user?.sub
         this.getUser(user?.sub);
@@ -97,8 +95,7 @@ export class ProjectsComponent implements AfterViewInit {
 
   loadRegistrations() {
     this.APIService.getRegistrations().subscribe(data => {
-      data.filter((registration: Registration) => registration.account_id >= this.user_id).
-      forEach((reg: Registration) => {
+      data.filter((registration: Registration) => registration.account_id >= this.user_id).forEach((reg: Registration) => {
         this.registrationMap.set(reg.project_id, true)
       });
     })
@@ -123,7 +120,7 @@ export class ProjectsComponent implements AfterViewInit {
     const clickedLocation = this.locationMap.get(id);
     this.eventsSubject.next(clickedLocation);
     const rowID = row ? row.id : null;
-    this.router.navigate(['/projects/', rowID ]);
+    this.router.navigate(['/projects/', rowID]);
   }
 
   register(evt: any, row: Project) {
@@ -159,10 +156,10 @@ export class ProjectsComponent implements AfterViewInit {
         lead: rawFormValues.lead,
       }
       this.APIService.putRegistration(registration).subscribe(data => {
-        this.loadProjects(false);
-        this.loadRegistrations();
-        this.table.renderRows();
-        this.paginator.firstPage();
+          this.loadProjects(false);
+          this.loadRegistrations();
+          this.table.renderRows();
+          this.paginator.firstPage();
         }
       )
     });

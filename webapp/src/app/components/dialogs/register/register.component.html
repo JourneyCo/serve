@@ -41,7 +41,7 @@
         <input id="qty_enroll" type="number" formControlName="qty_enroll">
         <div class="form-error" *ngIf="registerForm.get('qty_enroll')?.invalid && (registerForm.get('qty_enroll')?.dirty)">
           <small *ngIf="registerForm.get('qty_enroll')?.errors?.['required']">Number to register is required.</small>
-          <small *ngIf="registerForm.get('qty_enroll')?.errors?.['max']">Registrants cannot exceed {{data.needed}}.</small>
+          <small *ngIf="registerForm.get('qty_enroll')?.errors?.['max']">Registrants cannot exceed {{data.required - data.registered}}.</small>
         </div>
       </div>
       <div class="w-100"></div>

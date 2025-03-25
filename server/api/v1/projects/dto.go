@@ -12,8 +12,8 @@ type Request struct {
 	// Required is the total number of people needed for the project
 	Required int `json:"required"`
 
-	// Needed is the number of people still needed for the project
-	Needed int `json:"needed"`
+	// Registered is the number of people registered for the project
+	Registered int `json:"registered"`
 
 	Enabled          bool       `json:"enabled"`
 	Status           string     `json:"status"`

@@ -75,7 +75,7 @@ func create(h http.Handler) http.Handler {
 				// TODO: Remove hardcode once we can get dto into context
 				Name:             dto.Name,
 				Required:         dto.Required,
-				Needed:           dto.Needed,
+				Registered:       dto.Registered,
 				LeaderID:         "exampleid",
 				LocationID:       l.ID,
 				StartTime:        now,

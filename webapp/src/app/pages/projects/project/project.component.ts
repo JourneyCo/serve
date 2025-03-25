@@ -40,6 +40,7 @@ ngOnInit() {
       this.project = data;
       this.projects.push(this.project);
       this.getLeader(this.project.leader_id)
+      console.log(this.project);
     });
   }
 

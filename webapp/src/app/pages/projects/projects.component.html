@@ -10,12 +10,6 @@
 <div class="mx-5 border" *ngIf="registrationMap">
   <table [dataSource]="dataSource" mat-table matSort matSortActive="id" matSortDirection="asc" class="w-100">
 
-    <!-- ID Column -->
-<!--    <ng-container matColumnDef="id">-->
-<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>-->
-<!--      <td mat-cell *matCellDef="let row"> {{row.id}} </td>-->
-<!--    </ng-container>-->
-
     <!-- Name Column -->
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -31,33 +25,15 @@
     <!-- Needed Column -->
     <ng-container matColumnDef="needed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Needed</th>
-      <td mat-cell *matCellDef="let row"> {{row.needed}} </td>
+      <td mat-cell *matCellDef="let row"> {{row.required - row.registered}} </td>
     </ng-container>
-
-    <!-- Date Column -->
-<!--    <ng-container matColumnDef="date">-->
-<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>-->
-<!--      <td mat-cell *matCellDef="let row"> {{row.date}} </td>-->
-<!--    </ng-container>-->
-
-    <!-- Created Column -->
-<!--    <ng-container matColumnDef="created_at">-->
-<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header> Created </th>-->
-<!--      <td mat-cell *matCellDef="let row"> {{row.created_at | date:'medium'}} </td>-->
-<!--    </ng-container>-->
-
-    <!-- Updated Column -->
-<!--    <ng-container matColumnDef="updated_at">-->
-<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header> Updated </th>-->
-<!--      <td mat-cell *matCellDef="let row"> {{row.updated_at | date:'medium'}} </td>-->
-<!--    </ng-container>-->
 
     <!-- Register Column -->
     <ng-container matColumnDef="register">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <button (click)="register($event, row)" *ngIf="row.needed && !registrationMap.has(row.id)" >Register</button>
-        <button (click)="register($event, row)" *ngIf="!row.needed && !registrationMap.has(row.id)" disabled>Full</button>
+        <button (click)="register($event, row)" *ngIf="(row.required - row.registered) && !registrationMap.has(row.id)" >Register</button>
+        <button (click)="register($event, row)" *ngIf="!(row.required - row.registered) && !registrationMap.has(row.id)" disabled>Full</button>
         <button (click)="register($event, row)" *ngIf="registrationMap.has(row.id)" >Modify</button>
       </td>
     </ng-container>
@@ -75,30 +51,30 @@
 </div>
 
 
-<div class="content-layout">
-  <h1 id="page-title" class="content__title">Profile Page</h1>
-  <div class="content__body">
-    <p id="page-description">
-        User Token Information:
-    </p>
-    <ng-container *ngIf="user$ | async as user">
-      <div class="profile-grid">
-        <div class="profile__header">
-          <img [src]="user.picture" alt="Profile" class="profile__avatar" />
-          <div class="profile__headline">
-            <h2 class="profile__title">{{ user.name }}</h2>
-            <span class="profile__description">{{ user.email }}</span>
-          </div>
-        </div>
-        <ng-container *ngIf="code$ | async as code">
-          <div class="profile__details">
-            <app-code-snippet
-              [title]="title"
-              [code]="code"
-            ></app-code-snippet>
-          </div>
-        </ng-container>
-      </div>
-    </ng-container>
-  </div>
-</div>
+<!--<div class="content-layout">-->
+<!--  <h1 id="page-title" class="content__title">Profile Page</h1>-->
+<!--  <div class="content__body">-->
+<!--    <p id="page-description">-->
+<!--        User Token Information:-->
+<!--    </p>-->
+<!--    <ng-container *ngIf="user$ | async as user">-->
+<!--      <div class="profile-grid">-->
+<!--        <div class="profile__header">-->
+<!--          <img [src]="user.picture" alt="Profile" class="profile__avatar" />-->
+<!--          <div class="profile__headline">-->
+<!--            <h2 class="profile__title">{{ user.name }}</h2>-->
+<!--            <span class="profile__description">{{ user.email }}</span>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <ng-container *ngIf="code$ | async as code">-->
+<!--          <div class="profile__details">-->
+<!--            <app-code-snippet-->
+<!--              [title]="title"-->
+<!--              [code]="code"-->
+<!--            ></app-code-snippet>-->
+<!--          </div>-->
+<!--        </ng-container>-->
+<!--      </div>-->
+<!--    </ng-container>-->
+<!--  </div>-->
+<!--</div>-->

@@ -16,8 +16,8 @@ type Project struct {
 	// Required is the total number of people needed for the project
 	Required int
 
-	// Needed is the number of people still needed for the project
-	Needed int
+	// Registered is the number of people registered for the project
+	Registered int
 
 	// LeaderID is the account ID of the project lead
 	LeaderID string

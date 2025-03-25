@@ -2,7 +2,7 @@ export interface Project {
   id?: number,
   name: string,
   required: number,
-  needed: number,
+  registered: number,
   leader_id: string,
   location_id: number,
   start_time: Date,

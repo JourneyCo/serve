@@ -70,14 +70,14 @@ func register(h http.Handler) http.Handler {
 			}
 			toRegister := *dto.QtyEnroll
 
-			if proj.Needed <= 0 || toRegister > proj.Needed {
-				log.Printf("project has a need of %d but user attempted to register %d", proj.Needed, toRegister)
+			needed := proj.Required - proj.Registered
+			if needed == 0 || toRegister > needed {
+				log.Printf("project has a need of %d but user attempted to register %d", needed, toRegister)
 				w.WriteHeader(http.StatusRequestedRangeNotSatisfiable)
 				return
 			}
 
 			// TODO: Needs to adjust accounts correctly
-			proj.Needed -= toRegister
 			proj.UpdatedAt = &now
 
 			project, err := db.PutProject(ctx, proj)
