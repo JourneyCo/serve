@@ -6,7 +6,7 @@ export const environment = {
       clientId: 'BaYqp3c6XO3GQTqIIStocfRmVxxFRhBc',
       authorizationParams: {
         redirect_uri: 'http://localhost:3000/projects',
-        audience: 'https://dev-dnuncdnpl8446bmt.us.auth0.com/api/v2/',
+        audience: 'https://serve.journeyco.com',
       },
       errorPath: '/projects',
       // The AuthHttpInterceptor configuration

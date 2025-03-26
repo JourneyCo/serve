@@ -42,3 +42,5 @@
     <app-map [locations]="locations" [projects]="projects" [events]="eventsSubject.asObservable()"></app-map>
   </div>
 </div>
+<admin *ngIf="canAdmin && leader && project" [leader]="leader" [project]="project"></admin>
+

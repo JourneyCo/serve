@@ -6,3 +6,7 @@ h5 {
 p {
   margin-bottom: 0.5rem;
 }
+
+input {
+  max-width: 100%;
+}

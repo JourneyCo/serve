@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, inject, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, inject, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatSort, MatSortModule} from '@angular/material/sort';
 import {MatTable, MatTableDataSource, MatTableModule} from '@angular/material/table';
@@ -22,7 +22,7 @@ import {Router} from "@angular/router";
 })
 
 
-export class ProjectsComponent implements AfterViewInit {
+export class ProjectsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['name', 'required', 'needed', 'register']
   dataSource: MatTableDataSource<Project> = new MatTableDataSource();
   projects: Project[] = [];

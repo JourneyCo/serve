@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS ages(
 );
 INSERT INTO ages(min, max)  VALUES (18, 100);
 
-CREATE TYPE status AS ENUM ('pending', 'open', 'not approved', 'did not occur', 'in review');
+CREATE TYPE status AS ENUM ('pending', 'open', 'not_approved', 'did_not_occur', 'in_review');
 CREATE TABLE IF NOT EXISTS projects(
    id SERIAL PRIMARY KEY,
    name TEXT NOT NULL,

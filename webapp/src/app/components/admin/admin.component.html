@@ -1,0 +1,89 @@
+<div class="row mt-5 mx-3 px-5" *ngIf="leader && project">
+  <mat-tab-group animationDuration="0">
+    <mat-tab label="Details">
+      <form [formGroup]="detailsForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="name">Name: </label>
+          <div class="form-control">
+            <input id="name" type="text" formControlName="name">
+            <div class="form-error" *ngIf="detailsForm.get('name')?.invalid && (detailsForm.get('name')?.dirty)">
+              <small *ngIf="detailsForm.get('name')?.errors?.['required']">Name is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="short_description">Short Description: </label>
+          <div class="form-control">
+            <input id="short_description" type="text" formControlName="short_description">
+            <div class="form-error" *ngIf="detailsForm.get('short_description')?.invalid && (detailsForm.get('short_description')?.dirty)">
+              <small *ngIf="detailsForm.get('short_description')?.errors?.['required']">Short description is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="long_description">Long Description: </label>
+          <div class="form-control">
+            <textarea id="long_description" formControlName="long_description"></textarea>
+<!--            <input id="long_description" type="text" formControlName="long_description">-->
+            <div class="form-error" *ngIf="detailsForm.get('long_description')?.invalid && (detailsForm.get('long_description')?.dirty)">
+              <small *ngIf="detailsForm.get('long_description')?.errors?.['required']">Long description is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="enabled">Enabled </label>
+          <div class="form-control">
+              <input id="enabled" type="checkbox" formControlName="enabled" class="move-left">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="status">Status </label>
+          <div class="form-control">
+            <select formControlName="status" id="status">
+              <option value="pending">Pending</option>
+              <option value="open">Open</option>
+              <option value="not_approved">Not Approved</option>
+              <option value="did_not_occur">Did Not Occur</option>
+              <option value="in_review">In Review</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="start_time">Start Time: </label>
+          <div class="form-control">
+            <input id="start_time" type="tel" formControlName="start_time">
+            <div class="form-error" *ngIf="detailsForm.get('start_time')?.invalid && (detailsForm.get('start_time')?.dirty)">
+              <small *ngIf="detailsForm.get('start_time')?.errors?.['required']">Start Time is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="end_time">End Time: </label>
+          <div class="form-control">
+            <input id="end_time" type="tel" formControlName="end_time">
+            <div class="form-error" *ngIf="detailsForm.get('end_time')?.invalid && (detailsForm.get('end_time')?.dirty)">
+              <small *ngIf="detailsForm.get('end_time')?.errors?.['required']">End Time is required.</small>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+            <label for="wheelchair">Wheelchair Accessible? </label>
+          <div class="form-control">
+            <input id="wheelchair" type="checkbox" formControlName="wheelchair" class="move-left">
+          </div>
+        </div>
+        <p class="mt-3 text-end">Complete the form to enable button.</p>
+        <div class="d-flex flex-row-reverse mt-3">
+          <button type="submit" [disabled]="!detailsForm.valid">Submit</button>
+          <button class="mx-4" type="button" matDialogClose> Cancel</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="Roster">
+      Content 2
+    </mat-tab>
+    <mat-tab label="Third">
+      Content 3
+    </mat-tab>
+  </mat-tab-group>
+</div>

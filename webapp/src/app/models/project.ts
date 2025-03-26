@@ -11,7 +11,9 @@ export interface Project {
   updated_at?: Date,
   wheelchair: boolean,
   short_description: string,
-  long_description: string
+  long_description: string,
+  enabled: boolean,
+  status: string,
 }
 
 export interface Registration {

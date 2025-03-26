@@ -6,12 +6,14 @@ import {ActivatedRoute} from "@angular/router";
 import {Subject} from "rxjs";
 import {CommonModule} from "@angular/common";
 import {AuthService} from "@auth0/auth0-angular";
+import { jwtDecode } from 'jwt-decode';
+import {AdminComponent} from "@components";
 
 @Component({
   selector: 'app-project',
   templateUrl: './project.component.html',
   styleUrl: './project.component.css',
-  imports: [CommonModule, MapComponent]
+  imports: [CommonModule, MapComponent, AdminComponent]
 })
 export class ProjectComponent implements OnInit {
 
@@ -27,12 +29,13 @@ export class ProjectComponent implements OnInit {
   leadermailto: string;
   private auth = inject(AuthService);
   user$ = this.auth.user$;
-
+  canAdmin: boolean = false;
 
 ngOnInit() {
   const id = Number(this.router.snapshot.paramMap.get('id'));
   this.loadProject(id);
   this.loadLocation(id);
+  this.getUser()
 }
 
   loadProject(id: number) {
@@ -59,4 +62,18 @@ ngOnInit() {
       this.leadermailto = "mailto:" + this.leader.email;
     })
   }
+
+  getUser() {
+    this.auth.getAccessTokenSilently().subscribe(token => {
+      this.getPermissionsFromToken(token);
+    });
+  }
+
+  getPermissionsFromToken(accessToken: string) {
+      const decodedToken: any = jwtDecode(accessToken);
+      const perms =  decodedToken.permissions || [];
+      if (perms.includes('edit:projects')) {
+        this.canAdmin = true;
+      }
+    }
 }

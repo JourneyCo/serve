@@ -6,7 +6,6 @@
       <button class="dropbtn" mat-button [matMenuTriggerFor]="menu"><h1>menu</h1></button>
       <mat-menu #menu="matMenu">
         <button *ngIf="!isLoggedIn" mat-menu-item (click)="handleLogin()">Log In</button>
-        <button *ngIf="isLoggedIn" mat-menu-item routerLink="/admin" routerLinkActive="active">Admin</button>
         <button *ngIf="isLoggedIn" mat-menu-item routerLink="/" routerLinkActive="active">All Projects</button>
         <button *ngIf="isLoggedIn" mat-menu-item (click)="handleLogout()">Log Out</button>
       </mat-menu>
