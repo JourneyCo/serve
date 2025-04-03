@@ -1,0 +1,15 @@
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+frontend/node_modules
+frontend/build
+frontend/npm-debug.log*
+/.idea/dataSources.xml
+/.idea/sqldialects.xml
+backend/.env
+backend/public.key
