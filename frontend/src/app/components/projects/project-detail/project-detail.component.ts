@@ -66,6 +66,8 @@ export class ProjectDetailComponent implements OnInit {
   // Registration form properties
   guestCount: number = 0;
   isProjectLead: boolean = false;
+  phone: string = '';
+  contactEmail: string = '';
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {

@@ -5,16 +5,36 @@
       <p>Loading project details...</p>
     </div>
   }
-  
+
   <!-- Registration Dialog Template -->
   <ng-template #registrationDialog>
     <div class="registration-dialog">
       <h2 mat-dialog-title>Register for {{project?.title}}</h2>
-      
+
       <mat-dialog-content>
         <p>Please complete your registration details:</p>
-        
+
         <form #registrationForm="ngForm">
+          <mat-form-field class="full-width">
+            <mat-label>Phone Number</mat-label>
+            <input matInput 
+                  type="tel" 
+                  [(ngModel)]="phone" 
+                  name="phone" 
+                  required>
+            <mat-hint>Enter your contact phone number</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="full-width">
+            <mat-label>Contact Email</mat-label>
+            <input matInput 
+                  type="email" 
+                  [(ngModel)]="contactEmail" 
+                  name="contactEmail" 
+                  required>
+            <mat-hint>Enter your contact email</mat-hint>
+          </mat-form-field>
+
           <mat-form-field class="full-width">
             <mat-label>Number of guests</mat-label>
             <input matInput 
@@ -25,18 +45,18 @@
                   name="guestCount">
             <mat-hint>Enter the number of guests you'll bring (0-10)</mat-hint>
           </mat-form-field>
-          
+
           <mat-checkbox [(ngModel)]="isProjectLead" name="isProjectLead" class="project-lead-checkbox">
             Register as a project lead
           </mat-checkbox>
-          
+
           <p class="lead-description">
             Project leads help coordinate activities and may receive additional instructions 
             before the project starts.
           </p>
         </form>
       </mat-dialog-content>
-      
+
       <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close>Cancel</button>
         <button mat-raised-button 
@@ -105,9 +125,48 @@
         </div>
 
         <div class="project-description">
-          <h3>Description</h3>
-          <p>{{project.description}}</p>
+          <h3>About This Project</h3>
+          <div class="accessibility-info">
+            <mat-icon [class.accessible]="project.wheelchairAccessible">
+              {{ project.wheelchairAccessible ? 'accessible' : 'not_accessible' }}
+            </mat-icon>
+            <span>This location is {{ project.wheelchairAccessible ? '' : 'not ' }}wheelchair accessible</span>
+          </div>
+          <div class="short-description">
+            <h4>Summary</h4>
+            <p>{{project.shortDescription}}</p>
+          </div>
+          <div class="full-description">
+            <h4>Full Description</h4>
+            <p>{{project.description}}</p>
+          </div>
         </div>
+
+        @if (project.tools && project.tools.length > 0) {
+          <div class="project-tools">
+            <h3>Tools & Skills Required</h3>
+            <mat-chip-set>
+              @for (tool of project.tools; track tool.id) {
+                <mat-chip>{{tool.name}}</mat-chip>
+              }
+            </mat-chip-set>
+          </div>
+        }
+
+        @if (project.leadUser) {
+          <div class="project-lead">
+            <h3>Project Lead</h3>
+            <mat-card class="lead-info">
+              <mat-card-content>
+                <p><strong>Name:</strong> {{project.leadUser.name}}</p>
+                <p><strong>Email:</strong> {{project.leadUser.email}}</p>
+                @if (project.leadUser.phone) {
+                  <p><strong>Phone:</strong> {{project.leadUser.phone}}</p>
+                }
+              </mat-card-content>
+            </mat-card>
+          </div>
+        }
 
         <!-- Location Section - Only shown if location is provided -->
         @if (project.locationName || (project.latitude && project.longitude)) {
@@ -116,7 +175,7 @@
             @if (project.locationName) {
               <p><strong>Location:</strong> {{project.locationName}}</p>
             }
-            
+
             @if (project.latitude && project.longitude) {
               <!-- Google Maps component -->
               <div class="map-container">
@@ -126,7 +185,7 @@
                   }
                 </google-map>
               </div>
-              
+
               <div class="map-actions">
                 <a href="https://maps.google.com/?q={{project.latitude}},{{project.longitude}}" 
                    target="_blank" 
@@ -146,7 +205,7 @@
               <span>You are registered for this project</span>
             </div>
           }
-          
+
           @if (registrationError) {
             <div class="error-message">
               <mat-icon color="warn">error</mat-icon>
@@ -160,7 +219,7 @@
         <button mat-button color="accent" routerLink="/projects">
           <mat-icon>arrow_back</mat-icon> Back to Projects
         </button>
-        
+
         @if (!isRegistered) {
           <button mat-raised-button 
                   color="primary" 
@@ -170,7 +229,7 @@
             <span>Register</span>
           </button>
         }
-        
+
         @if (isRegistered) {
           <button mat-raised-button 
                   color="warn" 
@@ -197,18 +256,18 @@
             Admin Panel - Registrations
           </mat-card-title>
         </mat-card-header>
-        
+
         <mat-card-content>
           @if (registrations.length === 0) {
             <div class="no-registrations">
               <p>No registrations found for this project.</p>
             </div>
           }
-          
+
           @if (registrations.length > 0) {
             <div class="registrations-list">
               <h3>Registered Users ({{registrations.length}})</h3>
-              
+
               <mat-list>
                 @for (reg of registrations; track reg.id) {
                   <mat-list-item>

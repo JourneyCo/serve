@@ -22,8 +22,25 @@
       
       <div class="form-row">
         <mat-form-field appearance="outline">
-          <mat-label>Description</mat-label>
-          <textarea matInput formControlName="description" placeholder="Enter project description" rows="4" required></textarea>
+          <mat-label>Short Description</mat-label>
+          <textarea matInput formControlName="shortDescription" placeholder="Enter a brief summary" rows="2" required></textarea>
+          @if (projectForm.get('shortDescription')?.hasError('required')) {
+            <mat-error>
+              Short description is required
+            </mat-error>
+          }
+          @if (projectForm.get('shortDescription')?.hasError('maxlength')) {
+            <mat-error>
+              Short description cannot exceed 200 characters
+            </mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Full Description</mat-label>
+          <textarea matInput formControlName="description" placeholder="Enter detailed project description" rows="4" required></textarea>
           @if (projectForm.get('description')?.hasError('required')) {
             <mat-error>
               Description is required

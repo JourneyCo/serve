@@ -3,7 +3,7 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 20px 0;
-  
+
   .loading-container, .error-container {
     display: flex;
     flex-direction: column;
@@ -11,54 +11,54 @@
     justify-content: center;
     padding: 40px 0;
     text-align: center;
-    
+
     mat-icon {
       font-size: 48px;
       height: 48px;
       width: 48px;
       margin-bottom: 16px;
     }
-    
+
     p {
       margin-top: 16px;
       color: var(--journeyGray);
     }
-    
+
     button {
       margin-top: 20px;
     }
   }
-  
+
   .project-card, .admin-panel {
     margin-bottom: 24px;
   }
-  
+
   .project-dates {
     display: flex;
     margin: 16px 0;
-    
+
     .date-field {
       margin-right: 24px;
       padding: 8px 0;
-      
+
       strong {
         color: var(--journeyBlue);
       }
     }
   }
-  
+
   .project-capacity {
     margin: 24px 0;
-    
+
     h3 {
       margin-bottom: 12px;
       color: #333;
     }
-    
+
     .capacity-indicator {
       display: flex;
       align-items: center;
-      
+
       .capacity-bar-container {
         width: 200px;
         height: 12px;
@@ -66,64 +66,64 @@
         border-radius: 6px;
         overflow: hidden;
         margin-right: 16px;
-        
+
         .capacity-bar {
           height: 100%;
           border-radius: 6px;
-          
+
           &.available {
             background-color: #4caf50;
           }
-          
+
           &.filling {
             background-color: var(--journeyBlue);
           }
-          
+
           &.almost-full {
             background-color: #ff9800; /* Keeping orange for better warning visualization */
           }
-          
+
           &.full {
             background-color: var(--journeyGray);
           }
         }
       }
-      
+
       .capacity-text {
         font-size: 0.9rem;
         color: var(--journeyGray);
       }
     }
   }
-  
+
   .project-description {
     margin: 24px 0;
-    
+
     h3 {
       margin-bottom: 12px;
       color: #333;
     }
-    
+
     p {
       line-height: 1.6;
       color: #444;
       white-space: pre-line;
     }
   }
-  
+
   .project-location {
     margin: 24px 0;
     padding: 16px;
     background-color: #f5f5f5;
     border-radius: 8px;
     border-left: 4px solid #f57c00;
-    
+
     h3 {
       margin-bottom: 12px;
       color: #333;
       display: flex;
       align-items: center;
-      
+
       &::before {
         content: '';
         display: inline-block;
@@ -135,90 +135,90 @@
         background-position: center;
       }
     }
-    
+
     p {
       margin-bottom: 12px;
       line-height: 1.6;
       color: #444;
-      
+
       strong {
         color: #f57c00;
       }
     }
-    
+
     .map-container {
       margin: 16px 0;
       border-radius: 8px;
       overflow: hidden;
       border: 1px solid #ddd;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      
+
       google-map {
         display: block;
       }
     }
-    
+
     .map-actions {
       display: flex;
       justify-content: flex-end;
       margin-top: 12px;
-      
+
       a {
         margin-left: 8px;
       }
     }
   }
-  
+
   .registration-status {
     margin: 24px 0;
-    
+
     .registered-message, .error-message {
       display: flex;
       align-items: center;
       padding: 12px;
       border-radius: 4px;
-      
+
       mat-icon {
         margin-right: 8px;
       }
     }
-    
+
     .registered-message {
       background-color: rgba(76, 175, 80, 0.1);
       color: #388e3c;
     }
-    
+
     .error-message {
       background-color: rgba(244, 67, 54, 0.1);
       color: #d32f2f;
     }
   }
-  
+
   .admin-panel {
     mat-card-header {
       margin-bottom: 16px;
-      
+
       mat-icon {
         margin-right: 8px;
       }
     }
-    
+
     .no-registrations {
       padding: 20px;
       text-align: center;
       color: var(--journeyGray);
       font-style: italic;
     }
-    
+
     .registrations-list {
       h3 {
         margin-bottom: 16px;
         color: #333;
       }
-      
+
       mat-list-item {
         margin-bottom: 8px;
-        
+
         .project-lead-badge {
           display: inline-block;
           background-color: var(--journeyBlue);
@@ -228,7 +228,7 @@
           font-size: 12px;
           margin-left: 8px;
         }
-        
+
         .guest-badge {
           display: inline-block;
           background-color: var(--journeyGray);
@@ -241,19 +241,19 @@
       }
     }
   }
-  
+
   // Registration dialog styles
   .registration-dialog {
     .full-width {
       width: 100%;
       margin-bottom: 16px;
     }
-    
+
     .project-lead-checkbox {
       display: block;
       margin-bottom: 8px;
     }
-    
+
     .lead-description {
       font-size: 0.9rem;
       color: var(--journeyGray);
@@ -265,13 +265,34 @@
 @media (max-width: 768px) {
   .project-detail-container {
     padding: 16px;
-    
+
     .project-dates {
       flex-direction: column;
-      
+
       .date-field {
         margin-right: 0;
         margin-bottom: 8px;
+      }
+    }
+    .mat-mdc-card {
+      padding: 10px;
+    }
+
+    .registration-form {
+      .form-row {
+        flex-direction: column;
+        gap: 10px;
+
+        .mat-mdc-form-field {
+          width: 100%;
+        }
+      }
+    }
+    .project-info {
+      flex-direction: column;
+
+      .info-section {
+        width: 100%;
       }
     }
   }
