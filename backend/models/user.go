@@ -7,15 +7,15 @@ import (
 
 // User represents a user in the system
 type User struct {
-	ID           string    `json:"id"`
-	Email        string    `json:"email"`
-	Name         string    `json:"name"`
-	Picture      string    `json:"picture"`
-	Phone        string    `json:"phone"`
-	ContactEmail string    `json:"contactEmail"`
-	CreatedAt    time.Time `json:"createdAt"`
-	UpdatedAt    time.Time `json:"updatedAt"`
-	IsAdmin      bool      `json:"isAdmin"`
+	ID          string    `json:"id"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Picture     string    `json:"picture"`
+	Phone       string    `json:"phone"`
+	ContactEmail string   `json:"contactEmail"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
+	IsAdmin     bool      `json:"isAdmin"`
 }
 
 // GetUserByID retrieves a user by their ID

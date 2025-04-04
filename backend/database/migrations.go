@@ -78,6 +78,7 @@ func createProjectsTable(db *sql.DB) error {
                 location_name TEXT,
                 latitude DOUBLE PRECISION,
                 longitude DOUBLE PRECISION,
+                location_address TEXT,
                 wheelchair_accessible BOOLEAN NOT NULL DEFAULT FALSE,
                 lead_user_id TEXT REFERENCES users(id),
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
@@ -122,34 +123,58 @@ func addExampleProject(db *sql.DB) error {
 		return nil
 	}
 
-	// Add example project for July 12, 2025
-	query := `
-        INSERT INTO projects (
-                title,
-                              short_description,
-                description, 
-                start_time, 
-                end_time, 
-                project_date, 
-                max_capacity,
-                location_name,
-                latitude,
-                longitude
-        ) VALUES (
-                'Community Park Cleanup',
-                  'cleanup project',
-                'Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
-                '09:00:00',
-                '12:00:00',
-                '2025-07-12',
-                25,
-                'Central Community Park',
-                40.7128,
-                -74.0060
-        )
-        `
+	// Add example user first
+	userQuery := `
+		INSERT INTO users (id, email, name, picture, phone, contact_email, is_admin)
+		VALUES (
+			'example-user-123',
+			'project.lead@example.com',
+			'Example Project Lead',
+			'https://example.com/avatar.jpg',
+			'555-0123',
+			'project.lead@example.com',
+			true
+		)
+		RETURNING id`
 
-	_, err = db.Exec(query)
+	var userID string
+	err = db.QueryRow(userQuery).Scan(&userID)
+	if err != nil {
+		return err
+	}
+
+	// Add example project for July 12, 2025
+	query := `INSERT INTO projects (
+      title,
+      short_description,
+      description, 
+      start_time, 
+      end_time, 
+      project_date, 
+      max_capacity,
+      location_name,
+      latitude,
+      longitude,
+      lead_user_id,
+      wheelchair_accessible,
+      location_address
+    ) VALUES (
+      'Community Park Cleanup',
+      'cleanup project',
+      'Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
+      '09:00:00',
+      '12:00:00',
+      '2025-07-12',
+      25,
+      'Central Community Park',
+      40.7128,
+      -74.0060,
+      $1,
+      true,
+      '123 Main Street, New York, NY 10001'
+    )`
+
+	_, err = db.Exec(query, userID) // Use userID here
 	if err != nil {
 		return err
 	}

@@ -10,6 +10,7 @@ export interface Project {
   maxCapacity: number;
   currentRegistrations: number;
   locationName: string | null;
+  locationAddress: string | null;
   latitude: number | null;
   longitude: number | null;
   wheelchairAccessible: boolean;

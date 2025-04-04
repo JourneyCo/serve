@@ -1,6 +1,7 @@
+
 import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,9 +12,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { ProjectService } from '../../../services/project.service';
 import { GoogleMapsApiService } from '../../../services/google-maps-api.service';
+import { UserService } from '../../../services/user.service';
 import { Project } from '../../../models/project.model';
 
 interface DialogData {
@@ -36,7 +40,9 @@ interface DialogData {
     MatDatepickerModule,
     MatNativeDateModule,
     MatProgressSpinnerModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatChipsModule
   ],
   templateUrl: './project-form.component.html',
   styleUrls: ['./project-form.component.scss']
@@ -47,37 +53,46 @@ export class ProjectFormComponent implements OnInit {
   geocoding = false;
   dialogTitle: string;
   minDate: Date;
+  users: any[] = [];
+  toolInput = '';
 
   constructor(
     private fb: FormBuilder,
     private projectService: ProjectService,
     private mapsService: GoogleMapsApiService,
+    private userService: UserService,
     private dialogRef: MatDialogRef<ProjectFormComponent>,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     this.dialogTitle = data.isEdit ? 'Edit Project' : 'Create New Project';
-    
-    // Set minimum date for start date (today)
     this.minDate = new Date();
     this.minDate.setHours(0, 0, 0, 0);
   }
 
   ngOnInit(): void {
+    this.loadUsers();
     this.initForm();
     this.setupLocationGeocoding();
+  }
+
+  loadUsers(): void {
+    this.userService.getAllUsers().subscribe(
+      users => this.users = users,
+      error => console.error('Error loading users:', error)
+    );
   }
 
   initForm(): void {
     const project = this.data.project;
     
-    // Default values for time
     const defaultDate = new Date('2025-07-12');
     const defaultStartTime = '09:00';
     const defaultEndTime = '17:00';
     
     this.projectForm = this.fb.group({
       title: [project?.title || '', [Validators.required, Validators.maxLength(100)]],
+      shortDescription: [project?.shortDescription || '', [Validators.required, Validators.maxLength(200)]],
       description: [project?.description || '', [Validators.required, Validators.minLength(10)]],
       projectDate: [project?.projectDate ? new Date(project.projectDate) : defaultDate, Validators.required],
       startTime: [project?.startTime || defaultStartTime, Validators.required],
@@ -85,8 +100,32 @@ export class ProjectFormComponent implements OnInit {
       maxCapacity: [project?.maxCapacity || 10, [Validators.required, Validators.min(1), Validators.max(1000)]],
       locationName: [project?.locationName || ''],
       latitude: [project?.latitude || null, [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]],
-      longitude: [project?.longitude || null, [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]]
+      longitude: [project?.longitude || null, [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)]],
+      wheelchairAccessible: [project?.wheelchairAccessible || false],
+      leadUserId: [project?.leadUserId || '', Validators.required],
+      tools: this.fb.array(project?.tools?.map(tool => this.fb.group({
+        id: [tool.id],
+        name: [tool.name]
+      })) || [])
     }, { validators: this.timeRangeValidator });
+  }
+
+  get tools(): FormArray {
+    return this.projectForm.get('tools') as FormArray;
+  }
+
+  addTool(): void {
+    if (this.toolInput.trim()) {
+      this.tools.push(this.fb.group({
+        id: [0],
+        name: [this.toolInput.trim()]
+      }));
+      this.toolInput = '';
+    }
+  }
+
+  removeTool(index: number): void {
+    this.tools.removeAt(index);
   }
 
   timeRangeValidator(formGroup: FormGroup): { [key: string]: boolean } | null {
@@ -107,18 +146,14 @@ export class ProjectFormComponent implements OnInit {
     
     this.submitting = true;
     
-    // Format the form values
     const formValues = this.projectForm.value;
-    
-    // Format the project date to YYYY-MM-DD
     const projectDate = this.formatDate(formValues.projectDate);
     
-    // Create project object
     const project: Project = {
       id: this.data.project?.id || 0,
       title: formValues.title,
+      shortDescription: formValues.shortDescription,
       description: formValues.description,
-      projectDate,
       startTime: formValues.startTime,
       endTime: formValues.endTime,
       maxCapacity: formValues.maxCapacity,
@@ -126,11 +161,15 @@ export class ProjectFormComponent implements OnInit {
       locationName: formValues.locationName || null,
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
+      wheelchairAccessible: formValues.wheelchairAccessible,
+      leadUserId: formValues.leadUserId,
+      tools: formValues.tools,
       createdAt: this.data.project?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      locationAddress: formValues.locationAddress,
+      projectDate: formValues.projectDate,
     };
     
-    // Submit the project
     const request = this.data.isEdit
       ? this.projectService.updateProject(project)
       : this.projectService.createProject(project);
@@ -167,29 +206,20 @@ export class ProjectFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Set up location geocoding to automatically convert addresses to lat/lng
-   */
   setupLocationGeocoding(): void {
-    // Watch for changes to the locationName field
     this.projectForm.get('locationName')?.valueChanges
       .pipe(
-        debounceTime(800), // Wait for the user to stop typing
-        distinctUntilChanged() // Only proceed if the value actually changed
+        debounceTime(800),
+        distinctUntilChanged()
       )
       .subscribe(value => {
-        // Only attempt geocoding if there's a value with enough characters
         if (value && value.length > 5) {
           this.geocodeLocation(value);
         }
       });
   }
 
-  /**
-   * Geocode a location string to latitude/longitude
-   */
   geocodeLocation(address: string): void {
-    // Don't geocode if already geocoding or if address is empty
     if (this.geocoding || !address) {
       return;
     }
@@ -205,7 +235,6 @@ export class ProjectFormComponent implements OnInit {
       .subscribe(
         result => {
           if (result) {
-            // Update the form with the geocoded coordinates
             this.projectForm.patchValue({
               latitude: result.latitude,
               longitude: result.longitude
