@@ -7,21 +7,21 @@ import (
 
 // User represents a user in the system
 type User struct {
-	ID          string    `json:"id"`
-	Email       string    `json:"email"`
-	Name        string    `json:"name"`
-	Picture     string    `json:"picture"`
-	Phone       string    `json:"phone"`
-	ContactEmail string   `json:"contactEmail"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-	IsAdmin     bool      `json:"isAdmin"`
+	ID           string    `json:"id"`
+	Email        string    `json:"email"`
+	Name         string    `json:"name"`
+	Picture      string    `json:"picture"`
+	Phone        string    `json:"phone"`
+	ContactEmail string    `json:"contactEmail"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+	IsAdmin      bool      `json:"isAdmin"`
 }
 
 // GetUserByID retrieves a user by their ID
 func GetUserByID(db *sql.DB, id string) (*User, error) {
 	query := `
-		SELECT id, email, name, picture, phone, contactEmail, created_at, updated_at, is_admin
+		SELECT id, email, name, picture, phone, contact_email, created_at, updated_at, is_admin
 		FROM users
 		WHERE id = $1
 	`
@@ -45,7 +45,7 @@ func GetUserByID(db *sql.DB, id string) (*User, error) {
 // GetUserByEmail retrieves a user by their email
 func GetUserByEmail(db *sql.DB, email string) (*User, error) {
 	query := `
-		SELECT id, email, name, picture, phone, contactEmail, created_at, updated_at, is_admin
+		SELECT id, email, name, picture, phone, contact_email, created_at, updated_at, is_admin
 		FROM users
 		WHERE email = $1
 	`
@@ -69,7 +69,7 @@ func GetUserByEmail(db *sql.DB, email string) (*User, error) {
 // CreateUser creates a new user in the database
 func CreateUser(db *sql.DB, user *User) error {
 	query := `
-		INSERT INTO users (id, email, name, picture, phone, contactEmail, is_admin)
+		INSERT INTO users (id, email, name, picture, phone, contact_email, is_admin)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING created_at, updated_at
 	`
@@ -90,7 +90,7 @@ func CreateUser(db *sql.DB, user *User) error {
 func UpdateUser(db *sql.DB, user *User) error {
 	query := `
 		UPDATE users
-		SET email = $1, name = $2, picture = $3, phone = $4, contactEmail = $5, is_admin = $6, updated_at = CURRENT_TIMESTAMP
+		SET email = $1, name = $2, picture = $3, phone = $4, contact_email = $5, is_admin = $6, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $7
 		RETURNING updated_at
 	`
@@ -124,7 +124,7 @@ func CreateOrUpdateUser(db *sql.DB, user *User) error {
 // GetAllUsers retrieves all users from the database
 func GetAllUsers(db *sql.DB) ([]User, error) {
 	query := `
-		SELECT id, email, name, picture, phone, contactEmail, created_at, updated_at, is_admin
+		SELECT id, email, name, picture, phone, contact_email, created_at, updated_at, is_admin
 		FROM users
 		ORDER BY name
 	`
