@@ -1,12 +1,12 @@
 <div class="profile-container">
-  @if (isLoading) {
+  @if (loading) {
     <div class="loading-container">
       <mat-spinner diameter="40"></mat-spinner>
       <p>Loading profile...</p>
     </div>
   }
 
-  @if (!isLoading && user) {
+  @if (!loading && user) {
     <mat-card class="profile-card">
       <mat-card-header>
         <div mat-card-avatar class="profile-avatar" [style.background-image]="'url(' + user.picture + ')'"></div>
@@ -23,10 +23,10 @@
           
           <div class="detail-item">
             <span class="label">Member Since:</span>
-            <span class="value">{{formatDate(user.createdAt)}}</span>
+            <span class="value">{{user.createdAt | date:'medium'}}</span>
           </div>
           
-          @if (isAdmin) {
+          @if (user.isAdmin) {
             <div class="admin-badge">
               <mat-icon>security</mat-icon> Admin
             </div>
@@ -39,7 +39,7 @@
           <mat-icon>event_available</mat-icon> Browse Projects
         </button>
         
-        @if (isAdmin) {
+        @if (user.isAdmin) {
           <button mat-raised-button color="accent" routerLink="/admin">
             <mat-icon>admin_panel_settings</mat-icon> Admin Dashboard
           </button>
@@ -73,7 +73,7 @@
           <ng-container matColumnDef="startDate">
             <th mat-header-cell *matHeaderCellDef>Start Date</th>
             <td mat-cell *matCellDef="let reg">
-              {{formatDate(reg.project?.startDate)}}
+              {{reg.project?.startDate | date:'medium'}}
               @if (getDaysUntilStart(reg.project?.startDate) > 0) {
                 <div class="days-info">
                   (in {{getDaysUntilStart(reg.project?.startDate)}} days)
@@ -90,7 +90,7 @@
           <!-- End Date Column -->
           <ng-container matColumnDef="endDate">
             <th mat-header-cell *matHeaderCellDef>End Date</th>
-            <td mat-cell *matCellDef="let reg">{{formatDate(reg.project?.endDate)}}</td>
+            <td mat-cell *matCellDef="let reg">{{reg.project?.endDate | date}}</td>
           </ng-container>
           
           <!-- Location Column -->
@@ -160,7 +160,7 @@
     </div>
   }
 
-  @if (!isLoading && !user) {
+  @if (!loading && !user) {
     <div class="error-container">
       <mat-icon color="warn">error</mat-icon>
       <h2>Error Loading Profile</h2>

@@ -49,11 +49,11 @@ func createUsersTable(db *sql.DB) error {
 	query := `
         CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
-                email TEXT NOT NULL UNIQUE,
-                name TEXT NOT NULL,
-                picture TEXT,
-                phone TEXT,
-                contact_email TEXT,
+                email TEXT NOT NULL DEFAULT '' UNIQUE,
+                name TEXT NOT NULL DEFAULT '',
+                picture TEXT DEFAULT '',
+                phone TEXT DEFAULT '',
+                contact_email TEXT DEFAULT '',
                 is_admin BOOLEAN NOT NULL DEFAULT FALSE,
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                 updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()

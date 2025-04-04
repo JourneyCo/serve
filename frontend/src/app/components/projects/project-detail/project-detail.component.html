@@ -9,7 +9,7 @@
   <!-- Registration Dialog Template -->
   <ng-template #registrationDialog>
     <div class="registration-dialog">
-      <h2 mat-dialog-title>Register for {{project?.title}}</h2>
+      <h2 mat-dialog-title>Register for {{ project?.title }}</h2>
 
       <mat-dialog-content>
         <p>Please complete your registration details:</p>
@@ -17,52 +17,64 @@
         <form #registrationForm="ngForm">
           <mat-form-field class="full-width">
             <mat-label>Phone Number</mat-label>
-            <input matInput 
-                  type="tel" 
-                  [(ngModel)]="phone" 
-                  name="phone" 
-                  required>
+            <input
+              matInput
+              type="tel"
+              [(ngModel)]="phone"
+              name="phone"
+              required
+            />
             <mat-hint>Enter your contact phone number</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="full-width">
             <mat-label>Contact Email</mat-label>
-            <input matInput 
-                  type="email" 
-                  [(ngModel)]="contactEmail" 
-                  name="contactEmail" 
-                  required>
+            <input
+              matInput
+              type="email"
+              [(ngModel)]="contactEmail"
+              name="contactEmail"
+              required
+            />
             <mat-hint>Enter your contact email</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="full-width">
             <mat-label>Number of guests</mat-label>
-            <input matInput 
-                  type="number" 
-                  min="0" 
-                  max="10"
-                  [(ngModel)]="guestCount" 
-                  name="guestCount">
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="10"
+              [(ngModel)]="guestCount"
+              name="guestCount"
+            />
             <mat-hint>Enter the number of guests you'll bring (0-10)</mat-hint>
           </mat-form-field>
 
-          <mat-checkbox [(ngModel)]="isProjectLead" name="isProjectLead" class="project-lead-checkbox">
-            Register as a project lead
+          <mat-checkbox
+            [(ngModel)]="isProjectLead"
+            name="isProjectLead"
+            class="project-lead-checkbox"
+          >
+            I am interested in being a project lead
           </mat-checkbox>
 
           <p class="lead-description">
-            Project leads help coordinate activities and may receive additional instructions 
-            before the project starts.
+            Project leads help coordinate activities and may receive additional
+            instructions before the project starts.
           </p>
         </form>
       </mat-dialog-content>
 
       <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close>Cancel</button>
-        <button mat-raised-button 
-                color="primary" 
-                [disabled]="loadingRegistration"
-                (click)="registerForProject()">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="loadingRegistration"
+          (click)="registerForProject()"
+        >
           @if (!loadingRegistration) {
             <span>Complete Registration</span>
           }
@@ -77,22 +89,20 @@
   @if (!isLoading && project) {
     <mat-card class="project-card">
       <mat-card-header>
-        <mat-card-title>{{project.title}}</mat-card-title>
+        <mat-card-title>{{ project.title }}</mat-card-title>
         <mat-card-subtitle>
           @if (getDaysUntilStart() > 0) {
             <span>
-              Starting in {{getDaysUntilStart()}} days ({{formatDate(project.projectDate)}})
+              Starting in {{ getDaysUntilStart() }} days ({{
+                formatDate(project.projectDate)
+              }})
             </span>
           }
           @if (getDaysUntilStart() === 0) {
-            <span>
-              Starting today!
-            </span>
+            <span> Starting today! </span>
           }
           @if (getDaysUntilStart() < 0) {
-            <span>
-              Started {{-getDaysUntilStart()}} days ago
-            </span>
+            <span> Started {{ -getDaysUntilStart() }} days ago </span>
           }
         </mat-card-subtitle>
       </mat-card-header>
@@ -100,10 +110,11 @@
       <mat-card-content>
         <div class="project-dates">
           <div class="date-field">
-            <strong>Date:</strong> {{formatDate(project.projectDate)}}
+            <strong>Date:</strong> {{ formatDate(project.projectDate) }}
           </div>
           <div class="date-field">
-            <strong>Time:</strong> {{formatTime(project.startTime)}} - {{formatTime(project.endTime)}}
+            <strong>Time:</strong> {{ formatTime(project.startTime) }} -
+            {{ formatTime(project.endTime) }}
           </div>
         </div>
 
@@ -111,15 +122,24 @@
           <h3>Registration Capacity</h3>
           <div class="capacity-indicator">
             <div class="capacity-bar-container">
-              <div class="capacity-bar" 
-                   [ngClass]="{'available': getCapacityPercentage() < 50, 
-                              'filling': getCapacityPercentage() >= 50 && getCapacityPercentage() < 80,
-                              'almost-full': getCapacityPercentage() >= 80 && getCapacityPercentage() < 100,
-                              'full': getCapacityPercentage() >= 100}"
-                   [style.width.%]="getCapacityPercentage()"></div>
+              <div
+                class="capacity-bar"
+                [ngClass]="{
+                  available: getCapacityPercentage() < 50,
+                  filling:
+                    getCapacityPercentage() >= 50 &&
+                    getCapacityPercentage() < 80,
+                  'almost-full':
+                    getCapacityPercentage() >= 80 &&
+                    getCapacityPercentage() < 100,
+                  full: getCapacityPercentage() >= 100,
+                }"
+                [style.width.%]="getCapacityPercentage()"
+              ></div>
             </div>
             <span class="capacity-text">
-              {{project.currentRegistrations}} / {{project.maxCapacity}} spots filled
+              {{ project.currentRegistrations }} /
+              {{ project.maxCapacity }} spots filled
             </span>
           </div>
         </div>
@@ -128,17 +148,23 @@
           <h3>About This Project</h3>
           <div class="accessibility-info">
             <mat-icon [class.accessible]="project.wheelchairAccessible">
-              {{ project.wheelchairAccessible ? 'accessible' : 'not_accessible' }}
+              {{
+                project.wheelchairAccessible ? "accessible" : "not_accessible"
+              }}
             </mat-icon>
-            <span>This location is {{ project.wheelchairAccessible ? '' : 'not ' }}wheelchair accessible</span>
+            <span
+              >This location is
+              {{ project.wheelchairAccessible ? "" : "not " }}wheelchair
+              accessible</span
+            >
           </div>
           <div class="short-description">
             <h4>Summary</h4>
-            <p>{{project.shortDescription}}</p>
+            <p>{{ project.shortDescription }}</p>
           </div>
           <div class="full-description">
             <h4>Full Description</h4>
-            <p>{{project.description}}</p>
+            <p>{{ project.description }}</p>
           </div>
         </div>
 
@@ -147,7 +173,7 @@
             <h3>Tools & Skills Required</h3>
             <mat-chip-set>
               @for (tool of project.tools; track tool.id) {
-                <mat-chip>{{tool.name}}</mat-chip>
+                <mat-chip>{{ tool.name }}</mat-chip>
               }
             </mat-chip-set>
           </div>
@@ -158,10 +184,10 @@
             <h3>Project Lead</h3>
             <mat-card class="lead-info">
               <mat-card-content>
-                <p><strong>Name:</strong> {{project.leadUser.name}}</p>
-                <p><strong>Email:</strong> {{project.leadUser.email}}</p>
+                <p><strong>Name:</strong> {{ project.leadUser.name }}</p>
+                <p><strong>Email:</strong> {{ project.leadUser.email }}</p>
                 @if (project.leadUser.phone) {
-                  <p><strong>Phone:</strong> {{project.leadUser.phone}}</p>
+                  <p><strong>Phone:</strong> {{ project.leadUser.phone }}</p>
                 }
               </mat-card-content>
             </mat-card>
@@ -173,7 +199,7 @@
           <div class="project-location">
             <h3>Location</h3>
             @if (project.locationName) {
-              <p><strong>Location:</strong> {{project.locationName}}</p>
+              <p><strong>Location:</strong> {{ project.locationName }}</p>
             }
 
             @if (project.latitude && project.longitude) {
@@ -181,16 +207,23 @@
               <div class="map-container">
                 <google-map [options]="mapOptions" height="300px" width="100%">
                   @if (markerPosition) {
-                    <map-marker [position]="markerPosition" [options]="markerOptions"></map-marker>
+                    <map-marker
+                      [position]="markerPosition"
+                      [options]="markerOptions"
+                    ></map-marker>
                   }
                 </google-map>
               </div>
 
               <div class="map-actions">
-                <a href="https://maps.google.com/?q={{project.latitude}},{{project.longitude}}" 
-                   target="_blank" 
-                   mat-raised-button 
-                   color="accent">
+                <a
+                  href="https://maps.google.com/?q={{ project.latitude }},{{
+                    project.longitude
+                  }}"
+                  target="_blank"
+                  mat-raised-button
+                  color="accent"
+                >
                   <mat-icon>directions</mat-icon> Get Directions
                 </a>
               </div>
@@ -209,7 +242,7 @@
           @if (registrationError) {
             <div class="error-message">
               <mat-icon color="warn">error</mat-icon>
-              <span>{{registrationError}}</span>
+              <span>{{ registrationError }}</span>
             </div>
           }
         </div>
@@ -221,20 +254,24 @@
         </button>
 
         @if (!isRegistered) {
-          <button mat-raised-button 
-                  color="primary" 
-                  (click)="openRegistrationForm()" 
-                  [disabled]="loadingRegistration || isProjectFull()">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="openRegistrationForm()"
+            [disabled]="loadingRegistration || isProjectFull()"
+          >
             <mat-icon>event_available</mat-icon>
             <span>Register</span>
           </button>
         }
 
         @if (isRegistered) {
-          <button mat-raised-button 
-                  color="warn" 
-                  (click)="cancelRegistration()" 
-                  [disabled]="loadingRegistration">
+          <button
+            mat-raised-button
+            color="warn"
+            (click)="cancelRegistration()"
+            [disabled]="loadingRegistration"
+          >
             <mat-icon>event_busy</mat-icon>
             @if (!loadingRegistration) {
               <span>Cancel Registration</span>
@@ -266,24 +303,32 @@
 
           @if (registrations.length > 0) {
             <div class="registrations-list">
-              <h3>Registered Users ({{registrations.length}})</h3>
+              <h3>Registered Users ({{ registrations.length }})</h3>
 
               <mat-list>
                 @for (reg of registrations; track reg.id) {
                   <mat-list-item>
-                    <img matListAvatar [src]="reg.user?.picture || 'assets/default-avatar.png'" alt="User avatar">
+                    <img
+                      matListAvatar
+                      [src]="reg.user?.picture || 'assets/default-avatar.png'"
+                      alt="User avatar"
+                    />
                     <div matLine>
-                      {{reg.user?.name}}
+                      {{ reg.user?.name }}
                       @if (reg.isProjectLead) {
                         <span class="project-lead-badge">Project Lead</span>
                       }
                     </div>
-                    <div matLine>{{reg.user?.email}}</div>
-                    <div matLine>Status: <strong>{{reg.status}}</strong></div>
+                    <div matLine>{{ reg.user?.email }}</div>
                     <div matLine>
-                      Registered on: {{formatDate(reg.createdAt)}}
+                      Status: <strong>{{ reg.status }}</strong>
+                    </div>
+                    <div matLine>
+                      Registered on: {{ formatDate(reg.createdAt) }}
                       @if (reg.guestCount > 0) {
-                        <span class="guest-badge">+{{reg.guestCount}} guests</span>
+                        <span class="guest-badge"
+                          >+{{ reg.guestCount }} guests</span
+                        >
                       }
                     </div>
                   </mat-list-item>

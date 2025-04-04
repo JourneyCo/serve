@@ -25,7 +25,6 @@ import { Registration } from "../../../models/registration.model";
 import { User } from "../../../models/user.model";
 import { Observable, forkJoin, of } from "rxjs";
 import { tap } from "rxjs/operators";
-import { catchError, map, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-project-detail",
