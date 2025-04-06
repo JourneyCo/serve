@@ -39,8 +39,8 @@ export class ProfileComponent implements OnInit {
   registrationsColumns = ['projectTitle', 'startDate', 'endDate', 'location', 'details', 'status', 'actions'];
 
   constructor(
-      private userService: UserService,
-      private projectService: ProjectService
+    private userService: UserService,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +49,17 @@ export class ProfileComponent implements OnInit {
   }
 
   private loadUserProfile(): void {
+    this.userService.getUserProfile().subscribe({
+      next: (user) => {
+        this.user = user;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading user profile:', err);
+        this.error = 'Failed to load profile';
+        this.loading = false;
+      }
+    });
     this.loading = true;
     this.error = null;
 

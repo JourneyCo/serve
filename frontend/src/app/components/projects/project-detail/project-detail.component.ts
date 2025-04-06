@@ -25,6 +25,7 @@ import { Registration } from "../../../models/registration.model";
 import { User } from "../../../models/user.model";
 import { Observable, forkJoin, of } from "rxjs";
 import { tap } from "rxjs/operators";
+import {MatTable, MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: "app-project-detail",
@@ -48,6 +49,7 @@ import { tap } from "rxjs/operators";
     MatCheckboxModule,
     MatDialogModule,
     GoogleMapsModule,
+    MatTable,
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
@@ -55,6 +57,8 @@ import { tap } from "rxjs/operators";
 export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   registrations: Registration[] = [];
+  registrationsDataSource = new MatTableDataSource<Registration>();
+  registrationsColumns = ['avatar', 'name', 'email', 'status', 'registrationDate'];
   currentUser: User | null = null;
   isAdmin = false;
   isRegistered = false;
@@ -63,6 +67,8 @@ export class ProjectDetailComponent implements OnInit {
   registrationError = "";
 
   // Registration form properties
+  firstName = '';
+  lastName = '';
   guestCount: number = 0;
   isProjectLead: boolean = false;
   phone: string = '';
@@ -153,6 +159,7 @@ export class ProjectDetailComponent implements OnInit {
         // If admin, get all registrations for the project
         if (this.isAdmin) {
           this.registrations = result.projectRegs;
+          this.registrationsDataSource.data = this.registrations;
         }
 
         // Set up map marker if coordinates are available

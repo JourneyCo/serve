@@ -50,6 +50,8 @@ func createUsersTable(db *sql.DB) error {
         CREATE TABLE IF NOT EXISTS users (
                 id TEXT PRIMARY KEY,
                 email TEXT NOT NULL DEFAULT '' UNIQUE,
+                first_name TEXT NOT NULL DEFAULT '',
+                last_name TEXT NOT NULL DEFAULT '',
                 name TEXT NOT NULL DEFAULT '',
                 picture TEXT DEFAULT '',
                 phone TEXT DEFAULT '',
@@ -125,11 +127,13 @@ func addExampleProject(db *sql.DB) error {
 
 	// Add example user first
 	userQuery := `
-		INSERT INTO users (id, email, name, picture, phone, contact_email, is_admin)
+		INSERT INTO users (id, email, name, first_name, last_name, picture, phone, contact_email, is_admin)
 		VALUES (
 			'example-user-123',
 			'project.lead@example.com',
 			'Example Project Lead',
+			'Example',
+			'Project Lead',
 			'https://example.com/avatar.jpg',
 			'555-0123',
 			'project.lead@example.com',

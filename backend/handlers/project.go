@@ -136,9 +136,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Register for the project
-	registration, err := models.RegisterForProject(
-		h.DB, userID, projectID, regRequest.GuestCount, regRequest.IsProjectLead,
-	)
+	registration, err := models.RegisterForProject(h.DB, userID, projectID, regRequest.GuestCount, regRequest.IsProjectLead)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -147,18 +145,14 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	// Get project details for email
 	project, err := models.GetProjectByID(h.DB, projectID)
 	if err != nil {
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
-		)
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email")
 		return
 	}
 
 	// Get user details for email
 	user, err = models.GetUserByID(h.DB, userID)
 	if err != nil {
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
-		)
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email")
 		return
 	}
 
