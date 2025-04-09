@@ -16,9 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectService } from '../../../services/project.service';
-import { UserService } from '../../../services/user.service';
 import { Project } from '../../../models/project.model';
-import { User } from '../../../models/user.model';
 import { ProjectFormComponent } from '../project-form/project-form.component';
 
 @Component({
@@ -49,15 +47,12 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
 export class AdminDashboardComponent implements OnInit {
   // Data sources for tables
   projectsDataSource = new MatTableDataSource<Project>([]);
-  usersDataSource = new MatTableDataSource<User>([]);
 
   // Column definitions
   projectColumns: string[] = ['id', 'title', 'startDate', 'endDate', 'capacity', 'actions'];
-  userColumns: string[] = ['id', 'name', 'email', 'isAdmin', 'actions'];
 
   // Loading states
   loadingProjects = true;
-  loadingUsers = true;
   processingAction = false;
 
   // ViewChild references for table sorting and pagination
@@ -69,14 +64,12 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private projectService: ProjectService,
-    private userService: UserService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.loadProjects();
-    this.loadUsers();
   }
 
   ngAfterViewInit(): void {
@@ -84,8 +77,6 @@ export class AdminDashboardComponent implements OnInit {
     setTimeout(() => {
       this.projectsDataSource.paginator = this.projectsPaginator;
       this.projectsDataSource.sort = this.projectsSort;
-      this.usersDataSource.paginator = this.usersPaginator;
-      this.usersDataSource.sort = this.usersSort;
     });
   }
 
@@ -104,36 +95,12 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
-  loadUsers(): void {
-    this.loadingUsers = true;
-    this.userService.getAllUsers().subscribe(
-      (users) => {
-        this.usersDataSource.data = users;
-        this.loadingUsers = false;
-      },
-      (error) => {
-        console.error('Error loading users:', error);
-        this.showError('Failed to load users');
-        this.loadingUsers = false;
-      }
-    );
-  }
-
   applyProjectFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.projectsDataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.projectsDataSource.paginator) {
       this.projectsDataSource.paginator.firstPage();
-    }
-  }
-
-  applyUserFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.usersDataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.usersDataSource.paginator) {
-      this.usersDataSource.paginator.firstPage();
     }
   }
 
@@ -180,27 +147,6 @@ export class AdminDashboardComponent implements OnInit {
       (error) => {
         console.error('Error deleting project:', error);
         this.showError('Failed to delete project');
-        this.processingAction = false;
-      }
-    );
-  }
-
-  toggleUserAdmin(user: User): void {
-    this.processingAction = true;
-    this.userService.toggleUserAdmin(user.id).subscribe(
-      (updatedUser) => {
-        // Update the user in the data source
-        const index = this.usersDataSource.data.findIndex(u => u.id === user.id);
-        if (index !== -1) {
-          this.usersDataSource.data[index] = updatedUser;
-          this.usersDataSource.data = [...this.usersDataSource.data]; // Trigger refresh
-        }
-        this.processingAction = false;
-        this.showSuccess(`User ${updatedUser.isAdmin ? 'promoted to' : 'removed from'} admin role`);
-      },
-      (error) => {
-        console.error('Error toggling admin status:', error);
-        this.showError('Failed to update user admin status');
         this.processingAction = false;
       }
     );

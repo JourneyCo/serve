@@ -95,7 +95,7 @@ export class ProjectFormComponent implements OnInit {
   initForm(): void {
     const project = this.data.project;
 
-    const defaultDate = new Date("2025-07-12");
+    const defaultDate = "2025-07-12";
     const defaultStartTime = "09:00";
     const defaultEndTime = "17:00";
 
@@ -114,7 +114,7 @@ export class ProjectFormComponent implements OnInit {
           [Validators.required, Validators.minLength(10)],
         ],
         projectDate: [
-          project?.projectDate ? new Date(project.projectDate) : defaultDate,
+          project?.projectDate ? project.projectDate : defaultDate,
           Validators.required,
         ],
         startTime: [
@@ -136,7 +136,7 @@ export class ProjectFormComponent implements OnInit {
           [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
         ],
         wheelchairAccessible: [project?.wheelchairAccessible || false],
-        leadUserId: [project?.leadUserId || "", Validators.required],
+        leadUserId: [project?.leadUserId || ""],
         tools: this.fb.array(
           project?.tools?.map((tool) =>
             this.fb.group({
@@ -189,7 +189,6 @@ export class ProjectFormComponent implements OnInit {
     this.submitting = true;
 
     const formValues = this.projectForm.value;
-    const projectDate = this.formatDate(formValues.projectDate);
 
     const project: Project = {
       id: this.data.project?.id || 0,

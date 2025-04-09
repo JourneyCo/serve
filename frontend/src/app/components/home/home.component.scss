@@ -4,12 +4,12 @@
   padding: 20px;
 }
 
-.hero-card {
+.serve-card {
   margin-bottom: 40px;
   border-radius: 8px;
 }
 
-.hero-content {
+.serve-content {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -20,7 +20,7 @@
   }
 }
 
-.hero-text {
+.serve-text {
   flex: 1;
   
   h1 {
@@ -37,7 +37,7 @@
   }
 }
 
-.hero-image {
+.serve-image {
   flex: 1;
   display: flex;
   justify-content: center;

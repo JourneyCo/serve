@@ -20,8 +20,4 @@ export class UserService {
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/admin/users`);
   }
-
-  toggleUserAdmin(userId: string): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/admin/users/${userId}/toggle-admin`, {});
-  }
 }

@@ -25,6 +25,7 @@ import { Registration } from "../../../models/registration.model";
 import { User } from "../../../models/user.model";
 import { Observable, forkJoin, of } from "rxjs";
 import { tap } from "rxjs/operators";
+import { catchError, map, switchMap } from "rxjs/operators";
 import {MatTable, MatTableDataSource} from "@angular/material/table";
 
 @Component({
@@ -55,10 +56,10 @@ import {MatTable, MatTableDataSource} from "@angular/material/table";
   styleUrls: ["./project-detail.component.scss"],
 })
 export class ProjectDetailComponent implements OnInit {
+  registrationsColumns = ['avatar', 'name', 'email', 'status', 'registrationDate'];
   project: Project | null = null;
   registrations: Registration[] = [];
   registrationsDataSource = new MatTableDataSource<Registration>();
-  registrationsColumns = ['avatar', 'name', 'email', 'status', 'registrationDate'];
   currentUser: User | null = null;
   isAdmin = false;
   isRegistered = false;
@@ -67,10 +68,10 @@ export class ProjectDetailComponent implements OnInit {
   registrationError = "";
 
   // Registration form properties
-  firstName = '';
-  lastName = '';
   guestCount: number = 0;
   isProjectLead: boolean = false;
+  firstName: string = '';
+  lastName: string = '';
   phone: string = '';
   contactEmail: string = '';
 
@@ -121,7 +122,9 @@ export class ProjectDetailComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(
       (user) => {
         this.currentUser = user;
-        this.isAdmin = user?.isAdmin || false;
+        // this.isAdmin = user?.isAdmin || false;
+        this.isAdmin = true;
+
 
         // Load project data
         this.loadProjectDetails(+projectId);

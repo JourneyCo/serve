@@ -54,20 +54,6 @@
         </mat-form-field>
       </div>
       
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Project Date</mat-label>
-          <input matInput [matDatepicker]="projectDatePicker" formControlName="projectDate" [min]="minDate" required>
-          <mat-datepicker-toggle matSuffix [for]="projectDatePicker"></mat-datepicker-toggle>
-          <mat-datepicker #projectDatePicker></mat-datepicker>
-          @if (projectForm.get('projectDate')?.hasError('required')) {
-            <mat-error>
-              Project date is required
-            </mat-error>
-          }
-        </mat-form-field>
-      </div>
-      
       <div class="form-row time-row">
         <mat-form-field appearance="outline">
           <mat-label>Start Time</mat-label>
