@@ -1,153 +1,153 @@
 package services
 
 import (
-        "bytes"
-        "fmt"
-        "html/template"
-        "log"
-        "net/smtp"
-        "time"
+	"bytes"
+	"fmt"
+	"html/template"
+	"log"
+	"net/smtp"
+	"time"
 
-        "project-registration-system/config"
-        "project-registration-system/models"
+	"project-registration-system/config"
+	"project-registration-system/models"
 )
 
 // EmailService handles email operations
 type EmailService struct {
-        Config *config.Config
-        auth   smtp.Auth
+	Config *config.Config
+	auth   smtp.Auth
 }
 
 // NewEmailService creates a new email service
 func NewEmailService(cfg *config.Config) *EmailService {
-        auth := smtp.PlainAuth(
-                "",
-                cfg.SMTPUsername,
-                cfg.SMTPPassword,
-                cfg.SMTPHost,
-        )
+	auth := smtp.PlainAuth(
+		"",
+		cfg.SMTPUsername,
+		cfg.SMTPPassword,
+		cfg.SMTPHost,
+	)
 
-        return &EmailService{
-                Config: cfg,
-                auth:   auth,
-        }
+	return &EmailService{
+		Config: cfg,
+		auth:   auth,
+	}
 }
 
 // SendRegistrationConfirmation sends a confirmation email when a user registers for a project
 func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
-        subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
-        
-        // Format dates
-        projectDateFormatted := project.ProjectDate.Format("Monday, January 2, 2006")
+	subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
 
-        // Create email data
-        data := struct {
-                Name           string
-                ProjectTitle   string
-                ProjectDesc    string
-                ProjectDate    string
-                StartTime      string
-                EndTime        string
-                ProjectDateFull time.Time
-        }{
-                Name:           user.Name,
-                ProjectTitle:   project.Title,
-                ProjectDesc:    project.Description,
-                ProjectDate:    projectDateFormatted,
-                StartTime:      project.StartTime,
-                EndTime:        project.EndTime,
-                ProjectDateFull: project.ProjectDate,
-        }
+	// Format dates
+	projectDateFormatted := project.ProjectDate.Format("Monday, January 2, 2006")
 
-        // Send the email
-        return s.sendEmail(user.Email, subject, registrationTemplate, data)
+	// Create email data
+	data := struct {
+		Name            string
+		ProjectTitle    string
+		ProjectDesc     string
+		ProjectDate     string
+		StartTime       string
+		EndTime         string
+		ProjectDateFull time.Time
+	}{
+		Name:            fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+		ProjectTitle:    project.Title,
+		ProjectDesc:     project.Description,
+		ProjectDate:     projectDateFormatted,
+		StartTime:       project.StartTime,
+		EndTime:         project.EndTime,
+		ProjectDateFull: project.ProjectDate,
+	}
+
+	// Send the email
+	return s.sendEmail(user.Email, subject, registrationTemplate, data)
 }
 
 // SendReminderEmail sends a reminder email for an upcoming project
 func (s *EmailService) SendReminderEmail(registration *models.Registration, daysLeft int) error {
-        var subject string
-        var templateStr string
+	var subject string
+	var templateStr string
 
-        // Set subject and template based on days left
-        switch daysLeft {
-        case 14:
-                subject = fmt.Sprintf("2 Weeks Until Your Project: %s", registration.Project.Title)
-                templateStr = twoWeekReminderTemplate
-        case 7:
-                subject = fmt.Sprintf("1 Week Until Your Project: %s", registration.Project.Title)
-                templateStr = oneWeekReminderTemplate
-        case 1:
-                subject = fmt.Sprintf("Tomorrow: Your Project %s Begins", registration.Project.Title)
-                templateStr = oneDayReminderTemplate
-        default:
-                return fmt.Errorf("unsupported reminder interval: %d days", daysLeft)
-        }
+	// Set subject and template based on days left
+	switch daysLeft {
+	case 14:
+		subject = fmt.Sprintf("2 Weeks Until Your Project: %s", registration.Project.Title)
+		templateStr = twoWeekReminderTemplate
+	case 7:
+		subject = fmt.Sprintf("1 Week Until Your Project: %s", registration.Project.Title)
+		templateStr = oneWeekReminderTemplate
+	case 1:
+		subject = fmt.Sprintf("Tomorrow: Your Project %s Begins", registration.Project.Title)
+		templateStr = oneDayReminderTemplate
+	default:
+		return fmt.Errorf("unsupported reminder interval: %d days", daysLeft)
+	}
 
-        // Format dates
-        projectDateFormatted := registration.Project.ProjectDate.Format("Monday, January 2, 2006")
+	// Format dates
+	projectDateFormatted := registration.Project.ProjectDate.Format("Monday, January 2, 2006")
 
-        // Create email data
-        data := struct {
-                Name           string
-                ProjectTitle   string
-                ProjectDesc    string
-                ProjectDate    string
-                StartTime      string
-                EndTime        string
-                DaysLeft       int
-        }{
-                Name:           registration.User.Name,
-                ProjectTitle:   registration.Project.Title,
-                ProjectDesc:    registration.Project.Description,
-                ProjectDate:    projectDateFormatted,
-                StartTime:      registration.Project.StartTime,
-                EndTime:        registration.Project.EndTime,
-                DaysLeft:       daysLeft,
-        }
+	// Create email data
+	data := struct {
+		Name         string
+		ProjectTitle string
+		ProjectDesc  string
+		ProjectDate  string
+		StartTime    string
+		EndTime      string
+		DaysLeft     int
+	}{
+		Name:         fmt.Sprintf("%s %s", registration.User.FirstName, registration.User.LastName),
+		ProjectTitle: registration.Project.Title,
+		ProjectDesc:  registration.Project.Description,
+		ProjectDate:  projectDateFormatted,
+		StartTime:    registration.Project.StartTime,
+		EndTime:      registration.Project.EndTime,
+		DaysLeft:     daysLeft,
+	}
 
-        // Send the email
-        return s.sendEmail(registration.User.Email, subject, templateStr, data)
+	// Send the email
+	return s.sendEmail(registration.User.Email, subject, templateStr, data)
 }
 
 // sendEmail is a helper function to send emails
 func (s *EmailService) sendEmail(to, subject, templateStr string, data interface{}) error {
-        // Parse template
-        t, err := template.New("email").Parse(templateStr)
-        if err != nil {
-                return fmt.Errorf("failed to parse email template: %w", err)
-        }
+	// Parse template
+	t, err := template.New("email").Parse(templateStr)
+	if err != nil {
+		return fmt.Errorf("failed to parse email template: %w", err)
+	}
 
-        // Execute template
-        var body bytes.Buffer
-        if err := t.Execute(&body, data); err != nil {
-                return fmt.Errorf("failed to execute email template: %w", err)
-        }
+	// Execute template
+	var body bytes.Buffer
+	if err := t.Execute(&body, data); err != nil {
+		return fmt.Errorf("failed to execute email template: %w", err)
+	}
 
-        // Set up email headers
-        headers := make(map[string]string)
-        headers["From"] = s.Config.EmailFrom
-        headers["To"] = to
-        headers["Subject"] = subject
-        headers["MIME-Version"] = "1.0"
-        headers["Content-Type"] = "text/html; charset=UTF-8"
+	// Set up email headers
+	headers := make(map[string]string)
+	headers["From"] = s.Config.EmailFrom
+	headers["To"] = to
+	headers["Subject"] = subject
+	headers["MIME-Version"] = "1.0"
+	headers["Content-Type"] = "text/html; charset=UTF-8"
 
-        // Create message
-        var message bytes.Buffer
-        for k, v := range headers {
-                message.WriteString(fmt.Sprintf("%s: %s\r\n", k, v))
-        }
-        message.WriteString("\r\n")
-        message.Write(body.Bytes())
+	// Create message
+	var message bytes.Buffer
+	for k, v := range headers {
+		message.WriteString(fmt.Sprintf("%s: %s\r\n", k, v))
+	}
+	message.WriteString("\r\n")
+	message.Write(body.Bytes())
 
-        // Send the email
-        addr := fmt.Sprintf("%s:%s", s.Config.SMTPHost, s.Config.SMTPPort)
-        if err := smtp.SendMail(addr, s.auth, s.Config.EmailFrom, []string{to}, message.Bytes()); err != nil {
-                log.Printf("Failed to send email: %v", err)
-                return fmt.Errorf("failed to send email: %w", err)
-        }
+	// Send the email
+	addr := fmt.Sprintf("%s:%s", s.Config.SMTPHost, s.Config.SMTPPort)
+	if err := smtp.SendMail(addr, s.auth, s.Config.EmailFrom, []string{to}, message.Bytes()); err != nil {
+		log.Printf("Failed to send email: %v", err)
+		return fmt.Errorf("failed to send email: %w", err)
+	}
 
-        log.Printf("Email sent to %s: %s", to, subject)
-        return nil
+	log.Printf("Email sent to %s: %s", to, subject)
+	return nil
 }
 
 // Email templates

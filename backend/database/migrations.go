@@ -52,11 +52,8 @@ func createUsersTable(db *sql.DB) error {
                 email TEXT NOT NULL DEFAULT '' UNIQUE,
                 first_name TEXT NOT NULL DEFAULT '',
                 last_name TEXT NOT NULL DEFAULT '',
-                name TEXT NOT NULL DEFAULT '',
-                picture TEXT DEFAULT '',
                 phone TEXT DEFAULT '',
-                contact_email TEXT DEFAULT '',
-                is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+                text_permission BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                 updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
         )
@@ -100,7 +97,7 @@ func createRegistrationsTable(db *sql.DB) error {
                 project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
                 status TEXT NOT NULL DEFAULT 'registered',
                 guest_count INTEGER NOT NULL DEFAULT 0,
-                is_project_lead BOOLEAN NOT NULL DEFAULT FALSE,
+                lead_interest BOOLEAN NOT NULL DEFAULT FALSE,
                 created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                 updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                 UNIQUE(user_id, project_id, status)
@@ -127,16 +124,13 @@ func addExampleProject(db *sql.DB) error {
 
 	// Add example user first
 	userQuery := `
-		INSERT INTO users (id, email, name, first_name, last_name, picture, phone, contact_email, is_admin)
+		INSERT INTO users (id, email, first_name, last_name, phone, text_permission)
 		VALUES (
 			'example-user-123',
 			'project.lead@example.com',
-			'Example Project Lead',
-			'Example',
-			'Project Lead',
-			'https://example.com/avatar.jpg',
-			'555-0123',
-			'project.lead@example.com',
+			'Doug',
+			'DoesGood',
+			'303-555-0123',
 			true
 		)
 		RETURNING id`

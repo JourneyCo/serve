@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -16,6 +17,16 @@ import (
 type ProjectHandler struct {
 	DB           *sql.DB
 	EmailService *services.EmailService
+}
+
+// regRequest defines the JSON request for registration
+type regRequest struct {
+	GuestCount       int    `json:"guest_count"`
+	IsLeadInterested bool   `json:"lead_interest"`
+	FirstName        string `json:"first_name"`
+	LastName         string `json:"last_name"`
+	Phone            string `json:"phone"`
+	Email            string `json:"email"`
 }
 
 // RegisterProjectRoutes registers the routes for project handlers
@@ -63,13 +74,9 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, project)
-}
+	project.Tools = []models.Tool{}
 
-// RegistrationRequest defines the JSON request for registration
-type RegistrationRequest struct {
-	GuestCount    int  `json:"guestCount"`
-	IsProjectLead bool `json:"isProjectLead"`
+	middleware.RespondWithJSON(w, http.StatusOK, project)
 }
 
 // RegisterForProject registers a user for a project
@@ -107,36 +114,38 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
+	var reg regRequest
 	// Parse registration request
-	var regRequest struct {
-		GuestCount    int    `json:"guestCount"`
-		IsProjectLead bool   `json:"isProjectLead"`
-		Phone         string `json:"phone"`
-		ContactEmail  string `json:"contactEmail"`
-	}
-	if err := middleware.ParseJSON(r, &regRequest); err != nil {
+	if err = middleware.ParseJSON(r, &reg); err != nil {
 		// If parsing fails, use default values (for backward compatibility)
-		regRequest.GuestCount = 0
-		regRequest.IsProjectLead = false
+		reg.GuestCount = 0
+		reg.IsLeadInterested = false
 	}
+	err = nil
 
 	// Update user information
-	user.Phone = regRequest.Phone
-	user.ContactEmail = regRequest.ContactEmail
-	err = models.UpdateUser(h.DB, user)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update user information")
+	user.FirstName = reg.FirstName
+	user.LastName = reg.LastName
+	user.Phone = reg.Phone
+	user.Email = reg.Email
+	if err = models.UpdateUser(h.DB, user); err != nil {
+		log.Printf("Failed to update user information: %v\n", err)
+		middleware.RespondWithError(
+			w, http.StatusInternalServerError, "Failed to update user information",
+		)
 		return
 	}
 
 	// Validate guest count
-	if regRequest.GuestCount < 0 {
+	if reg.GuestCount < 0 {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Guest count cannot be negative")
 		return
 	}
 
 	// Register for the project
-	registration, err := models.RegisterForProject(h.DB, userID, projectID, regRequest.GuestCount, regRequest.IsProjectLead)
+	registration, err := models.RegisterForProject(
+		h.DB, userID, projectID, reg.GuestCount, reg.IsLeadInterested,
+	)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -145,14 +154,18 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	// Get project details for email
 	project, err := models.GetProjectByID(h.DB, projectID)
 	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email")
+		middleware.RespondWithError(
+			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
+		)
 		return
 	}
 
 	// Get user details for email
 	user, err = models.GetUserByID(h.DB, userID)
 	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email")
+		middleware.RespondWithError(
+			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
+		)
 		return
 	}
 
@@ -201,6 +214,7 @@ func (h *ProjectHandler) GetProjectRegistrations(w http.ResponseWriter, r *http.
 
 	registrations, err := models.GetProjectRegistrations(h.DB, projectID)
 	if err != nil {
+		log.Println("failed to get project registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
 		return
 	}

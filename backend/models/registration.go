@@ -8,20 +8,22 @@ import (
 
 // Registration represents a user's registration for a project
 type Registration struct {
-	ID            int       `json:"id"`
-	UserID        string    `json:"userId"`
-	ProjectID     int       `json:"projectId"`
-	Status        string    `json:"status"` // "registered", "cancelled", "completed"
-	GuestCount    int       `json:"guestCount"`
-	IsProjectLead bool      `json:"isProjectLead"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
-	User          *User     `json:"user,omitempty"`
-	Project       *Project  `json:"project,omitempty"`
+	ID           int       `json:"id"`
+	UserID       string    `json:"user_id"`
+	ProjectID    int       `json:"project_id"`
+	Status       string    `json:"status"` // "registered", "cancelled", "completed"
+	GuestCount   int       `json:"guest_count"`
+	LeadInterest bool      `json:"lead_interest"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+	User         *User     `json:"user,omitempty"`
+	Project      *Project  `json:"project,omitempty"`
 }
 
 // RegisterForProject registers a user for a project
-func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int, isProjectLead bool) (*Registration, error) {
+func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int, isLeadInterested bool) (
+	*Registration, error,
+) {
 	// Begin transaction
 	tx, err := db.Begin()
 	if err != nil {
@@ -36,7 +38,8 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 	// Check if project exists and has capacity
 	var currentCount int
 	var maxCapacity int
-	err = tx.QueryRow(`
+	err = tx.QueryRow(
+		`
                 SELECT 
                         COALESCE(COUNT(r.id), 0) + COALESCE(SUM(r.guest_count), 0), 
                         p.max_capacity 
@@ -44,7 +47,8 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
                 LEFT JOIN registrations r ON p.id = r.project_id AND r.status = 'registered'
                 WHERE p.id = $1
                 GROUP BY p.id
-        `, projectID).Scan(&currentCount, &maxCapacity)
+        `, projectID,
+	).Scan(&currentCount, &maxCapacity)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -63,10 +67,12 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	// Check if user is already registered for this project
 	var existingID int
-	err = tx.QueryRow(`
+	err = tx.QueryRow(
+		`
                 SELECT id FROM registrations
                 WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
-        `, userID, projectID).Scan(&existingID)
+        `, userID, projectID,
+	).Scan(&existingID)
 
 	if err == nil {
 		return nil, errors.New("user is already registered for this project")
@@ -76,18 +82,20 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	// Create registration
 	reg := &Registration{
-		UserID:        userID,
-		ProjectID:     projectID,
-		Status:        "registered",
-		GuestCount:    guestCount,
-		IsProjectLead: isProjectLead,
+		UserID:       userID,
+		ProjectID:    projectID,
+		Status:       "registered",
+		GuestCount:   guestCount,
+		LeadInterest: isLeadInterested,
 	}
 
-	err = tx.QueryRow(`
-                INSERT INTO registrations (user_id, project_id, status, guest_count, is_project_lead)
+	err = tx.QueryRow(
+		`
+                INSERT INTO registrations (user_id, project_id, status, guest_count, lead_interest)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id, created_at, updated_at
-        `, reg.UserID, reg.ProjectID, reg.Status, reg.GuestCount, reg.IsProjectLead).Scan(&reg.ID, &reg.CreatedAt, &reg.UpdatedAt)
+        `, reg.UserID, reg.ProjectID, reg.Status, reg.GuestCount, reg.LeadInterest,
+	).Scan(&reg.ID, &reg.CreatedAt, &reg.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -129,7 +137,7 @@ func CancelRegistration(db *sql.DB, userID string, projectID int) error {
 // GetUserRegistrations gets all registrations for a user
 func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.is_project_lead,
+                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
                 r.created_at, r.updated_at,
                 p.title, p.description, p.start_time, p.end_time, p.project_date, p.max_capacity,
                 p.location_name, p.latitude, p.longitude
@@ -151,7 +159,7 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 		r.Project = &Project{}
 
 		if err := rows.Scan(
-			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.IsProjectLead,
+			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.Project.Title, &r.Project.Description, &r.Project.StartTime,
 			&r.Project.EndTime, &r.Project.ProjectDate, &r.Project.MaxCapacity,
@@ -174,9 +182,9 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 // GetProjectRegistrations gets all registrations for a project
 func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.is_project_lead,
+                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
                 r.created_at, r.updated_at,
-                u.email, u.name, u.picture
+                u.email, u.first_name, u.last_name, u.phone, u.text_permission
                 FROM registrations r
                 JOIN users u ON r.user_id = u.id
                 WHERE r.project_id = $1
@@ -195,9 +203,9 @@ func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) 
 		r.User = &User{}
 
 		if err := rows.Scan(
-			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.IsProjectLead,
+			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
-			&r.User.Email, &r.User.Name, &r.User.Picture,
+			&r.User.Email, &r.User.FirstName, &r.User.LastName, &r.User.Phone, &r.User.TextPermission,
 		); err != nil {
 			return nil, err
 		}
@@ -216,9 +224,9 @@ func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) 
 // GetRegistrationsForReminders gets registrations for projects starting in specified days
 func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.is_project_lead,
+                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
                 r.created_at, r.updated_at,
-                u.email, u.name, u.picture,
+                u.email, u.first_name, u.last_name,
                 p.title, p.description, p.start_time, p.end_time, p.project_date,
                 p.location_name, p.latitude, p.longitude
                 FROM registrations r
@@ -242,9 +250,9 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 		r.Project = &Project{}
 
 		if err := rows.Scan(
-			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.IsProjectLead,
+			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
-			&r.User.Email, &r.User.Name, &r.User.Picture,
+			&r.User.Email, &r.User.FirstName, &r.User.LastName,
 			&r.Project.Title, &r.Project.Description, &r.Project.StartTime,
 			&r.Project.EndTime, &r.Project.ProjectDate,
 			&r.Project.LocationName, &r.Project.Latitude, &r.Project.Longitude,
