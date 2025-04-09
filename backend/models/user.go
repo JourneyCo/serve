@@ -153,15 +153,3 @@ func GetAllUsers(db *sql.DB) ([]User, error) {
 
 	return users, nil
 }
-
-// SetUserAdmin sets the admin status for a user
-func SetUserAdmin(db *sql.DB, userID string, isAdmin bool) error {
-	query := `
-		UPDATE users
-		SET is_admin = $1, updated_at = CURRENT_TIMESTAMP
-		WHERE id = $2
-	`
-
-	_, err := db.Exec(query, isAdmin, userID)
-	return err
-}

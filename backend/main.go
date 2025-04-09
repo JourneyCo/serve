@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"fmt"
 
 	gorhandler "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -59,7 +59,6 @@ func main() {
 
 	// Set up middleware
 	r.Use(middleware.LoggerMiddleware)
-	r.Use(middleware.CorsMiddleware)
 
 	// API routes (with auth)
 	api := r.PathPrefix("/api").Subrouter()
@@ -94,7 +93,8 @@ func main() {
 
 	corsHandler := gorhandler.CORS(
 		gorhandler.AllowedOrigins(
-			[]string{"http://localhost:3000", "http://localhost:5000",},), // Allowed origins
+			[]string{"http://localhost:3000", "http://localhost:5000"},
+		), // Allowed origins
 		gorhandler.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),           // Allowed methods
 		gorhandler.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Allowed headers
 		gorhandler.AllowCredentials(), // Allow credentials

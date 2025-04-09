@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"slices"
 
 	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
@@ -16,13 +17,13 @@ import (
 	"project-registration-system/config"
 )
 
+const (
+	adminProjects = "edit:projects"
+)
+
 // CustomClaims contains custom claims extended from the standard JWT claims
 type CustomClaims struct {
-	Email    string   `json:"email"`
-	Nickname string   `json:"nickname"`
-	Name     string   `json:"name"`
-	Picture  string   `json:"picture"`
-	Roles    []string `json:"https://projectapp/roles"`
+	Permissions []string `json:"permissions"`
 }
 
 // Validate does custom validation for the token
@@ -63,60 +64,59 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 	)
 
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			encounteredError := true
-			var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				encounteredError = false
-				next.ServeHTTP(w, r)
-			})
+		return http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				encounteredError := true
+				var handler http.Handler = http.HandlerFunc(
+					func(w http.ResponseWriter, r *http.Request) {
+						encounteredError = false
+						next.ServeHTTP(w, r)
+					},
+				)
+				middleware.CheckJWT(handler).ServeHTTP(w, r)
 
-			middleware.CheckJWT(handler).ServeHTTP(w, r)
-
-			if encounteredError {
-				// No need to handle the error as the middleware already did
-				return
-			}
-		})
+				if encounteredError {
+					// No need to handle the error as the middleware already did
+					return
+				}
+			},
+		)
 	}
 }
 
 // AdminMiddleware checks if the user has admin role
 func AdminMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Context().Value(jwtmiddleware.ContextKey{})
-		if token == nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		claims, ok := token.(*validator.ValidatedClaims)
-		if !ok {
-			http.Error(w, "Invalid token claims", http.StatusUnauthorized)
-			return
-		}
-
-		customClaims, ok := claims.CustomClaims.(*CustomClaims)
-		if !ok {
-			http.Error(w, "Invalid custom claims", http.StatusUnauthorized)
-			return
-		}
-
-		// Check if user has admin role
-		isAdmin := false
-		for _, role := range customClaims.Roles {
-			if role == "admin" {
-				isAdmin = true
-				break
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			token := r.Context().Value(jwtmiddleware.ContextKey{})
+			if token == nil {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
 			}
-		}
 
-		if !isAdmin {
-			http.Error(w, "Forbidden: admin role required", http.StatusForbidden)
-			return
-		}
+			claims, ok := token.(*validator.ValidatedClaims)
+			if !ok {
+				http.Error(w, "Invalid token claims", http.StatusUnauthorized)
+				return
+			}
 
-		next.ServeHTTP(w, r)
-	})
+			customClaims, ok := claims.CustomClaims.(*CustomClaims)
+			if !ok {
+				http.Error(w, "Invalid custom claims", http.StatusUnauthorized)
+				return
+			}
+
+			// Check if user has admin role
+			isAdmin := slices.Contains(customClaims.Permissions, adminProjects)
+
+			if !isAdmin {
+				http.Error(w, "Forbidden: admin role required", http.StatusForbidden)
+				return
+			}
+
+			next.ServeHTTP(w, r)
+		},
+	)
 }
 
 // GetUserIDFromRequest extracts the user ID from the JWT token
