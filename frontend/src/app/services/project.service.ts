@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Project } from '../models/project.model';
@@ -22,15 +22,17 @@ export class ProjectService {
     return this.http.get<Project>(`${this.apiUrl}/projects/${id}`);
   }
 
-  registerForProject(projectId: number, guestCount: number = 0, isProjectLead: boolean = false): Observable<Registration> {
-    return this.http.post<Registration>(`${this.apiUrl}/projects/${projectId}/register`, {
-      guestCount,
-      isProjectLead
-    });
+  registerForProject(project_id: number, body: any): Observable<Registration> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<Registration>(`${this.apiUrl}/projects/${project_id}/register`, body, httpOptions);
   }
 
-  cancelRegistration(projectId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/projects/${projectId}/cancel`, {});
+  cancelRegistration(project_id: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/projects/${project_id}/cancel`, {});
   }
 
   getUserRegistrations(): Observable<Registration[]> {
@@ -50,7 +52,7 @@ export class ProjectService {
     return this.http.delete<any>(`${this.apiUrl}/admin/projects/${id}`);
   }
 
-  getProjectRegistrations(projectId: number): Observable<Registration[]> {
-    return this.http.get<Registration[]>(`${this.apiUrl}/projects/${projectId}/registrations`);
+  getProjectRegistrations(project_id: number): Observable<Registration[]> {
+    return this.http.get<Registration[]>(`${this.apiUrl}/projects/${project_id}/registrations`);
   }
 }

@@ -12,16 +12,14 @@
       <h2 mat-dialog-title>Register for {{ project?.title }}</h2>
 
       <mat-dialog-content>
-        <p>Please complete your registration details:</p>
-
         <form #registrationForm="ngForm">
           <mat-form-field class="full-width">
             <mat-label>First Name</mat-label>
             <input
               matInput
               type="text"
-              [(ngModel)]="firstName"
-              name="firstName"
+              [(ngModel)]="first_name"
+              name="first_name"
               required
             />
           </mat-form-field>
@@ -31,8 +29,8 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="lastName"
-              name="lastName"
+              [(ngModel)]="last_name"
+              name="last_name"
               required
             />
           </mat-form-field>
@@ -53,8 +51,8 @@
             <input
               matInput
               type="email"
-              [(ngModel)]="contactEmail"
-              name="contactEmail"
+              [(ngModel)]="email"
+              name="email"
               required
             />
             <mat-hint>Enter your contact email</mat-hint>
@@ -67,15 +65,15 @@
               type="number"
               min="0"
               max="10"
-              [(ngModel)]="guestCount"
-              name="guestCount"
+              [(ngModel)]="guest_count"
+              name="guest_count"
             />
             <mat-hint>Enter the number of guests you'll bring (0-10)</mat-hint>
           </mat-form-field>
 
           <mat-checkbox
-            [(ngModel)]="isProjectLead"
-            name="isProjectLead"
+            [(ngModel)]="lead_interest"
+            name="lead_interest"
             class="project-lead-checkbox"
           >
             I am interested in being a project lead
@@ -316,37 +314,28 @@
         </mat-card-header>
 
         <mat-card-content>
-          @if (registrations.length === 0) {
+          @if (registrations && registrations.length === 0) {
             <div class="no-registrations">
               <p>No registrations found for this project.</p>
+<!--              <p> {{ registrations.length === 0 }} </p>-->
             </div>
           }
 
-          @if (registrations.length > 0) {
+          @if (registrations && registrations.length > 0) {
             <div class="registrations-table-container">
               <table
                 mat-table
                 [dataSource]="registrationsDataSource"
                 class="registrations-table"
               >
-                <!-- Avatar Column -->
-                <ng-container matColumnDef="avatar">
-                  <th mat-header-cell *matHeaderCellDef>User</th>
-                  <td mat-cell *matCellDef="let reg">
-                    <img
-                      class="user-avatar"
-                      [src]="reg.user?.picture || 'assets/default-avatar.png'"
-                      alt="User avatar"
-                    />
-                  </td>
-                </ng-container>
 
                 <!-- Name Column -->
                 <ng-container matColumnDef="name">
                   <th mat-header-cell *matHeaderCellDef>Name</th>
                   <td mat-cell *matCellDef="let reg">
-                    {{ reg.user?.name }}
-                    @if (reg.isProjectLead) {
+                    {{ reg.user?.first_name }} {{ reg.user?.last_name}}
+<!--                    //TODO: not correct-->
+                    @if (reg.lead_interest) {
                       <span class="project-lead-badge">Project Lead</span>
                     }
                   </td>
@@ -358,24 +347,20 @@
                   <td mat-cell *matCellDef="let reg">{{ reg.user?.email }}</td>
                 </ng-container>
 
-                <!-- Status Column -->
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Status</th>
-                  <td mat-cell *matCellDef="let reg">
-                    <span class="status-badge" [ngClass]="reg.status">{{
-                      reg.status
-                    }}</span>
-                  </td>
+                <!-- Phone Column -->
+                <ng-container matColumnDef="phone">
+                  <th mat-header-cell *matHeaderCellDef>Phone</th>
+                  <td mat-cell *matCellDef="let reg">{{ reg.user?.phone }}</td>
                 </ng-container>
 
                 <!-- Registration Date Column -->
                 <ng-container matColumnDef="registrationDate">
                   <th mat-header-cell *matHeaderCellDef>Registration Date</th>
                   <td mat-cell *matCellDef="let reg">
-                    {{ formatDate(reg.createdAt) }}
-                    @if (reg.guestCount > 0) {
+                    {{ formatDate(reg.created_at) }}
+                    @if (reg.guest_count > 0) {
                       <span class="guest-badge"
-                        >+{{ reg.guestCount }} guests</span
+                        >+{{ reg.guest_count }} guests</span
                       >
                     }
                   </td>

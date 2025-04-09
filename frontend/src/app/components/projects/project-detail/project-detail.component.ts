@@ -26,7 +26,7 @@ import { User } from "../../../models/user.model";
 import { Observable, forkJoin, of } from "rxjs";
 import { tap } from "rxjs/operators";
 import { catchError, map, switchMap } from "rxjs/operators";
-import {MatTable, MatTableDataSource} from "@angular/material/table";
+import {MatTable, MatTableDataSource, MatTableModule} from "@angular/material/table";
 
 @Component({
   selector: "app-project-detail",
@@ -51,29 +51,35 @@ import {MatTable, MatTableDataSource} from "@angular/material/table";
     MatDialogModule,
     GoogleMapsModule,
     MatTable,
+    MatTableModule
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
 })
 export class ProjectDetailComponent implements OnInit {
-  registrationsColumns = ['avatar', 'name', 'email', 'status', 'registrationDate'];
+  registrationsColumns = [
+    "name",
+    "email",
+    "phone",
+    "registrationDate",
+  ];
   project: Project | null = null;
   registrations: Registration[] = [];
   registrationsDataSource = new MatTableDataSource<Registration>();
   currentUser: User | null = null;
-  isAdmin = false;
+  isAdmin: Observable<boolean> | undefined;
   isRegistered = false;
   isLoading = true;
   loadingRegistration = false;
   registrationError = "";
 
   // Registration form properties
-  guestCount: number = 0;
-  isProjectLead: boolean = false;
-  firstName: string = '';
-  lastName: string = '';
-  phone: string = '';
-  contactEmail: string = '';
+  guest_count: number = 0;
+  lead_interest: boolean = false;
+  first_name: string = "";
+  last_name: string = "";
+  phone: string = "";
+  email: string = "";
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {
@@ -105,14 +111,15 @@ export class ProjectDetailComponent implements OnInit {
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
+    this.isAdmin = this.authService.isAdmin();
   }
 
   loadProjectData(): void {
     this.isLoading = true;
 
     // Get the project ID from the route
-    const projectId = this.route.snapshot.paramMap.get("id");
-    if (!projectId || isNaN(+projectId)) {
+    const project_id = this.route.snapshot.paramMap.get("id");
+    if (!project_id || isNaN(+project_id)) {
       this.showError("Invalid project ID");
       this.router.navigate(["/projects"]);
       return;
@@ -122,12 +129,9 @@ export class ProjectDetailComponent implements OnInit {
     this.authService.getCurrentUser().subscribe(
       (user) => {
         this.currentUser = user;
-        // this.isAdmin = user?.isAdmin || false;
-        this.isAdmin = true;
-
 
         // Load project data
-        this.loadProjectDetails(+projectId);
+        this.loadProjectDetails(+project_id);
       },
       (error: any) => {
         console.error("Error getting user:", error);
@@ -137,12 +141,12 @@ export class ProjectDetailComponent implements OnInit {
     );
   }
 
-  loadProjectDetails(projectId: number): void {
+  loadProjectDetails(project_id: number): void {
     // Create observables for project and user registrations
-    const projectObs = this.projectService.getProject(projectId);
+    const projectObs = this.projectService.getProject(project_id);
     const registrationsObs = this.projectService.getUserRegistrations();
     const projectRegistrationsObs = this.isAdmin
-      ? this.projectService.getProjectRegistrations(projectId)
+      ? this.projectService.getProjectRegistrations(project_id)
       : of([]);
 
     // Use forkJoin to get all data at once
@@ -156,7 +160,7 @@ export class ProjectDetailComponent implements OnInit {
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
-          (reg) => reg.projectId === projectId && reg.status === "registered",
+          (reg) => reg.project_id === project_id && reg.status === "registered",
         );
 
         // If admin, get all registrations for the project
@@ -180,8 +184,8 @@ export class ProjectDetailComponent implements OnInit {
 
   openRegistrationForm(): void {
     // Reset form values
-    this.guestCount = 0;
-    this.isProjectLead = false;
+    this.guest_count = 0;
+    this.lead_interest = false;
 
     // Open dialog
     this.dialogRef = this.dialog.open(this.registrationDialogTemplate, {
@@ -209,8 +213,18 @@ export class ProjectDetailComponent implements OnInit {
       this.dialogRef.close(true);
     }
 
+    const body = {
+      guest_count: this.guest_count,
+      email: this.email,
+      phone: this.phone,
+      first_name: this.first_name,
+      last_name: this.last_name,
+      lead_interest: this.lead_interest,
+    };
+
+    console.log(body);
     this.projectService
-      .registerForProject(this.project.id, this.guestCount, this.isProjectLead)
+      .registerForProject(this.project.id, body)
       .subscribe(
         (_) => {
           this.loadingRegistration = false;

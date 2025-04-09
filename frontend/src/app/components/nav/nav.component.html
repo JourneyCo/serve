@@ -46,25 +46,15 @@
     
     @if (isAuthenticated$ | async) {
       <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
-        @if ((user$ | async)?.picture) {
-          <img 
-            [src]="(user$ | async)?.picture" 
-            alt="User Avatar" 
-            class="user-avatar"
-          >
-        }
-        @if (!(user$ | async)?.picture) {
-          <mat-icon>account_circle</mat-icon>
-        }
+        <mat-icon>account_circle</mat-icon>
       </button>
       
       <mat-menu #userMenu="matMenu">
         @if (user$ | async; as user) {
           <div class="user-menu-header">
             <div class="user-info">
-              <img [src]="user.picture" alt="User Avatar" class="user-avatar">
               <div class="user-details">
-                <p class="user-name">{{ user.name }}</p>
+                <p class="user-name">{{ user.first_name }} {{ user.last_name }}</p>
                 <p class="user-email">{{ user.email }}</p>
               </div>
             </div>

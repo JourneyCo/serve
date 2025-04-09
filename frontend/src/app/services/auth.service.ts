@@ -13,6 +13,7 @@ import {
 import { environment } from "../../environments/environment";
 import { User } from "../models/user.model";
 import { UserService } from "./user.service";
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthConfig {
   domain: string;
@@ -95,8 +96,12 @@ export class AuthService {
   }
 
   isAdmin(): Observable<boolean> {
-    return this.getCurrentUser().pipe(
-      switchMap((user) => of(user?.isAdmin || false)),
-    );
+    let admin = false;
+    this.auth0Service.getAccessTokenSilently().subscribe(token => {
+      const decodedToken: any = jwtDecode(token);
+      const perms =  decodedToken.permissions || [];
+      admin = perms.includes('edit:projects')
+    });
+    return of (admin);
   }
 }

@@ -207,8 +207,8 @@ export class ProjectFormComponent implements OnInit {
       tools: formValues.tools,
       locationAddress: formValues.locationAddress,
       projectDate: formValues.projectDate,
-      createdAt: this.data.project?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      created_at: this.data.project?.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const request = this.data.isEdit

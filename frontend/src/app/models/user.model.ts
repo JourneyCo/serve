@@ -1,13 +1,11 @@
+
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  name: string;
-  picture: string;
+  first_name: string;
+  last_name: string;
   phone: string;
-  contactEmail: string;
-  createdAt: string;
-  updatedAt: string;
-  isAdmin: boolean;
+  text_permission: boolean;
+  created_at: string;
+  updated_at: string;
 }

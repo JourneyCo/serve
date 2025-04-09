@@ -13,6 +13,8 @@ import { ProjectService } from '../../services/project.service';
 import { User } from '../../models/user.model';
 import { Registration } from '../../models/registration.model';
 import { MatTableDataSource } from '@angular/material/table';
+import {AuthService} from "../../services/auth.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-profile',
@@ -37,21 +39,24 @@ export class ProfileComponent implements OnInit {
   user: User | null = null;
   registrationsDataSource = new MatTableDataSource<Registration>([]);
   registrationsColumns = ['projectTitle', 'startDate', 'endDate', 'location', 'details', 'status', 'actions'];
+  isAdmin: Observable<boolean> | undefined;
 
   constructor(
     private userService: UserService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
     this.loadUserProfile();
-    this.loadUserRegistrations();
+    this.isAdmin = this.authService.isAdmin();
   }
 
   private loadUserProfile(): void {
     this.userService.getUserProfile().subscribe({
       next: (user) => {
         this.user = user;
+        this.loadUserRegistrations();
         this.loading = false;
       },
       error: (err) => {
@@ -95,9 +100,9 @@ export class ProfileComponent implements OnInit {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
-  cancelRegistration(projectId: number): void {
+  cancelRegistration(project_id: number): void {
     this.registrationLoading = true;
-    this.projectService.cancelRegistration(projectId).subscribe({
+    this.projectService.cancelRegistration(project_id).subscribe({
       next: () => {
         this.loadUserRegistrations();
         this.registrationLoading = false;

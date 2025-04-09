@@ -3,13 +3,13 @@ import { Project } from './project.model';
 
 export interface Registration {
   id: number;
-  userId: string;
-  projectId: number;
+  user_id: string;
+  project_id: number;
   status: string; // "registered", "cancelled", "completed"
-  guestCount: number;
-  isProjectLead: boolean;
-  createdAt: string;
-  updatedAt: string;
+  guest_count: number;
+  lead_interest: boolean;
+  created_at: string;
+  updated_at: string;
   user?: User;
   project?: Project;
 }
