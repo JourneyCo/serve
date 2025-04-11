@@ -22,11 +22,11 @@ type AdminHandler struct {
 type ProjectInput struct {
 	Title        string  `json:"title"`
 	Description  string  `json:"description"`
-	StartTime    string  `json:"startTime"`
-	EndTime      string  `json:"endTime"`
-	ProjectDate  string  `json:"projectDate"`
-	MaxCapacity  int     `json:"maxCapacity"`
-	LocationName string  `json:"locationName"`
+	StartTime    string  `json:"start_time"`
+	EndTime      string  `json:"end_time"`
+	ProjectDate  string  `json:"project_date"`
+	MaxCapacity  int     `json:"max_capacity"`
+	LocationName string  `json:"location_name"`
 	Latitude     float64 `json:"latitude"`
 	Longitude    float64 `json:"longitude"`
 }

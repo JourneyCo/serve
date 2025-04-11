@@ -12,7 +12,11 @@ require (
 )
 
 require (
-	github.com/felixge/httpsnoop v1.0.3 // indirect
+	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/golang-migrate/migrate/v4 v4.18.2 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	go.uber.org/atomic v1.7.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.3 // indirect

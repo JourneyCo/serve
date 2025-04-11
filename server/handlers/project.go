@@ -74,6 +74,14 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get lead user details if lead user ID exists
+	if project.LeadUserID != "" {
+		leadUser, err := models.GetUserByID(h.DB, project.LeadUserID)
+		if err == nil && leadUser != nil {
+			project.LeadUser = leadUser
+		}
+	}
+
 	project.Tools = []models.Tool{}
 
 	middleware.RespondWithJSON(w, http.StatusOK, project)

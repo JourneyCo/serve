@@ -40,14 +40,14 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 	var maxCapacity int
 	err = tx.QueryRow(
 		`
-                SELECT 
-                        COALESCE(COUNT(r.id), 0) + COALESCE(SUM(r.guest_count), 0), 
-                        p.max_capacity 
-                FROM projects p
-                LEFT JOIN registrations r ON p.id = r.project_id AND r.status = 'registered'
-                WHERE p.id = $1
-                GROUP BY p.id
-        `, projectID,
+								SELECT 
+												COALESCE(COUNT(r.id), 0) + COALESCE(SUM(r.guest_count), 0), 
+												p.max_capacity 
+								FROM projects p
+								LEFT JOIN registrations r ON p.id = r.project_id AND r.status = 'registered'
+								WHERE p.id = $1
+								GROUP BY p.id
+				`, projectID,
 	).Scan(&currentCount, &maxCapacity)
 
 	if err != nil {
@@ -69,9 +69,9 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 	var existingID int
 	err = tx.QueryRow(
 		`
-                SELECT id FROM registrations
-                WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
-        `, userID, projectID,
+								SELECT id FROM registrations
+								WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
+				`, userID, projectID,
 	).Scan(&existingID)
 
 	if err == nil {
@@ -91,10 +91,10 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	err = tx.QueryRow(
 		`
-                INSERT INTO registrations (user_id, project_id, status, guest_count, lead_interest)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING id, created_at, updated_at
-        `, reg.UserID, reg.ProjectID, reg.Status, reg.GuestCount, reg.LeadInterest,
+								INSERT INTO registrations (user_id, project_id, status, guest_count, lead_interest)
+								VALUES ($1, $2, $3, $4, $5)
+								RETURNING id, created_at, updated_at
+				`, reg.UserID, reg.ProjectID, reg.Status, reg.GuestCount, reg.LeadInterest,
 	).Scan(&reg.ID, &reg.CreatedAt, &reg.UpdatedAt)
 
 	if err != nil {
@@ -113,9 +113,9 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 // CancelRegistration deletes a registration
 func CancelRegistration(db *sql.DB, userID string, projectID int) error {
 	query := `
-                DELETE FROM registrations 
-                WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
-        `
+								DELETE FROM registrations 
+								WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
+				`
 
 	result, err := db.Exec(query, userID, projectID)
 	if err != nil {
@@ -137,15 +137,15 @@ func CancelRegistration(db *sql.DB, userID string, projectID int) error {
 // GetUserRegistrations gets all registrations for a user
 func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
-                r.created_at, r.updated_at,
-                p.title, p.description, p.start_time, p.end_time, p.project_date, p.max_capacity,
-                p.location_name, p.latitude, p.longitude
-                FROM registrations r
-                JOIN projects p ON r.project_id = p.id
-                WHERE r.user_id = $1
-                ORDER BY p.project_date ASC, p.start_time ASC
-        `
+								SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
+								r.created_at, r.updated_at,
+								p.title, p.description, p.start_time, p.end_time, p.project_date, p.max_capacity,
+								p.location_name, p.latitude, p.longitude
+								FROM registrations r
+								JOIN projects p ON r.project_id = p.id
+								WHERE r.user_id = $1
+								ORDER BY p.project_date ASC, p.start_time ASC
+				`
 
 	rows, err := db.Query(query, userID)
 	if err != nil {
@@ -182,14 +182,14 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 // GetProjectRegistrations gets all registrations for a project
 func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
-                r.created_at, r.updated_at,
-                u.email, u.first_name, u.last_name, u.phone, u.text_permission
-                FROM registrations r
-                JOIN users u ON r.user_id = u.id
-                WHERE r.project_id = $1
-                ORDER BY r.status, r.created_at ASC
-        `
+								SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
+								r.created_at, r.updated_at,
+								u.email, u.first_name, u.last_name, u.phone, u.text_permission
+								FROM registrations r
+								JOIN users u ON r.user_id = u.id
+								WHERE r.project_id = $1
+								ORDER BY r.status, r.created_at ASC
+				`
 
 	rows, err := db.Query(query, projectID)
 	if err != nil {
@@ -224,18 +224,18 @@ func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) 
 // GetRegistrationsForReminders gets registrations for projects starting in specified days
 func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) {
 	query := `
-                SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
-                r.created_at, r.updated_at,
-                u.email, u.first_name, u.last_name,
-                p.title, p.description, p.start_time, p.end_time, p.project_date,
-                p.location_name, p.latitude, p.longitude
-                FROM registrations r
-                JOIN users u ON r.user_id = u.id
-                JOIN projects p ON r.project_id = p.id
-                WHERE r.status = 'registered' 
-                AND p.project_date = CURRENT_DATE + $1::integer
-                ORDER BY p.project_date ASC, p.start_time ASC
-        `
+								SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
+								r.created_at, r.updated_at,
+								u.email, u.first_name, u.last_name,
+								p.title, p.description, p.start_time, p.end_time, p.project_date,
+								p.location_name, p.latitude, p.longitude
+								FROM registrations r
+								JOIN users u ON r.user_id = u.id
+								JOIN projects p ON r.project_id = p.id
+								WHERE r.status = 'registered' 
+								AND p.project_date = CURRENT_DATE + $1::integer
+								ORDER BY p.project_date ASC, p.start_time ASC
+				`
 
 	rows, err := db.Query(query, days)
 	if err != nil {

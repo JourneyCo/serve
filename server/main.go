@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -27,21 +26,12 @@ func main() {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 
-	fmt.Println("Repl Name (Slug):", os.Getenv("REPL_SLUG"))
-	fmt.Println("Repl Owner:", os.Getenv("REPL_OWNER"))
-	fmt.Println("Repl ID:", os.Getenv("REPL_ID"))
-
-	// Initialize database connection
+	// Initialize database connection and migrate
 	db, err := database.InitDB(cfg)
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer db.Close()
-
-	// Run database migrations
-	if err := database.RunMigrations(db); err != nil {
-		log.Fatalf("Failed to run database migrations: %v", err)
-	}
 
 	// Initialize email service
 	emailService := services.NewEmailService(cfg)
@@ -93,7 +83,7 @@ func main() {
 
 	corsHandler := gorhandler.CORS(
 		gorhandler.AllowedOrigins(
-			[]string{"http://localhost:3000", "http://localhost:5000"},
+			[]string{"http://localhost:3000", "http://localhost:5000", "http://localhost:8080"},
 		), // Allowed origins
 		gorhandler.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),           // Allowed methods
 		gorhandler.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Allowed headers
@@ -103,7 +93,7 @@ func main() {
 	// Server setup
 	srv := &http.Server{
 		Handler:      corsHandler,
-		Addr:         ":8000",
+		Addr:         ":8080",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 		IdleTimeout:  60 * time.Second,
