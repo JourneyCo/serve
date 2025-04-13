@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import {MatIconModule, MatIconRegistry} from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../../services/auth.service';
@@ -30,7 +30,9 @@ export class NavComponent implements OnInit {
   user$: Observable<User | null>;
   isAdmin$: Observable<boolean>;
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(private authService: AuthService,
+              private router: Router,
+              ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.user$ = this.authService.getCurrentUser();
     this.isAdmin$ = this.authService.isAdmin();

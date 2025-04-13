@@ -6,10 +6,10 @@
 *.test
 *.out
 
-frontend/node_modules
-frontend/build
-frontend/npm-debug.log*
+webapp/node_modules
+webapp/build
+webapp/npm-debug.log*
 /.idea/dataSources.xml
 /.idea/sqldialects.xml
-backend/.env
-backend/public.key
+server/.env
+server/public.key
