@@ -1,8 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, inject, Input, OnInit} from '@angular/core';
 import {MatTab, MatTabGroup} from "@angular/material/tabs";
 import {CommonModule} from "@angular/common";
 import {Account, Project} from "@models";
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
+import {APIService} from "@services";
 
 @Component({
   selector: 'admin',
@@ -14,9 +15,11 @@ export class AdminComponent implements OnInit {
   @Input() leader: Account;
   @Input() project: Project;
   detailsForm!: FormGroup;
+  private APIService = inject(APIService);
+  accounts: Account[];
+
 
   ngOnInit(): void {
-    console.log(this.project);
     this.detailsForm = new FormGroup({
       name: new FormControl(this.project.name, [Validators.required]),
       short_description: new FormControl(this.project.short_description, [Validators.required]),
@@ -28,6 +31,9 @@ export class AdminComponent implements OnInit {
       leader_id: new FormControl(this.project.leader_id, [Validators.required]),
       status: new FormControl(this.project.status, [Validators.required])
     });
+    this.APIService.getAccounts(this.project.id).subscribe(data => {
+      this.accounts = data;
+    })
   }
 
   onSubmit() {

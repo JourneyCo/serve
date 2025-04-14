@@ -100,6 +100,55 @@ SELECT * FROM accounts`
 	return accounts, nil
 }
 
+// GetAccountsByProject returns all accounts associated with a project
+// TODO: Needs completed
+func GetAccountsByProject(ctx context.Context, proj int) ([]models.Account, error) {
+	accounts := []models.Account{}
+
+	tx, err := DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.Printf("error beginning tx")
+		return accounts, err
+	}
+
+	// Defer a rollback in case anything fails.
+	defer tx.Rollback()
+
+	sqlStatement := `SELECT a.id, a.first, a.last, a.email, a.cellphone, a.text_permission, a.created_at, a.updated_at FROM accounts a INNER JOIN registrations r ON a.id = r.account_id INNER JOIN projects p ON r.project_id = p.id WHERE p.id=$1;`
+	rows, err := tx.QueryContext(ctx, sqlStatement, proj)
+	if err != nil {
+		log.Printf("error getting accounts by project: %v", err)
+		return accounts, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var account models.Account
+		if err = rows.Scan(
+			&account.ID, &account.FirstName, &account.LastName, &account.Email, &account.CellPhone,
+			&account.TextPermission, &account.CreatedAt, &account.UpdatedAt,
+		); err != nil {
+			log.Printf("error scanning while getting accounts")
+			return accounts, err
+		}
+		accounts = append(accounts, account)
+	}
+
+	// Rows.Err will report the last error encountered by Rows.Scan.
+	if err = rows.Err(); err != nil {
+		log.Printf("error row err while getting accounts")
+		return accounts, err
+	}
+
+	// Commit the transaction.
+	if err = tx.Commit(); err != nil {
+		log.Printf("error committing tx while getting accounts")
+		return accounts, err
+	}
+
+	return accounts, nil
+}
+
 func PostAccount(ctx context.Context, account models.Account) (models.Account, error) {
 	tx, err := DB.BeginTx(ctx, nil)
 	if err != nil {

@@ -72,15 +72,44 @@
             <input id="wheelchair" type="checkbox" formControlName="wheelchair" class="move-left">
           </div>
         </div>
-        <p class="mt-3 text-end">Complete the form to enable button.</p>
-        <div class="d-flex flex-row-reverse mt-3">
+        <div class="d-flex flex-row-reverse mt-3" *ngIf="detailsForm.dirty">
           <button type="submit" [disabled]="!detailsForm.valid">Submit</button>
           <button class="mx-4" type="button" matDialogClose> Cancel</button>
         </div>
       </form>
     </mat-tab>
     <mat-tab label="Roster">
-      Content 2
+      <div class="row" *ngIf="accounts.length>0">
+        <div class="card col-6">
+          <div class="card-header mb-3">
+            <h4><b>Volunteers</b></h4>
+          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let account of accounts">
+              <td>{{ account.first | titlecase }} {{ account.last | titlecase }}</td>
+              <td>{{ account.email }}</td>
+              <td>
+                <button type="button" >Delete</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+<!--          <ul class="list-group list-group-flush">-->
+<!--            <li >-->
+<!--              {{ i + 1 }}. - a Count: {{count}}-->
+<!--              {{ account.email }}-->
+<!--            </li>-->
+<!--          </ul>-->
+        </div>
+      </div>
     </mat-tab>
     <mat-tab label="Third">
       Content 3

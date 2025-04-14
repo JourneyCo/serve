@@ -18,25 +18,11 @@ func index() http.Handler {
 
 			for _, account := range accounts {
 				l := struct {
-					ID             string     `json:"id"`
-					FirstName      *string    `json:"first"`
-					LastName       *string    `json:"last"`
-					Email          *string    `json:"email"`
-					CellPhone      *string    `json:"cellphone"`
-					TextPermission *bool      `json:"text_permission"`
-					Lead           *bool      `json:"lead"`
-					CreatedAt      time.Time  `json:"created_at"`
-					UpdatedAt      *time.Time `json:"updated_at"`
+					ID string `json:"id"`
+
+					UpdatedAt *time.Time `json:"updated_at"`
 				}{
-					ID:             account.ID,
-					FirstName:      account.FirstName,
-					LastName:       account.LastName,
-					Email:          account.Email,
-					CellPhone:      account.CellPhone,
-					TextPermission: account.TextPermission,
-					Lead:           account.Lead,
-					CreatedAt:      account.CreatedAt,
-					UpdatedAt:      account.UpdatedAt,
+					ID: account.ID,
 				}
 				dto = append(dto, l)
 			}
