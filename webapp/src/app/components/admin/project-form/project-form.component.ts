@@ -96,8 +96,6 @@ export class ProjectFormComponent implements OnInit {
     const project = this.data.project;
 
     const defaultDate = "2025-07-12";
-    const defaultStartTime = "09:00";
-    const defaultEndTime = "17:00";
 
     this.projectForm = this.fb.group(
       {
@@ -114,14 +112,13 @@ export class ProjectFormComponent implements OnInit {
           [Validators.required, Validators.minLength(10)],
         ],
         project_date: [
-          project?.project_date ? project.project_date : defaultDate,
+          defaultDate,
           Validators.required,
         ],
-        start_time: [
-          project?.start_time || defaultStartTime,
+        time: [
+          project?.time || "",
           Validators.required,
         ],
-        end_time: [project?.end_time || defaultEndTime, Validators.required],
         max_capacity: [
           project?.max_capacity || 10,
           [Validators.required, Validators.min(1), Validators.max(1000)],
@@ -146,7 +143,6 @@ export class ProjectFormComponent implements OnInit {
           ) || [],
         ),
       },
-      { validators: this.timeRangeValidator },
     );
   }
 
@@ -170,17 +166,6 @@ export class ProjectFormComponent implements OnInit {
     this.tools.removeAt(index);
   }
 
-  timeRangeValidator(formGroup: FormGroup): { [key: string]: boolean } | null {
-    const start_time = formGroup.get("start_time")?.value;
-    const end_time = formGroup.get("end_time")?.value;
-
-    if (start_time && end_time && end_time <= start_time) {
-      return { timeRange: true };
-    }
-
-    return null;
-  }
-
   onSubmit(): void {
     if (this.projectForm.invalid) {
       return;
@@ -195,8 +180,7 @@ export class ProjectFormComponent implements OnInit {
       title: formValues.title,
       short_description: formValues.short_description,
       description: formValues.description,
-      start_time: formValues.start_time,
-      end_time: formValues.end_time,
+      time: formValues.time,
       max_capacity: formValues.max_capacity,
       current_registrations: this.data.project?.current_registrations || 0,
       location_name: formValues.location_name || null,

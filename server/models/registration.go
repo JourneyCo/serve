@@ -139,12 +139,12 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 	query := `
 								SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 								r.created_at, r.updated_at,
-								p.title, p.description, p.start_time, p.end_time, p.project_date, p.max_capacity,
+								p.title, p.description, p.time, p.project_date, p.max_capacity,
 								p.location_name, p.latitude, p.longitude
 								FROM registrations r
 								JOIN projects p ON r.project_id = p.id
 								WHERE r.user_id = $1
-								ORDER BY p.project_date ASC, p.start_time ASC
+								ORDER BY p.project_date ASC
 				`
 
 	rows, err := db.Query(query, userID)
@@ -161,8 +161,8 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 		if err := rows.Scan(
 			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
-			&r.Project.Title, &r.Project.Description, &r.Project.StartTime,
-			&r.Project.EndTime, &r.Project.ProjectDate, &r.Project.MaxCapacity,
+			&r.Project.Title, &r.Project.Description, &r.Project.Time,
+			&r.Project.ProjectDate, &r.Project.MaxCapacity,
 			&r.Project.LocationName, &r.Project.Latitude, &r.Project.Longitude,
 		); err != nil {
 			return nil, err
@@ -227,14 +227,14 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 								SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 								r.created_at, r.updated_at,
 								u.email, u.first_name, u.last_name,
-								p.title, p.description, p.start_time, p.end_time, p.project_date,
+								p.title, p.description, p.time, p.project_date,
 								p.location_name, p.latitude, p.longitude
 								FROM registrations r
 								JOIN users u ON r.user_id = u.id
 								JOIN projects p ON r.project_id = p.id
 								WHERE r.status = 'registered' 
 								AND p.project_date = CURRENT_DATE + $1::integer
-								ORDER BY p.project_date ASC, p.start_time ASC
+								ORDER BY p.project_date ASC
 				`
 
 	rows, err := db.Query(query, days)
@@ -253,8 +253,7 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.User.Email, &r.User.FirstName, &r.User.LastName,
-			&r.Project.Title, &r.Project.Description, &r.Project.StartTime,
-			&r.Project.EndTime, &r.Project.ProjectDate,
+			&r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
 			&r.Project.LocationName, &r.Project.Latitude, &r.Project.Longitude,
 		); err != nil {
 			return nil, err

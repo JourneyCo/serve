@@ -31,7 +31,7 @@
         </a>
 
         <!-- Admin links -->
-        @if (isAdmin$ | async) {
+        @if (isAdmin | async) {
           <a mat-button routerLink="/admin" routerLinkActive="active">
             <mat-icon>admin_panel_settings</mat-icon>
             <span>Admin</span>

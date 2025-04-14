@@ -63,18 +63,16 @@
 
       <div class="form-row time-row">
         <mat-form-field appearance="outline">
-          <mat-label>Start Time</mat-label>
-          <input matInput type="time" formControlName="start_time" required />
-          @if (projectForm.get("start_time")?.hasError("required")) {
-            <mat-error> Start time is required </mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>End Time</mat-label>
-          <input matInput type="time" formControlName="end_time" required />
-          @if (projectForm.get("end_time")?.hasError("required")) {
-            <mat-error> End time is required </mat-error>
+          <mat-label>Time</mat-label>
+          <textarea
+                  matInput
+                  formControlName="time"
+                  placeholder="Enter a period of time (9:00AM - 9:30AM)"
+                  rows="1"
+                  required
+          ></textarea>
+          @if (projectForm.get("time")?.hasError("required")) {
+            <mat-error> Time is required </mat-error>
           }
         </mat-form-field>
       </div>

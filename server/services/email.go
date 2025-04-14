@@ -46,16 +46,14 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		ProjectTitle    string
 		ProjectDesc     string
 		ProjectDate     string
-		StartTime       string
-		EndTime         string
+		Time            string
 		ProjectDateFull time.Time
 	}{
 		Name:            fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		ProjectTitle:    project.Title,
 		ProjectDesc:     project.Description,
 		ProjectDate:     projectDateFormatted,
-		StartTime:       project.StartTime,
-		EndTime:         project.EndTime,
+		Time:            project.Time,
 		ProjectDateFull: project.ProjectDate,
 	}
 
@@ -92,16 +90,14 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 		ProjectTitle string
 		ProjectDesc  string
 		ProjectDate  string
-		StartTime    string
-		EndTime      string
+		Time         string
 		DaysLeft     int
 	}{
 		Name:         fmt.Sprintf("%s %s", registration.User.FirstName, registration.User.LastName),
 		ProjectTitle: registration.Project.Title,
 		ProjectDesc:  registration.Project.Description,
 		ProjectDate:  projectDateFormatted,
-		StartTime:    registration.Project.StartTime,
-		EndTime:      registration.Project.EndTime,
+		Time:         registration.Project.Time,
 		DaysLeft:     daysLeft,
 	}
 

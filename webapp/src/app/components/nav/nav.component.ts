@@ -28,14 +28,14 @@ import { User } from '../../models/user.model';
 export class NavComponent implements OnInit {
   isAuthenticated$: Observable<boolean>;
   user$: Observable<User | null>;
-  isAdmin$: Observable<boolean>;
+  isAdmin: Observable<boolean>;
 
   constructor(private authService: AuthService,
               private router: Router,
               ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.user$ = this.authService.getCurrentUser();
-    this.isAdmin$ = this.authService.isAdmin();
+    this.isAdmin = this.authService.isAdmin();
   }
 
   ngOnInit(): void {}

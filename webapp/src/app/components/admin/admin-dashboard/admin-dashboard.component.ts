@@ -52,8 +52,7 @@ export class AdminDashboardComponent implements OnInit {
   projectColumns: string[] = [
     "id",
     "title",
-    "startDate",
-    "endDate",
+    "time",
     "capacity",
     "actions",
   ];

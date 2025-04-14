@@ -43,7 +43,7 @@ import {Subject} from "rxjs";
   styleUrls: ['./project-list.component.scss']
 })
 export class ProjectListComponent implements OnInit {
-  displayedColumns: string[] = ['title', 'projectLocation', 'start_time', 'end_time', 'capacity', 'actions'];
+  displayedColumns: string[] = ['title', 'projectLocation', 'time', 'capacity', 'actions'];
   dataSource = new MatTableDataSource<Project>([]);
   isLoading = true;
   eventsSubject: Subject<any> = new Subject<any>();
@@ -82,8 +82,7 @@ export class ProjectListComponent implements OnInit {
     this.projectService.getProjects().subscribe(
       (projects) => {
         this.dataSource.data = projects;
-        console.log(projects);
-        
+
         // Create markers for projects with valid coordinates
         this.markers = [];
         const validProjects = projects.filter(p => p.latitude && p.longitude);

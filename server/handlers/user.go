@@ -92,15 +92,12 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	log.Println(userID)
 	registrations, err := models.GetUserRegistrations(h.DB, userID)
 	if err != nil {
 		log.Println("failed to retrieve user registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
 		return
 	}
-
-	log.Println(registrations)
 
 	middleware.RespondWithJSON(w, http.StatusOK, registrations)
 }

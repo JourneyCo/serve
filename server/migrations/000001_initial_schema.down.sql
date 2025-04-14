@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS project_tools;
+DROP TABLE IF EXISTS tools;
+DROP TABLE IF EXISTS project_supplies;
+DROP TABLE IF EXISTS supplies;
+DROP TABLE IF EXISTS project_skills;
+DROP TABLE IF EXISTS skills;
+DROP TABLE IF EXISTS project_categories;
+DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS registrations;

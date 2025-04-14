@@ -155,7 +155,6 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe(
       (result) => {
         this.project = result.project;
-        console.log(this.project);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
@@ -221,7 +220,6 @@ export class ProjectDetailComponent implements OnInit {
       lead_interest: this.lead_interest,
     };
 
-    console.log(body);
     this.projectService.registerForProject(this.project.id, body).subscribe(
       (_) => {
         this.loadingRegistration = false;

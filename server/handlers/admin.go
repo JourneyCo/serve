@@ -20,15 +20,18 @@ type AdminHandler struct {
 
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
-	Title        string  `json:"title"`
-	Description  string  `json:"description"`
-	StartTime    string  `json:"start_time"`
-	EndTime      string  `json:"end_time"`
-	ProjectDate  string  `json:"project_date"`
-	MaxCapacity  int     `json:"max_capacity"`
-	LocationName string  `json:"location_name"`
-	Latitude     float64 `json:"latitude"`
-	Longitude    float64 `json:"longitude"`
+	Title                string   `json:"title"`
+	Description          string   `json:"description"`
+	ShortDescription     string   `json:"short_description"`
+	Time                 string   `json:"time"`
+	ProjectDate          string   `json:"project_date"`
+	MaxCapacity          int      `json:"max_capacity"`
+	WheelchairAccessible bool     `json:"wheelchair_accessible"`
+	LeadUserID           string   `json:"lead_user_id"`
+	Tools                []string `json:"tools,omitempty"`
+	LocationName         string   `json:"location_name"`
+	Latitude             float64  `json:"latitude"`
+	Longitude            float64  `json:"longitude"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
@@ -63,7 +66,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if input.Title == "" || input.Description == "" || input.StartTime == "" || input.EndTime == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+	if input.Title == "" || input.Description == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
 		)
@@ -81,8 +84,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	project := &models.Project{
 		Title:        input.Title,
 		Description:  input.Description,
-		StartTime:    input.StartTime,
-		EndTime:      input.EndTime,
+		Time:         input.Time,
 		ProjectDate:  projectDate,
 		MaxCapacity:  input.MaxCapacity,
 		LocationName: input.LocationName,
@@ -124,9 +126,8 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
-
 	// Validate input
-	if input.Title == "" || input.Description == "" || input.StartTime == "" || input.EndTime == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+	if input.Title == "" || input.Description == "" || input.ShortDescription == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
 		)
@@ -134,6 +135,9 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse project date
+	if input.ProjectDate == "" {
+		input.ProjectDate = "2025-07-12"
+	}
 	projectDate, err := time.Parse("2006-01-02", input.ProjectDate)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
@@ -143,15 +147,16 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	// Update project
 	project.Title = input.Title
 	project.Description = input.Description
-	project.StartTime = input.StartTime
-	project.EndTime = input.EndTime
+	project.ShortDescription = input.ShortDescription
+	project.Time = input.Time
 	project.ProjectDate = projectDate
 	project.MaxCapacity = input.MaxCapacity
 	project.LocationName = input.LocationName
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
+	project.WheelchairAccessible = input.WheelchairAccessible
 
-	if err := models.UpdateProject(h.DB, project); err != nil {
+	if err = models.UpdateProject(h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project")
 		return
 	}

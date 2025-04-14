@@ -39,14 +39,13 @@ export class ProfileComponent implements OnInit {
   registrationsDataSource = new MatTableDataSource<Registration>([]);
   registrationsColumns = [
     "projectTitle",
-    "startDate",
-    "endDate",
+    "time",
     "location",
     "details",
     "status",
     "actions",
   ];
-  isAdmin: Observable<boolean> | undefined;
+  isAdmin: Observable<boolean>;
 
   constructor(
     private userService: UserService,

@@ -11,8 +11,7 @@ type Project struct {
 	Title                string    `json:"title"`
 	ShortDescription     string    `json:"short_description"`
 	Description          string    `json:"description"`
-	StartTime            string    `json:"start_time"`
-	EndTime              string    `json:"end_time"`
+	Time                 string    `json:"time"`
 	ProjectDate          time.Time `json:"project_date"`
 	MaxCapacity          int       `json:"max_capacity"`
 	CurrentReg           int       `json:"current_registrations"`
@@ -37,14 +36,14 @@ type Tool struct {
 // GetAllProjects retrieves all projects from the database
 func GetAllProjects(db *sql.DB) ([]Project, error) {
 	query := `
-                SELECT p.id, p.title, p.description, p.start_time, p.end_time, p.project_date, 
+                SELECT p.id, p.title, p.short_description, p.description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
-                p.created_at, p.updated_at, 
+                p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
                 GROUP BY p.id
-                ORDER BY p.project_date ASC, p.start_time ASC
+                ORDER BY p.project_date ASC
         `
 
 	rows, err := db.Query(query)
@@ -57,9 +56,9 @@ func GetAllProjects(db *sql.DB) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err := rows.Scan(
-			&p.ID, &p.Title, &p.Description, &p.StartTime, &p.EndTime, &p.ProjectDate,
+			&p.ID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 		); err != nil {
 			return nil, err
 		}
@@ -76,9 +75,9 @@ func GetAllProjects(db *sql.DB) ([]Project, error) {
 // GetProjectByID retrieves a project by its ID
 func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 	query := `
-                SELECT p.id, p.title, p.description, p.start_time, p.end_time, p.project_date, 
+                SELECT p.id, p.title, p.description, p.short_description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.lead_user_id,
-                p.created_at, p.updated_at, 
+                p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
@@ -88,9 +87,9 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 
 	var p Project
 	err := db.QueryRow(query, id).Scan(
-		&p.ID, &p.Title, &p.Description, &p.StartTime, &p.EndTime, &p.ProjectDate,
+		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.LeadUserID,
-		&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
+		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
 
 	if err != nil {
@@ -106,8 +105,8 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 // CreateProject creates a new project in the database
 func CreateProject(db *sql.DB, project *Project) error {
 	query := `
-                INSERT INTO projects (title, short_description, description, start_time, end_time, project_date, max_capacity, 
-                                    location_name, location_address, latitude, longitude)
+                INSERT INTO projects (title, short_description, description, time, project_date, max_capacity, 
+                                    location_name, location_address, latitude, longitude, wheelchair_accessible)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 RETURNING id, created_at, updated_at
         `
@@ -117,14 +116,14 @@ func CreateProject(db *sql.DB, project *Project) error {
 		project.Title,
 		project.ShortDescription,
 		project.Description,
-		project.StartTime,
-		project.EndTime,
+		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
 		project.LocationName,
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,
+		project.WheelchairAccessible,
 	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
 }
 
@@ -132,9 +131,9 @@ func CreateProject(db *sql.DB, project *Project) error {
 func UpdateProject(db *sql.DB, project *Project) error {
 	query := `
                 UPDATE projects
-                SET title = $1, short_description = $2, description = $3, start_time = $4, end_time = $5, project_date = $6, 
-                max_capacity = $7, location_name = $8, location_address = $9, latitude = $10, longitude = $11,
-                updated_at = CURRENT_TIMESTAMP
+                SET title = $1, short_description = $2, description = $3, time = $4, project_date = $5, 
+                max_capacity = $6, location_name = $7, location_address = $8, latitude = $9, longitude = $10,
+                wheelchair_accessible = $11, updated_at = CURRENT_TIMESTAMP
                 WHERE id = $12
                 RETURNING updated_at
         `
@@ -144,14 +143,14 @@ func UpdateProject(db *sql.DB, project *Project) error {
 		project.Title,
 		project.ShortDescription,
 		project.Description,
-		project.StartTime,
-		project.EndTime,
+		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
 		project.LocationName,
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,
+		project.WheelchairAccessible,
 		project.ID,
 	).Scan(&project.UpdatedAt)
 }
@@ -166,7 +165,7 @@ func DeleteProject(db *sql.DB, id int) error {
 // GetUpcomingProjects retrieves projects that are starting within the given days
 func GetUpcomingProjects(db *sql.DB, days int) ([]Project, error) {
 	query := `
-                SELECT p.id, p.title, p.description, p.start_time, p.end_time, p.project_date, 
+                SELECT p.id, p.title, p.description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
                 p.created_at, p.updated_at, 
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN r.id END), 0) as current_registrations
@@ -174,7 +173,6 @@ func GetUpcomingProjects(db *sql.DB, days int) ([]Project, error) {
                 LEFT JOIN registrations r ON p.id = r.project_id
                 WHERE p.project_date BETWEEN CURRENT_DATE AND CURRENT_DATE + $1::integer
                 GROUP BY p.id
-                ORDER BY p.project_date ASC, p.start_time ASC
         `
 
 	rows, err := db.Query(query, days)
@@ -187,7 +185,7 @@ func GetUpcomingProjects(db *sql.DB, days int) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err := rows.Scan(
-			&p.ID, &p.Title, &p.Description, &p.StartTime, &p.EndTime, &p.ProjectDate,
+			&p.ID, &p.Title, &p.Description, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 		); err != nil {

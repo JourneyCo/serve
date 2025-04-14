@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { AuthModule, AuthService as Auth0Service } from "@auth0/auth0-angular";
-import { Observable, from, of, throwError } from "rxjs";
+import {Observable, from, of, throwError, Subscription} from "rxjs";
 import {
   tap,
   catchError,
@@ -96,12 +96,12 @@ export class AuthService {
   }
 
   isAdmin(): Observable<boolean> {
-    let admin = false;
-    this.auth0Service.getAccessTokenSilently().subscribe(token => {
+    return this.auth0Service.getAccessTokenSilently().pipe(
+        map(token => {
       const decodedToken: any = jwtDecode(token);
       const perms =  decodedToken.permissions || [];
-      admin = perms.includes('edit:projects')
-    });
-    return of (admin);
+      return perms.includes('edit:projects')
+    })
+    );
   }
 }
