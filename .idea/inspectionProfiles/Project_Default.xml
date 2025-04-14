@@ -4,7 +4,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="44">
+          <list size="45">
             <item index="0" class="java.lang.String" itemvalue="[(ngModel)]" />
             <item index="1" class="java.lang.String" itemvalue="sortable" />
             <item index="2" class="java.lang.String" itemvalue="(sort)" />
@@ -49,6 +49,7 @@
             <item index="41" class="java.lang.String" itemvalue="#input" />
             <item index="42" class="java.lang.String" itemvalue="mat-button" />
             <item index="43" class="java.lang.String" itemvalue="[matMenuTriggerFor]" />
+            <item index="44" class="java.lang.String" itemvalue="*ngFor" />
           </list>
         </value>
       </option>

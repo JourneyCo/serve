@@ -33,9 +33,9 @@ export class MapComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit() {
-    this.eventsSubscription = this.events?.subscribe((data) => {
+    this.eventsSubscription = this.events?.subscribe({next: (data) => {
       this.moveToClickedRow(data);
-      }
+      }}
     );
     this.locations?.forEach((location: Location)=> {
       let loc: google.maps.LatLngLiteral = {

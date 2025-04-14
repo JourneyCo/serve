@@ -10,15 +10,17 @@ import {MapComponent, RegisterDialogComponent} from "@components";
 import {CommonModule, NgIf} from "@angular/common";
 import {MatDialog} from "@angular/material/dialog";
 import {map, Subject} from "rxjs";
+import {Router, RouterLink} from "@angular/router";
+import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from "@angular/material/card";
+import {MatIcon} from "@angular/material/icon";
 import {AuthService} from "@auth0/auth0-angular";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'projects',
-  styleUrl: 'projects.component.css',
+  styleUrl: 'projects.component.scss',
   templateUrl: 'projects.component.html',
   imports: [NgIf, MatFormFieldModule, MatInputModule, MatTableModule, MatSortModule, MatPaginatorModule, MapComponent,
-  CommonModule],
+  CommonModule, MatCard, MatCardContent, MatCardTitle, MatIcon, MatCardHeader, RouterLink],
 })
 
 
@@ -44,8 +46,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   registrations: Registration[];
   registrationMap: Map<number, boolean>;
   user: Account;
+  isAuthenticated = false;
 
-  constructor() {
+  constructor(
+    private authService: AuthService,
+  ) {
   }
 
   ngOnInit() {
@@ -57,6 +62,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
       }
       this.loadRegistrations();
     });
+    this.auth.isAuthenticated$.subscribe( status => {
+      this.isAuthenticated = status;
+      }
+
+    )
     this.loadProjects(true);
     this.loadLocations();
   }
@@ -164,5 +174,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
       )
     });
     evt.stopPropagation();
+  }
+
+  login(): void {
+    this.auth.loginWithRedirect({
+      appState: {
+        target: '/projects',
+      },
+      authorizationParams: {
+        prompt: 'login',
+      },
+    });
   }
 }

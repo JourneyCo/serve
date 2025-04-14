@@ -12,7 +12,7 @@ import {AdminComponent} from "@components";
 @Component({
   selector: 'app-project',
   templateUrl: './project.component.html',
-  styleUrl: './project.component.css',
+  styleUrl: './project.component.scss',
   imports: [CommonModule, MapComponent, AdminComponent]
 })
 export class ProjectComponent implements OnInit {

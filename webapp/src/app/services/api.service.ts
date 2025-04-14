@@ -18,6 +18,10 @@ export class APIService {
     return this.http.get<any[]>(`${this.apiUrl}/accounts/`+id);
   }
 
+  public getAccounts(project?: number): Observable<any> {
+    return this.http.get<any[]>(`${this.apiUrl}/accounts?project=`+project);
+  }
+
   public getLocation(id: number): Observable<any> {
     return this.http.get<any[]>(`${this.apiUrl}/locations/`+id);
   }
