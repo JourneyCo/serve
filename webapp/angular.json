@@ -82,6 +82,12 @@
               "buildTarget": "serve:build:development"
             }
           },
+          "options": {
+            "allowedHosts": [
+              "serve.ravn.systems",
+              "localhost"
+            ]
+          },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
