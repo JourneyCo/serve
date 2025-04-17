@@ -1,11 +1,11 @@
 export const environment = {
-    production: true,
-    apiUrl: 'https:serve.raven.systems/api/v1',
-    auth0: {
+  production: true,
+  apiUrl: 'https://serve.ravn.systems/api/v1',
+  auth0: {
     domain: 'dev-dnuncdnpl8446bmt.us.auth0.com',
     clientId: 'BaYqp3c6XO3GQTqIIStocfRmVxxFRhBc',
     authorizationParams: {
-      redirect_uri: 'https:serve.raven.systems/projects',
+      redirect_uri: 'https://serve.ravn.systems/projects',
       audience: 'https://serve.journeyco.com',
     },
     errorPath: '/projects',
