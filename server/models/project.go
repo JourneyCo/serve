@@ -443,7 +443,7 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 			valueArgs = append(valueArgs, p.ID, age.ID)
 		}
 		tbl = "project_ages"
-		id = "age_id"
+		id = "ages_id"
 	case AccSkills:
 		for i, skill := range p.Skills {
 			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))

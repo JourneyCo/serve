@@ -14,6 +14,9 @@ import { Registration } from "../../models/registration.model";
 import { MatTableDataSource } from "@angular/material/table";
 import { AuthService } from "../../services/auth.service";
 import { Observable } from "rxjs";
+import {EditProfileDialogComponent} from "./edit-profile-dialog/edit-profile-dialog.component";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: "app-profile",
@@ -48,10 +51,38 @@ export class ProfileComponent implements OnInit {
   isAdmin: Observable<boolean>;
 
   constructor(
-    private userService: UserService,
-    private projectService: ProjectService,
-    private authService: AuthService,
+      private userService: UserService,
+      private projectService: ProjectService,
+      private authService: AuthService,
+      private dialog: MatDialog,
+      private snackBar: MatSnackBar
   ) {}
+
+  openEditDialog(): void {
+    const dialogRef = this.dialog.open(EditProfileDialogComponent, {
+      data: { user: this.user }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.userService.updateProfile(result).subscribe({
+          next: (updatedUser) => {
+            this.user = updatedUser;
+            this.snackBar.open('Profile updated successfully', 'Close', {
+              duration: 3000
+            });
+          },
+          error: (error) => {
+            console.error('Error updating profile:', error);
+            this.snackBar.open('Failed to update profile', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
+          }
+        });
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadUserProfile();

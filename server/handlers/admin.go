@@ -87,15 +87,16 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	// Create project
 	project := &models.Project{
-		Title:        input.Title,
-		Description:  input.Description,
-		Time:         input.Time,
-		ProjectDate:  projectDate,
-		MaxCapacity:  input.MaxCapacity,
-		LocationName: input.LocationName,
-		Latitude:     input.Latitude,
-		Longitude:    input.Longitude,
-		LeadUserID:   input.LeadUserID,
+		Title:            input.Title,
+		ShortDescription: input.ShortDescription,
+		Description:      input.Description,
+		Time:             input.Time,
+		ProjectDate:      projectDate,
+		MaxCapacity:      input.MaxCapacity,
+		LocationName:     input.LocationName,
+		Latitude:         input.Latitude,
+		Longitude:        input.Longitude,
+		LeadUserID:       input.LeadUserID,
 	}
 
 	project = applyAccessories(input, project)

@@ -96,7 +96,9 @@
           <mat-label>Lead User</mat-label>
           <mat-select formControlName="lead_user_id" required>
             @for (user of sortedUsers; track user.id) {
-            <mat-option [value]="user.id">{{ user.last_name }}, {{ user.first_name }}</mat-option>
+            <mat-option [value]="user.id"
+            >{{ user.last_name }}, {{ user.first_name }}</mat-option
+            >
             }
           </mat-select>
           @if (projectForm.get("lead_user_id")?.hasError("required")) {
@@ -157,6 +159,21 @@
           Enter a location address and coordinates will be automatically
           generated, or click the map pin icon to manually trigger geocoding.
         </p>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Location Name</mat-label>
+          <input
+                  matInput
+                  formControlName="location_name"
+                  placeholder="e.g., Community Center, Main Campus"
+                  required
+          />
+          @if (projectForm.get("location_name")?.hasError("required")) {
+          <mat-error>Location name is required</mat-error>
+          }
+        </mat-form-field>
       </div>
 
       <div class="form-row">

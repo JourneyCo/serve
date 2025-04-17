@@ -20,4 +20,8 @@ export class UserService {
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.apiUrl}/admin/users`);
   }
+
+  updateProfile(userData: Partial<User>): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/profile`, userData);
+  }
 }
