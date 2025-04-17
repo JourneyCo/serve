@@ -95,6 +95,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		LocationName: input.LocationName,
 		Latitude:     input.Latitude,
 		Longitude:    input.Longitude,
+		LeadUserID:   input.LeadUserID,
 	}
 
 	project = applyAccessories(input, project)

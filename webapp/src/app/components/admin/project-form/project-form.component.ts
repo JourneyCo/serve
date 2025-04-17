@@ -5,7 +5,10 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormArray, NgModel, FormsModule, FormControl,
+  FormArray,
+  NgModel,
+  FormsModule,
+  FormControl,
 } from "@angular/forms";
 import {
   MatDialogRef,
@@ -18,7 +21,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import {MatNativeDateModule, MatOption} from "@angular/material/core";
+import { MatNativeDateModule, MatOption } from "@angular/material/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -28,8 +31,15 @@ import { ProjectService } from "../../../services/project.service";
 import { GoogleMapsApiService } from "../../../services/google-maps-api.service";
 import { UserService } from "../../../services/user.service";
 import { Project } from "../../../models/project.model";
-import {Tools, Skills, ProjectAccessory, Categories, Ages, Supplies} from "../../../models/accessories"
-import {MatSelectModule} from "@angular/material/select";
+import {
+  Tools,
+  Skills,
+  ProjectAccessory,
+  Categories,
+  Ages,
+  Supplies,
+} from "../../../models/accessories";
+import { MatSelectModule } from "@angular/material/select";
 
 interface DialogData {
   project: Project | null;
@@ -54,21 +64,23 @@ interface DialogData {
     MatTooltipModule,
     MatCheckboxModule,
     MatChipsModule,
-      MatOption,
-      FormsModule,
-      MatSelectModule,
+    MatOption,
+    FormsModule,
+    MatSelectModule,
   ],
   templateUrl: "./project-form.component.html",
   styleUrls: ["./project-form.component.scss"],
 })
 export class ProjectFormComponent implements OnInit {
-
   projectForm!: FormGroup;
   submitting = false;
   geocoding = false;
   dialogTitle: string;
   minDate: Date;
   users: any[] = [];
+  get sortedUsers() {
+    return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
+  }
   toolList = Tools;
   toolKeys = Object.keys(Tools);
   tool_list: any;
@@ -85,15 +97,14 @@ export class ProjectFormComponent implements OnInit {
   supplyKeys = Object.keys(Supplies);
   supply_list: any;
 
-
   constructor(
-    private fb: FormBuilder,
-    private projectService: ProjectService,
-    private mapsService: GoogleMapsApiService,
-    private userService: UserService,
-    private dialogRef: MatDialogRef<ProjectFormComponent>,
-    private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+      private fb: FormBuilder,
+      private projectService: ProjectService,
+      private mapsService: GoogleMapsApiService,
+      private userService: UserService,
+      private dialogRef: MatDialogRef<ProjectFormComponent>,
+      private snackBar: MatSnackBar,
+      @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
     this.dialogTitle = data.isEdit ? "Edit Project" : "Create New Project";
     this.minDate = new Date();
@@ -108,8 +119,8 @@ export class ProjectFormComponent implements OnInit {
 
   loadUsers(): void {
     this.userService.getAllUsers().subscribe(
-      (users) => (this.users = users),
-      (error) => console.error("Error loading users:", error),
+        (users) => (this.users = users),
+        (error) => console.error("Error loading users:", error),
     );
   }
 
@@ -119,50 +130,42 @@ export class ProjectFormComponent implements OnInit {
 
     const defaultDate = "2025-07-12";
 
-    this.projectForm = this.fb.group(
-      {
-        title: [
-          project?.title || "",
-          [Validators.required, Validators.maxLength(100)],
-        ],
-        short_description: [
-          project?.short_description || "",
-          [Validators.required, Validators.maxLength(200)],
-        ],
-        description: [
-          project?.description || "",
-          [Validators.required, Validators.minLength(10)],
-        ],
-        project_date: [
-          defaultDate,
-          Validators.required,
-        ],
-        time: [
-          project?.time || "",
-          Validators.required,
-        ],
-        max_capacity: [
-          project?.max_capacity || 10,
-          [Validators.required, Validators.min(1), Validators.max(1000)],
-        ],
-        location_name: [project?.location_name || ""],
-        latitude: [
-          project?.latitude || null,
-          [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
-        ],
-        longitude: [
-          project?.longitude || null,
-          [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
-        ],
-        wheelchair_accessible: [project?.wheelchair_accessible || false],
-        lead_user_id: [project?.lead_user_id || ""],
-        tools: [project?.tools?.map(t => t.id) || []],
-        supplies: [project?.supplies?.map(s => s.id) || []],
-        ages: [project?.ages?.map(a => a.id) || []],
-        categories: [project?.categories?.map(c => c.id) || []],
-        skills: [project?.skills?.map(s => s.id) || []],
-      },
-    );
+    this.projectForm = this.fb.group({
+      title: [
+        project?.title || "",
+        [Validators.required, Validators.maxLength(100)],
+      ],
+      short_description: [
+        project?.short_description || "",
+        [Validators.required, Validators.maxLength(200)],
+      ],
+      description: [
+        project?.description || "",
+        [Validators.required, Validators.minLength(10)],
+      ],
+      project_date: [defaultDate, Validators.required],
+      time: [project?.time || "", Validators.required],
+      max_capacity: [
+        project?.max_capacity || 10,
+        [Validators.required, Validators.min(1), Validators.max(1000)],
+      ],
+      location_name: [project?.location_name || ""],
+      latitude: [
+        project?.latitude || null,
+        [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
+      ],
+      longitude: [
+        project?.longitude || null,
+        [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
+      ],
+      wheelchair_accessible: [project?.wheelchair_accessible || false],
+      lead_user_id: [project?.lead_user_id || ""],
+      tools: [project?.tools?.map((t) => t.id) || []],
+      supplies: [project?.supplies?.map((s) => s.id) || []],
+      ages: [project?.ages?.map((a) => a.id) || []],
+      categories: [project?.categories?.map((c) => c.id) || []],
+      skills: [project?.skills?.map((s) => s.id) || []],
+    });
   }
 
   onSubmit(): void {
@@ -200,19 +203,19 @@ export class ProjectFormComponent implements OnInit {
 
     console.log(project);
     const request = this.data.isEdit
-      ? this.projectService.updateProject(project)
-      : this.projectService.createProject(project);
+        ? this.projectService.updateProject(project)
+        : this.projectService.createProject(project);
 
     request.subscribe(
-      (result) => {
-        this.submitting = false;
-        this.dialogRef.close(result);
-      },
-      (error) => {
-        this.submitting = false;
-        console.error("Error saving project:", error);
-        this.showError(error.error?.error || "Failed to save project");
-      },
+        (result) => {
+          this.submitting = false;
+          this.dialogRef.close(result);
+        },
+        (error) => {
+          this.submitting = false;
+          console.error("Error saving project:", error);
+          this.showError(error.error?.error || "Failed to save project");
+        },
     );
   }
 
@@ -237,13 +240,13 @@ export class ProjectFormComponent implements OnInit {
 
   setupLocationGeocoding(): void {
     this.projectForm
-      .get("location_name")
-      ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
-      .subscribe((value) => {
-        if (value && value.length > 5) {
-          this.geocodeLocation(value);
-        }
-      });
+        .get("location_name")
+        ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
+        .subscribe((value) => {
+          if (value && value.length > 5) {
+            this.geocodeLocation(value);
+          }
+        });
   }
 
   geocodeLocation(address: string): void {
@@ -254,31 +257,31 @@ export class ProjectFormComponent implements OnInit {
     this.geocoding = true;
 
     this.mapsService
-      .geocodeAddress(address)
-      .pipe(
-        finalize(() => {
-          this.geocoding = false;
-        }),
-      )
-      .subscribe(
-        (result) => {
-          if (result) {
-            this.projectForm.patchValue({
-              latitude: result.latitude,
-              longitude: result.longitude,
-            });
+        .geocodeAddress(address)
+        .pipe(
+            finalize(() => {
+              this.geocoding = false;
+            }),
+        )
+        .subscribe(
+            (result) => {
+              if (result) {
+                this.projectForm.patchValue({
+                  latitude: result.latitude,
+                  longitude: result.longitude,
+                });
 
-            this.snackBar.open("Location geocoded successfully", "Close", {
-              duration: 3000,
-            });
-          }
-        },
-        (error) => {
-          console.error("Geocoding error:", error);
-          this.showError(
-            "Failed to geocode address: " + (error.message || "Unknown error"),
-          );
-        },
-      );
+                this.snackBar.open("Location geocoded successfully", "Close", {
+                  duration: 3000,
+                });
+              }
+            },
+            (error) => {
+              console.error("Geocoding error:", error);
+              this.showError(
+                  "Failed to geocode address: " + (error.message || "Unknown error"),
+              );
+            },
+        );
   }
 }

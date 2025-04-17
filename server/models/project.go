@@ -282,8 +282,8 @@ func CreateProject(db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (title, short_description, description, time, project_date, max_capacity, 
-                                    location_name, location_address, latitude, longitude, wheelchair_accessible)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                                    location_name, location_address, latitude, longitude, wheelchair_accessible, lead_user_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                 RETURNING id, created_at, updated_at
         `
 
@@ -300,6 +300,7 @@ func CreateProject(db *sql.DB, project *Project) error {
 		project.Latitude,
 		project.Longitude,
 		project.WheelchairAccessible,
+		project.LeadUserID,
 	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
 	if err != nil {
 		log.Println("error creating project: ", err)
