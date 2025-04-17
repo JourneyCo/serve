@@ -5,21 +5,23 @@ import (
 	"log"
 	"time"
 
-	"project-registration-system/models"
+	"serve/models"
 )
 
 // Scheduler handles scheduling of email reminders
 type Scheduler struct {
 	DB           *sql.DB
 	EmailService *EmailService
+	TextService  *TextService
 	stop         chan struct{}
 }
 
 // NewScheduler creates a new scheduler service
-func NewScheduler(db *sql.DB, emailService *EmailService) *Scheduler {
+func NewScheduler(db *sql.DB, emailService *EmailService, textService *TextService) *Scheduler {
 	return &Scheduler{
 		DB:           db,
 		EmailService: emailService,
+		TextService:  textService,
 		stop:         make(chan struct{}),
 	}
 }
@@ -73,9 +75,23 @@ func (s *Scheduler) processReminderForDays(days int) {
 
 	log.Printf("Found %d registrations for %d days reminder", len(registrations), days)
 
+	// send emails
 	for _, reg := range registrations {
 		if err := s.EmailService.SendReminderEmail(&reg, days); err != nil {
 			log.Printf("Error sending %d days reminder email to %s: %v", days, reg.User.Email, err)
 		}
+	}
+
+	// send text messages
+	var list []models.Registration
+	for _, reg := range registrations {
+		if reg.User.TextPermission { // exclude users who do not want texts
+			list = append(list, reg)
+		}
+	}
+	if err := s.TextService.SendReminderText(list, days); err != nil {
+		log.Printf(
+			"Error sending %d days reminder text: %v", days, err,
+		)
 	}
 }

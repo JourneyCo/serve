@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"project-registration-system/middleware"
-	"project-registration-system/services"
+	"serve/middleware"
+	"serve/services"
 )
 
 // GeocodingHandler handles geocoding requests

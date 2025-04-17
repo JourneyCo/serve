@@ -7,10 +7,9 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-
-	"project-registration-system/middleware"
-	"project-registration-system/models"
-	"project-registration-system/services"
+	"serve/middleware"
+	"serve/models"
+	"serve/services"
 )
 
 // ProjectHandler handles project-related requests
@@ -81,8 +80,6 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 			project.LeadUser = leadUser
 		}
 	}
-
-	project.Tools = []models.Tool{}
 
 	middleware.RespondWithJSON(w, http.StatusOK, project)
 }

@@ -32,6 +32,10 @@ type Config struct {
 	SMTPPassword string
 	EmailFrom    string
 
+	// Text config
+	ClearStreamAPIKey string
+	TextFrom          string
+
 	// Google Maps API config
 	GoogleMapsAPIKey string
 }
@@ -43,13 +47,13 @@ func Load() (*Config, error) {
 
 	config := &Config{
 		// Server config with default
-		ServerPort: getEnv("PORT", "8000"),
+		ServerPort: getEnv("PORT", "8080"),
 
 		// Database config
 		DBHost:     getEnv("PGHOST", "localhost"),
 		DBPort:     getEnv("PGPORT", "5432"),
 		DBUser:     getEnv("PGUSER", "postgres"),
-		DBPassword: getEnv("PGPASSWORD", ""),
+		DBPassword: getEnv("PGPASSWORD", "postgres"),
 		DBName:     getEnv("PGDATABASE", "serve"),
 		DBURL:      getEnv("DATABASE_URL", ""),
 
@@ -65,6 +69,10 @@ func Load() (*Config, error) {
 		SMTPUsername: getEnv("SMTP_USERNAME", "dev@example.com"),
 		SMTPPassword: getEnv("SMTP_PASSWORD", "dev-password"),
 		EmailFrom:    getEnv("EMAIL_FROM", "noreply@projectregistration.com"),
+
+		// Text config
+		ClearStreamAPIKey: getEnv("CS_API_KEY", "apikey"),
+		TextFrom:          getEnv("CS_TEXT_FROM", "9007"),
 
 		// Google Maps API config
 		GoogleMapsAPIKey: getEnv("GOOGLE_MAPS_API_KEY", ""),

@@ -11,15 +11,18 @@ import (
 
 	gorhandler "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-
-	"project-registration-system/config"
-	"project-registration-system/database"
-	"project-registration-system/handlers"
-	"project-registration-system/middleware"
-	"project-registration-system/services"
+	"github.com/joho/godotenv"
+	"serve/config"
+	"serve/database"
+	"serve/handlers"
+	"serve/middleware"
+	"serve/services"
 )
 
 func main() {
+
+	godotenv.Load()
+
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
@@ -33,14 +36,15 @@ func main() {
 	}
 	defer db.Close()
 
-	// Initialize email service
+	// Initialize email and text services
 	emailService := services.NewEmailService(cfg)
+	textService := services.NewTextService(cfg)
 
 	// Initialize maps service
 	mapsService := services.NewMapsService()
 
 	// Initialize scheduler service
-	scheduler := services.NewScheduler(db, emailService)
+	scheduler := services.NewScheduler(db, emailService, textService)
 	go scheduler.Start()
 	defer scheduler.Stop()
 

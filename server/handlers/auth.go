@@ -8,8 +8,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-
-	"project-registration-system/config"
+	"serve/config"
 )
 
 // AuthHandler handles authentication-related requests

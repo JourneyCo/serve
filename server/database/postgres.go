@@ -10,7 +10,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq" // PostgreSQL driver
-	"project-registration-system/config"
+	"serve/config"
 )
 
 // InitDB initializes the database connection

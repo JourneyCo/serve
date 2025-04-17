@@ -8,8 +8,8 @@ import (
 	"net/smtp"
 	"time"
 
-	"project-registration-system/config"
-	"project-registration-system/models"
+	"serve/config"
+	"serve/models"
 )
 
 // EmailService handles email operations

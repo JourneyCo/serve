@@ -3,14 +3,14 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
-
-	"project-registration-system/middleware"
-	"project-registration-system/models"
+	"serve/middleware"
+	"serve/models"
 )
 
 // AdminHandler handles admin-related requests
@@ -20,18 +20,22 @@ type AdminHandler struct {
 
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
-	Title                string   `json:"title"`
-	Description          string   `json:"description"`
-	ShortDescription     string   `json:"short_description"`
-	Time                 string   `json:"time"`
-	ProjectDate          string   `json:"project_date"`
-	MaxCapacity          int      `json:"max_capacity"`
-	WheelchairAccessible bool     `json:"wheelchair_accessible"`
-	LeadUserID           string   `json:"lead_user_id"`
-	Tools                []string `json:"tools,omitempty"`
-	LocationName         string   `json:"location_name"`
-	Latitude             float64  `json:"latitude"`
-	Longitude            float64  `json:"longitude"`
+	Title                string  `json:"title"`
+	Description          string  `json:"description"`
+	ShortDescription     string  `json:"short_description"`
+	Time                 string  `json:"time"`
+	ProjectDate          string  `json:"project_date"`
+	MaxCapacity          int     `json:"max_capacity"`
+	WheelchairAccessible bool    `json:"wheelchair_accessible"`
+	LeadUserID           string  `json:"lead_user_id"`
+	Tools                []int   `json:"tools,omitempty"`
+	Skills               []int   `json:"skills,omitempty"`
+	Categories           []int   `json:"categories,omitempty"`
+	Ages                 []int   `json:"ages,omitempty"`
+	Supplies             []int   `json:"supplies,omitempty"`
+	LocationName         string  `json:"location_name"`
+	Latitude             float64 `json:"latitude"`
+	Longitude            float64 `json:"longitude"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
@@ -61,6 +65,7 @@ func (h *AdminHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	var input ProjectInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		log.Println(err)
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -91,6 +96,8 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		Latitude:     input.Latitude,
 		Longitude:    input.Longitude,
 	}
+
+	project = applyAccessories(input, project)
 
 	if err := models.CreateProject(h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create project")
@@ -156,6 +163,8 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Longitude = input.Longitude
 	project.WheelchairAccessible = input.WheelchairAccessible
 
+	project = applyAccessories(input, project)
+
 	if err = models.UpdateProject(h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project")
 		return
@@ -192,4 +201,54 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Project deleted successfully"})
+}
+
+func applyAccessories(input ProjectInput, project *models.Project) *models.Project {
+	var tools []models.ProjectAccessory
+	var categories []models.ProjectAccessory
+	var skills []models.ProjectAccessory
+	var supplies []models.ProjectAccessory
+	var ages []models.ProjectAccessory
+
+	for _, val := range input.Tools {
+		a := models.ProjectAccessory{
+			ID: val,
+		}
+		tools = append(tools, a)
+	}
+	project.Tools = tools
+
+	for _, val := range input.Categories {
+		a := models.ProjectAccessory{
+			ID: val,
+		}
+		categories = append(categories, a)
+	}
+	project.Categories = categories
+
+	for _, val := range input.Skills {
+		a := models.ProjectAccessory{
+			ID: val,
+		}
+		skills = append(skills, a)
+	}
+	project.Skills = skills
+
+	for _, val := range input.Supplies {
+		a := models.ProjectAccessory{
+			ID: val,
+		}
+		supplies = append(supplies, a)
+	}
+	project.Supplies = supplies
+
+	for _, val := range input.Ages {
+		a := models.ProjectAccessory{
+			ID: val,
+		}
+		ages = append(ages, a)
+	}
+	project.Ages = ages
+
+	return project
 }

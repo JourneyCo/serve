@@ -6,10 +6,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-
-	"project-registration-system/middleware"
-	"project-registration-system/models"
-	"project-registration-system/services"
+	"serve/middleware"
+	"serve/models"
+	"serve/services"
 )
 
 // UserHandler handles user-related requests

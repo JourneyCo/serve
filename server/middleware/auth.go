@@ -14,7 +14,7 @@ import (
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 
-	"project-registration-system/config"
+	"serve/config"
 )
 
 const (
