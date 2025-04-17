@@ -1,15 +1,15 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080', // Empty to use relative URLs (proxy will handle it)
-  googleMapsApiKey: 'AIzaSyDwo9SyW5J7vMQX8DAz6faesTedB2s0Csw', // Will be replaced with the actual API key at runtime
+  apiUrl: "http://localhost:8080", // Empty to use relative URLs (proxy will handle it)
+  googleMapsApiKey: "AIzaSyDwo9SyW5J7vMQX8DAz6faesTedB2s0Csw", // Will be replaced with the actual API key at runtime
   auth0: {
-    domain: 'dev-dnuncdnpl8446bmt.us.auth0.com',
-    clientId: 'BaYqp3c6XO3GQTqIIStocfRmVxxFRhBc',
+    domain: "dev-dnuncdnpl8446bmt.us.auth0.com",
+    clientId: "BaYqp3c6XO3GQTqIIStocfRmVxxFRhBc",
     authorizationParams: {
-      redirect_uri: 'http://localhost:3000',
-      audience: 'https://serve.journeyco.com',
+      redirect_uri: "http://localhost:3000",
+      audience: "https://serve.journeyco.com",
     },
-    errorPath: '/projects',
+    errorPath: "/projects",
     // The AuthHttpInterceptor configuration
     httpInterceptor: {
       allowedList: [
@@ -17,7 +17,9 @@ export const environment = {
         // '/api',
 
         // Attach access tokens to any calls that start with '/api/'
-        '/api/v1/*', '*', 'http://localhost:8080/api/v1/*',
+        "/api/v1/*",
+        "*",
+        "http://localhost:8080/api/v1/*",
 
         // Match anything starting with /api/accounts, but also specify the audience and scope the attached
         // access token must have

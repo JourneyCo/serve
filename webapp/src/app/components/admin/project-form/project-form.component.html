@@ -88,17 +88,64 @@
             max="1000"
             required
           />
-          @if (projectForm.get("max_capacity")?.hasError("required")) {
-            <mat-error> Maximum capacity is required </mat-error>
-          }
-          @if (projectForm.get("max_capacity")?.hasError("min")) {
-            <mat-error> Minimum capacity is 1 </mat-error>
-          }
-          @if (projectForm.get("max_capacity")?.hasError("max")) {
-            <mat-error> Maximum capacity cannot exceed 1000 </mat-error>
-          }
         </mat-form-field>
       </div>
+
+<!--      <div class="form-row">-->
+<!--        <mat-form-field appearance="outline" class="full-width">-->
+<!--          <mat-label>Tools Required</mat-label>-->
+<!--          <mat-select [(ngModel)]="tool_list" multiple name="tool_list" [ngModelOptions]="{standalone: true}">-->
+<!--            <mat-option [value]="tool.id" *ngFor="let tool of toolList">-->
+<!--              {{tool.name}}-->
+<!--            </mat-option>-->
+<!--          </mat-select>-->
+<!--        </mat-form-field>-->
+<!--      </div>-->
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Tools</mat-label>
+        <mat-select formControlName="tools" multiple>
+          @for (key of toolKeys; track key) {
+          <mat-option [value]="+key">{{ toolList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Skills</mat-label>
+        <mat-select formControlName="skills" multiple>
+          @for (key of skillKeys; track key) {
+          <mat-option [value]="+key">{{ skillList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Categories</mat-label>
+        <mat-select formControlName="categories" multiple>
+          @for (key of categoryKeys; track key) {
+          <mat-option [value]="+key">{{ categoryList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ages</mat-label>
+        <mat-select formControlName="ages" multiple>
+          @for (key of ageKeys; track key) {
+          <mat-option [value]="+key">{{ ageList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Supplies</mat-label>
+        <mat-select formControlName="supplies" multiple>
+          @for (key of supplyKeys; track key) {
+          <mat-option [value]="+key">{{ supplyList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
       <!-- Location Information Section -->
       <div class="section-label">

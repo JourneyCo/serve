@@ -31,6 +31,7 @@ import {
   MatTableDataSource,
   MatTableModule,
 } from "@angular/material/table";
+import {Ages, Categories, Supplies, Tools} from "../../../models/accessories";
 
 @Component({
   selector: "app-project-detail",
@@ -71,6 +72,10 @@ export class ProjectDetailComponent implements OnInit {
   isLoading = true;
   loadingRegistration = false;
   registrationError = "";
+  tools = Tools
+  supplies = Supplies
+  categories = Categories
+  ages = Ages
 
   // Registration form properties
   guest_count: number = 0;
@@ -155,6 +160,7 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe(
       (result) => {
         this.project = result.project;
+        console.log(this.project);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
@@ -268,16 +274,6 @@ export class ProjectDetailComponent implements OnInit {
       month: "long",
       day: "numeric",
     });
-  }
-
-  formatTime(time: string): string {
-    // Convert HH:MM:SS to a formatted time string (e.g. "9:00 AM")
-    const [hours, minutes] = time.split(":");
-    const hour = parseInt(hours, 10);
-    const minute = parseInt(minutes, 10);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    const formattedHour = hour % 12 || 12; // Convert 0 to 12 for display
-    return `${formattedHour}:${minute.toString().padStart(2, "0")} ${ampm}`;
   }
 
   getDaysUntilStart(): number {

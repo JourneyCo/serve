@@ -1,4 +1,11 @@
 .project-form-container {
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-form-field {
+    margin-bottom: 16px;
+  }
   .form-row {
     margin-bottom: 16px;
     

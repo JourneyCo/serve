@@ -98,9 +98,6 @@
                     <ng-container *ngIf="project.current_registrations >= project.max_capacity">
                       Full
                     </ng-container>
-                    <ng-container *ngIf="project.current_registrations < project.max_capacity">
-                      Need {{project.max_capacity - project.current_registrations}} more
-                    </ng-container>
                   </span>
                 </div>
               </div>

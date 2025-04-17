@@ -5,7 +5,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormArray,
+  FormArray, NgModel, FormsModule, FormControl,
 } from "@angular/forms";
 import {
   MatDialogRef,
@@ -18,7 +18,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
+import {MatNativeDateModule, MatOption} from "@angular/material/core";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -28,6 +28,8 @@ import { ProjectService } from "../../../services/project.service";
 import { GoogleMapsApiService } from "../../../services/google-maps-api.service";
 import { UserService } from "../../../services/user.service";
 import { Project } from "../../../models/project.model";
+import {Tools, Skills, ProjectAccessory, Categories, Ages, Supplies} from "../../../models/accessories"
+import {MatSelectModule} from "@angular/material/select";
 
 interface DialogData {
   project: Project | null;
@@ -52,18 +54,37 @@ interface DialogData {
     MatTooltipModule,
     MatCheckboxModule,
     MatChipsModule,
+      MatOption,
+      FormsModule,
+      MatSelectModule,
   ],
   templateUrl: "./project-form.component.html",
   styleUrls: ["./project-form.component.scss"],
 })
 export class ProjectFormComponent implements OnInit {
+
   projectForm!: FormGroup;
   submitting = false;
   geocoding = false;
   dialogTitle: string;
   minDate: Date;
   users: any[] = [];
-  toolInput = "";
+  toolList = Tools;
+  toolKeys = Object.keys(Tools);
+  tool_list: any;
+  skillList = Skills;
+  skillKeys = Object.keys(Skills);
+  skill_list: any;
+  categoryList = Categories;
+  categoryKeys = Object.keys(Categories);
+  category_list: any;
+  ageList = Ages;
+  ageKeys = Object.keys(Ages);
+  age_list: any;
+  supplyList = Supplies;
+  supplyKeys = Object.keys(Supplies);
+  supply_list: any;
+
 
   constructor(
     private fb: FormBuilder,
@@ -94,6 +115,7 @@ export class ProjectFormComponent implements OnInit {
 
   initForm(): void {
     const project = this.data.project;
+    console.log(project);
 
     const defaultDate = "2025-07-12";
 
@@ -134,36 +156,13 @@ export class ProjectFormComponent implements OnInit {
         ],
         wheelchair_accessible: [project?.wheelchair_accessible || false],
         lead_user_id: [project?.lead_user_id || ""],
-        tools: this.fb.array(
-          project?.tools?.map((tool) =>
-            this.fb.group({
-              id: [tool.id],
-              name: [tool.name],
-            }),
-          ) || [],
-        ),
+        tools: [project?.tools?.map(t => t.id) || []],
+        supplies: [project?.supplies?.map(s => s.id) || []],
+        ages: [project?.ages?.map(a => a.id) || []],
+        categories: [project?.categories?.map(c => c.id) || []],
+        skills: [project?.skills?.map(s => s.id) || []],
       },
     );
-  }
-
-  get tools(): FormArray {
-    return this.projectForm.get("tools") as FormArray;
-  }
-
-  addTool(): void {
-    if (this.toolInput.trim()) {
-      this.tools.push(
-        this.fb.group({
-          id: [0],
-          name: [this.toolInput.trim()],
-        }),
-      );
-      this.toolInput = "";
-    }
-  }
-
-  removeTool(index: number): void {
-    this.tools.removeAt(index);
   }
 
   onSubmit(): void {
@@ -189,12 +188,17 @@ export class ProjectFormComponent implements OnInit {
       wheelchair_accessible: formValues.wheelchair_accessible,
       lead_user_id: formValues.lead_user_id,
       tools: formValues.tools,
+      supplies: formValues.supplies,
+      ages: formValues.ages,
+      categories: formValues.categories,
+      skills: formValues.skills,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.data.project?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
+    console.log(project);
     const request = this.data.isEdit
       ? this.projectService.updateProject(project)
       : this.projectService.createProject(project);

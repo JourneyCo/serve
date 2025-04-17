@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { AuthModule, AuthService as Auth0Service } from "@auth0/auth0-angular";
-import {Observable, from, of, throwError, Subscription} from "rxjs";
+import { Observable, from, of, throwError, Subscription } from "rxjs";
 import {
   tap,
   catchError,
@@ -13,7 +13,7 @@ import {
 import { environment } from "../../environments/environment";
 import { User } from "../models/user.model";
 import { UserService } from "./user.service";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 interface AuthConfig {
   domain: string;
@@ -97,11 +97,11 @@ export class AuthService {
 
   isAdmin(): Observable<boolean> {
     return this.auth0Service.getAccessTokenSilently().pipe(
-        map(token => {
-      const decodedToken: any = jwtDecode(token);
-      const perms =  decodedToken.permissions || [];
-      return perms.includes('edit:projects')
-    })
+      map((token) => {
+        const decodedToken: any = jwtDecode(token);
+        const perms = decodedToken.permissions || [];
+        return perms.includes("edit:projects");
+      }),
     );
   }
 }
