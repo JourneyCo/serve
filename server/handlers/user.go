@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -25,6 +26,7 @@ func RegisterUserRoutes(router *mux.Router, db *sql.DB, emailService *services.E
 	}
 
 	router.HandleFunc("/profile", handler.GetUserProfile).Methods("GET")
+	router.HandleFunc("/profile", handler.UpdateUserProfile).Methods("PUT")
 	router.HandleFunc("/registrations", handler.GetUserRegistrations).Methods("GET")
 }
 
@@ -99,4 +101,29 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, registrations)
+}
+
+// UpdateUserProfile updates the profile of the authenticated user
+func (h *UserHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request) {
+	userID, err := middleware.GetUserIDFromRequest(r)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
+		return
+	}
+
+	var user models.User
+	if err = json.NewDecoder(r.Body).Decode(&user); err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	// Ensure the user can only update their own profile
+	user.ID = userID
+
+	if err = models.UpdateUser(h.DB, &user); err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update user profile")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, user)
 }
