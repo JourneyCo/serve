@@ -17,3 +17,4 @@ infra/packer/playbook/files/public.key
 infra/packer/playbook/files/deploy.key
 .terraform*
 terraform.tfstate
+webapp/.vscode
