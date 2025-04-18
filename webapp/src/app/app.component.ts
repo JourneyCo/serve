@@ -1,12 +1,18 @@
-import { Component } from '@angular/core';
-import {RouterLink, RouterOutlet} from "@angular/router";
-import {HeaderComponent} from "./header/header.component";
+import { Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { HttpClientModule } from "@angular/common/http";
+import { CommonModule } from "@angular/common";
+import { NavComponent } from "./components/nav/nav.component";
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.css'],
-    imports: [RouterOutlet, HeaderComponent]
+  selector: "app-root",
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, HttpClientModule, NavComponent],
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
 })
 export class AppComponent {
+  title = "Journey Serve Day";
+
+  constructor() {}
 }
