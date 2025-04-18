@@ -102,7 +102,7 @@
 
     - name: Copy git key
       ansible.builtin.copy:
-        src: ~/.ssh/id_rsa
+        src: files/deploy.key
         dest: /home/ec2-user/.ssh/id_rsa
         owner: ec2-user
         group: ec2-user

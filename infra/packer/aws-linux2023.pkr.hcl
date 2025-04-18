@@ -16,7 +16,7 @@ source "amazon-ebs" "al2023" {
 }
 
 build {
-  name = "learn-packer"
+  name = "serve-golden-image"
   sources = [
     "source.amazon-ebs.al2023"
   ]

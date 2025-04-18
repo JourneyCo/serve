@@ -15,3 +15,6 @@ server/.env
 server/public.key
 infra/packer/playbook/files/.env
 infra/packer/playbook/files/public.key
+infra/packer/playbook/files/deploy.key
+.terraform*
+terraform.tfstate
