@@ -13,11 +13,11 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { GoogleMapsModule } from "@angular/google-maps";
-import { GoogleMapsApiService } from "../../../services/google-maps-api.service";
-import { Project } from "../../../models/project.model";
-import { ProjectService } from "../../../services/project.service";
+import { GoogleMapsApiService } from '@services';
+import { Project } from '@models';
+import { ProjectService } from '@services';
 import { GoogleMapComponent } from "../../google-map/google-map.component";
-import { Marker } from "../../../models/marker.model";
+import { Marker } from '@models';
 import { Subject } from "rxjs";
 
 @Component({

@@ -8,7 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
 export const GOOGLE_MAPS_API_KEY = new InjectionToken<string>('google-maps-api-key');
-import { authInterceptor } from './services/auth.interceptor';
+import { authInterceptor } from '@services';
 
 export const appConfig: ApplicationConfig = {
   providers: [
