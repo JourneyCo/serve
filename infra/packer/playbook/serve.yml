@@ -1,0 +1,150 @@
+- name: 'Serve Image'
+  hosts: default
+
+  tasks:
+    - name: DNF Install
+      become: true
+      ansible.builtin.dnf:
+        update_cache: true
+        name: 
+          - git
+          - tmux
+          - nginx
+          - docker
+  
+    - name: setup nginx location
+      become: true
+      ansible.builtin.file:
+        path: /usr/share/nginx/serve
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Install go
+      become: true
+      ansible.builtin.shell: |
+        wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
+        tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
+        echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+
+    - name: Install nvm
+      ansible.builtin.shell: >
+        curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.39.7/install.sh | bash
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/.nvm/nvm.sh"
+
+    - name: Setup .profile
+      ansible.builtin.lineinfile:
+        path: ~/.profile
+        line: source ~/.nvm/nvm.sh # This will make sure Node is on the user's PATH
+        create: yes
+
+    - name: Install node
+      ansible.builtin.shell: |
+        source ~/.nvm/nvm.sh && nvm install {{item}}
+      args:
+        executable: /bin/bash
+        chdir: "$HOME"
+        creates: "$HOME/.nvm/versions/node/v{{item}}"
+      loop:
+        - 22.14.0
+
+    - name: Node symlinks
+      become: true
+      ansible.builtin.file:
+        src: /home/ec2-user/.nvm/versions/node/v22.14.0/bin/{{item}}
+        dest: /usr/local/bin/{{item}}
+        owner: ec2-user
+        group: ec2-user
+        state: link
+      loop:
+        - node
+        - npm
+  
+    - name: Configure Docker
+      become: true
+      ansible.builtin.shell: |
+        mkdir -p /usr/local/lib/docker/cli-plugins/
+        curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+        chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+        usermod -a -G docker ec2-user
+        systemctl enable docker
+        systemctl start docker
+
+    - name: Copy serve-be service file
+      become: true
+      ansible.builtin.copy:
+        src: files/serve-be.service
+        dest: /etc/systemd/system/serve-be.service
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy nginx config
+      become: true
+      ansible.builtin.copy:
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy authorized_keys
+      ansible.builtin.copy:
+        src: files/authorized_keys
+        dest: /home/ec2-user/.ssh/authorized_keys
+        owner: ec2-user
+        group: ec2-user
+        mode: '0600'
+
+    - name: Copy git key
+      ansible.builtin.copy:
+        src: ~/.ssh/id_rsa
+        dest: /home/ec2-user/.ssh/id_rsa
+        owner: ec2-user
+        group: ec2-user
+        mode: '0600'
+
+    - name: Clone repo
+      ansible.builtin.git:
+        repo: "git@github.com:scarrington76/serve.git"
+        dest: /home/ec2-user/serve
+        accept_hostkey: true
+
+    - name: Copy backend configs
+      ansible.builtin.copy:
+        src: files/{{item}}
+        dest: /home/ec2-user/serve/server
+        owner: ec2-user
+        group: ec2-user
+        mode: '0600'
+      loop:
+        - .env
+        - public.key
+
+    - name: Build backend
+      ansible.builtin.shell:
+        chdir: /home/ec2-user/serve/server
+        cmd: /usr/local/go/bin/go build
+
+    - name: npm install
+      ansible.builtin.shell:
+        chdir: /home/ec2-user/serve/webapp
+        cmd: npm install
+
+    - name: Build frontend
+      ansible.builtin.shell:
+        chdir: /home/ec2-user/serve/webapp
+        cmd: npm run build
+
+    - name: Copy frontend build
+      become: true
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /home/ec2-user/serve/webapp/build/browser/
+        dest: /usr/share/nginx/serve/
+        owner: root
+        group: root

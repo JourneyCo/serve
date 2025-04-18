@@ -13,3 +13,5 @@ webapp/npm-debug.log*
 /.idea/sqldialects.xml
 server/.env
 server/public.key
+infra/packer/playbook/files/.env
+infra/packer/playbook/files/public.key

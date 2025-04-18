@@ -1,0 +1,21 @@
+[Unit]
+Description=Journey Serve App Backend
+ConditionPathExists=/home/ec2-user/serve/server
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+
+WorkingDirectory=/home/ec2-user/serve/server
+ExecStart=/home/ec2-user/serve/server/serve
+Restart=on-failure
+RestartSec=10
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=serve-be
+
+[Install]
+WantedBy=multi-user.target
