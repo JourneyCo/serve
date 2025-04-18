@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "project-registration-frontend": {
+    "serve": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/project-registration-frontend",
+            "outputPath": "dist/serve",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": [
@@ -73,14 +73,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "project-registration-frontend:build"
+            "buildTarget": "serve:build"
           },
           "configurations": {
             "production": {
-              "buildTarget": "project-registration-frontend:build:production"
+              "buildTarget": "serve:build:production"
             },
             "development": {
-              "buildTarget": "project-registration-frontend:build:development"
+              "buildTarget": "serve:build:development"
             }
           },
           "options": {
@@ -94,7 +94,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "buildTarget": "project-registration-frontend:build"
+            "buildTarget": "serve:build"
           }
         },
         "test": {
