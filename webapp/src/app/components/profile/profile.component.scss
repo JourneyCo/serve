@@ -30,7 +30,7 @@
 
     p {
       margin-top: 16px;
-      color: #666;
+      color: var(--journeyGray);
     }
   }
 
@@ -55,7 +55,7 @@
         .label {
           min-width: 120px;
           font-weight: 500;
-          color: #555;
+          color: var(--journeyGray);
         }
 
         .value {
@@ -67,8 +67,8 @@
         display: inline-flex;
         align-items: center;
         padding: 4px 12px;
-        background-color: #3f51b5;
-        color: white;
+        background-color: var(--journeyBlue);
+        color: var(--journeyWhite);
         border-radius: 16px;
         margin-top: 8px;
 
@@ -87,7 +87,7 @@
       font-size: 1.5rem;
       margin-bottom: 20px;
       color: #333;
-      border-bottom: 2px solid #3f51b5;
+      border-bottom: 2px solid var(--journeyBlue);
       padding-bottom: 8px;
     }
 
@@ -99,13 +99,13 @@
         font-size: 48px;
         height: 48px;
         width: 48px;
-        color: #ccc;
+        color: var(--journeyWhite);
         margin-bottom: 16px;
       }
 
       p {
         margin-bottom: 24px;
-        color: #666;
+        color: var(--journeyGray);
       }
     }
 
@@ -116,12 +116,12 @@
         width: 100%;
 
         .mat-header-row {
-          background-color: #f5f5f5;
+          background-color: var(--journeyWhite);
         }
 
         .days-info {
           font-size: 0.8rem;
-          color: #3f51b5;
+          color: var(--journeyBlue);
 
           &.started {
             color: #f44336;
@@ -133,17 +133,17 @@
           padding: 3px 8px;
           border-radius: 4px;
           font-size: 0.8rem;
-          background-color: #f0f0f0;
-          color: #424242;
+          background-color: var(--journeyWhite);
+          color: var(--journeyGray);
           margin-right: 5px;
 
           &.lead {
-            background-color: #e3f2fd;
-            color: #1976d2;
+            background-color: var(--journeyWhite);
+            color: var(--journeyBlue);
           }
 
           &.guests {
-            background-color: #fff3e0;
+            background-color: var(--journeyWhite);
             color: #e65100;
           }
         }
@@ -169,23 +169,22 @@
 
         .status-badge {
           display: inline-block;
-          padding: 4px 8px;
           border-radius: 4px;
           font-size: 0.8rem;
           text-transform: uppercase;
 
           &.registered {
             background-color: #e3f2fd;
-            color: #1976d2;
+            color: var(--journeyBlue);
           }
 
           &.cancelled {
-            background-color: #ffebee;
+            background-color: var(--journeyWhite);
             color: #d32f2f;
           }
 
           &.completed {
-            background-color: #e8f5e9;
+            background-color: var(--journeyWhite);
             color: #388e3c;
           }
         }

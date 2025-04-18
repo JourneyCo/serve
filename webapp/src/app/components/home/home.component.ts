@@ -4,7 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '@services';
 
 @Component({
   selector: 'app-home',

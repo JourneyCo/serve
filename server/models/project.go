@@ -30,8 +30,8 @@ type Project struct {
 	Categories           []ProjectAccessory `json:"categories,omitempty"`
 	Ages                 []ProjectAccessory `json:"ages,omitempty"`
 	Skills               []ProjectAccessory `json:"skills,omitempty"`
-	CreatedAt            time.Time          `json:"createdAt"`
-	UpdatedAt            time.Time          `json:"updatedAt"`
+	CreatedAt            time.Time          `json:"created_at"`
+	UpdatedAt            time.Time          `json:"updated_at"`
 }
 
 const (
@@ -272,6 +272,26 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 			return nil, err
 		}
 		p.Ages = append(p.Ages, age)
+	}
+
+	// Get skills for this project
+	skillsQuery := `
+		SELECT a.id, a.name FROM ages a
+		JOIN project_ages pa ON a.id = pa.ages_id
+		WHERE pa.project_id = $1
+	`
+	skillsRows, err := db.Query(skillsQuery, id)
+	if err != nil {
+		return nil, err
+	}
+	defer ageRows.Close()
+
+	for skillsRows.Next() {
+		var skill ProjectAccessory
+		if err = skillsRows.Scan(&skill.ID, &skill.Name); err != nil {
+			return nil, err
+		}
+		p.Skills = append(p.Skills, skill)
 	}
 
 	return &p, nil

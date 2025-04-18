@@ -176,7 +176,13 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Send confirmation email
 	if user != nil && project != nil {
-		go h.EmailService.SendRegistrationConfirmation(user, project)
+		go func() {
+			err := h.EmailService.SendRegistrationConfirmation(user, project)
+			if err != nil {
+				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
+				log.Println(err)
+			}
+		}()
 	}
 
 	middleware.RespondWithJSON(w, http.StatusCreated, registration)

@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  serveDay: "07-12-25",
   apiUrl: "http://localhost:8080", // Empty to use relative URLs (proxy will handle it)
   googleMapsApiKey: "AIzaSyDwo9SyW5J7vMQX8DAz6faesTedB2s0Csw", // Will be replaced with the actual API key at runtime
   auth0: {

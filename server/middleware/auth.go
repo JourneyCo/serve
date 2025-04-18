@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"strings"
 
 	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
-
 	"serve/config"
 )
 
@@ -160,7 +160,7 @@ func RespondWithError(w http.ResponseWriter, status int, message string) {
 	response := map[string]string{"error": message}
 	w.Header().Set("Content-Type", "application/json")
 	if status != http.StatusOK {
-		log.Println(message)
+		log.Println(strings.ToLower(message))
 	}
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(response)

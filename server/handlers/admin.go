@@ -101,7 +101,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	project = applyAccessories(input, project)
 
-	if err := models.CreateProject(h.DB, project); err != nil {
+	if err = models.CreateProject(h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create project")
 		return
 	}
@@ -131,7 +131,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var input ProjectInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+	if err = json.NewDecoder(r.Body).Decode(&input); err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -164,6 +164,8 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
 	project.WheelchairAccessible = input.WheelchairAccessible
+
+	// TODO: Need to delete accessories here for an existing projct before adding accessories
 
 	project = applyAccessories(input, project)
 

@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -33,31 +34,7 @@ func GetUserByID(db *sql.DB, id string) (*User, error) {
 	)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil // User not found
-		}
-		return nil, err
-	}
-
-	return &user, nil
-}
-
-// GetUserByEmail retrieves a user by their email
-func GetUserByEmail(db *sql.DB, email string) (*User, error) {
-	query := `
-		SELECT id, email, first_name, last_name, phone, text_permission, created_at, updated_at
-		FROM users
-		WHERE email = $1
-	`
-
-	var user User
-	err := db.QueryRow(query, email).Scan(
-		&user.ID, &user.Email, &user.FirstName, &user.LastName, &user.Phone, &user.TextPermission,
-		&user.CreatedAt, &user.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // User not found
 		}
 		return nil, err
@@ -103,20 +80,6 @@ func UpdateUser(db *sql.DB, user *User) error {
 		user.TextPermission,
 		user.ID,
 	).Scan(&user.UpdatedAt)
-}
-
-// CreateOrUpdateUser creates a new user or updates an existing one
-func CreateOrUpdateUser(db *sql.DB, user *User) error {
-	existingUser, err := GetUserByID(db, user.ID)
-	if err != nil {
-		return err
-	}
-
-	if existingUser == nil {
-		return CreateUser(db, user)
-	}
-
-	return UpdateUser(db, user)
 }
 
 // GetAllUsers retrieves all users from the database

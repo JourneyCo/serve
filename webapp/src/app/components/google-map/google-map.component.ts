@@ -2,8 +2,7 @@ import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {GoogleMap, MapAdvancedMarker, MapInfoWindow} from "@angular/google-maps";
 import {CommonModule} from "@angular/common";
 import {Observable, Subscription} from "rxjs";
-import {Project} from "../../models/project.model";
-import {Location} from "../../models/location.model";
+import {Project, Location} from "@models";
 
 @Component({
   selector: 'app-map',

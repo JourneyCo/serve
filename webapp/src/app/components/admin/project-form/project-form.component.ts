@@ -5,10 +5,7 @@ import {
   FormBuilder,
   FormGroup,
   Validators,
-  FormArray,
-  NgModel,
   FormsModule,
-  FormControl,
 } from "@angular/forms";
 import {
   MatDialogRef,
@@ -27,19 +24,10 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
-import { ProjectService } from "../../../services/project.service";
-import { GoogleMapsApiService } from "../../../services/google-maps-api.service";
-import { UserService } from "../../../services/user.service";
-import { Project } from "../../../models/project.model";
-import {
-  Tools,
-  Skills,
-  ProjectAccessory,
-  Categories,
-  Ages,
-  Supplies,
-} from "../../../models/accessories";
+import { ProjectService, GoogleMapsApiService, UserService } from "@services";
+import { Project, Tools, Skills, Categories, Ages, Supplies } from "@models";
 import { MatSelectModule } from "@angular/material/select";
+import {environment} from "../../../../environments/environment";
 
 interface DialogData {
   project: Project | null;
@@ -96,6 +84,7 @@ export class ProjectFormComponent implements OnInit {
   supplyList = Supplies;
   supplyKeys = Object.keys(Supplies);
   supply_list: any;
+  serve_day: string = environment.serveDay
 
   constructor(
       private fb: FormBuilder,
@@ -126,9 +115,8 @@ export class ProjectFormComponent implements OnInit {
 
   initForm(): void {
     const project = this.data.project;
-    console.log(project);
 
-    const defaultDate = "2025-07-12";
+    const defaultDate = this.serve_day;
 
     this.projectForm = this.fb.group({
       title: [
@@ -143,7 +131,7 @@ export class ProjectFormComponent implements OnInit {
         project?.description || "",
         [Validators.required, Validators.minLength(10)],
       ],
-      project_date: [defaultDate, Validators.required],
+      project_date: [defaultDate],
       time: [project?.time || "", Validators.required],
       max_capacity: [
         project?.max_capacity || 10,
@@ -257,7 +245,7 @@ export class ProjectFormComponent implements OnInit {
     this.geocoding = true;
 
     this.mapsService
-        .geocodeAddress(address)
+        .geocodeAddressClientSide(address)
         .pipe(
             finalize(() => {
               this.geocoding = false;

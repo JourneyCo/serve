@@ -3,7 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -59,7 +59,7 @@ func (s *MapsService) GeocodeAddress(address string) (*GeocodingResult, error) {
 	defer resp.Body.Close()
 
 	// Read and parse the response
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("error reading geocoding response: %v", err)
 	}

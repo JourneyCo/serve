@@ -15,8 +15,8 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatTooltipModule } from "@angular/material/tooltip";
-import { ProjectService } from "../../../services/project.service";
-import { Project } from "../../../models/project.model";
+import { ProjectService } from "@services";
+import { Project } from "@models";
 import { ProjectFormComponent } from "../project-form/project-form.component";
 
 @Component({
@@ -50,7 +50,6 @@ export class AdminDashboardComponent implements OnInit {
 
   // Column definitions
   projectColumns: string[] = [
-    "id",
     "title",
     "time",
     "capacity",

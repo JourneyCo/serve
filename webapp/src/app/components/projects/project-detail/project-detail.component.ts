@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild, TemplateRef} from "@angular/core";
-import {CommonModule, DatePipe} from "@angular/common";
+import {CommonModule} from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
@@ -17,21 +17,15 @@ import { MatInputModule } from "@angular/material/input";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatDialogModule, MatDialog } from "@angular/material/dialog";
 import { GoogleMapsModule } from "@angular/google-maps";
-import { ProjectService } from "../../../services/project.service";
-import { AuthService } from "../../../services/auth.service";
-import { GoogleMapsApiService } from "../../../services/google-maps-api.service";
-import { Project } from "../../../models/project.model";
-import { Registration } from "../../../models/registration.model";
-import { User } from "../../../models/user.model";
+import { AuthService, ProjectService } from "@services";
 import { Observable, forkJoin, of } from "rxjs";
-import { tap } from "rxjs/operators";
-import { catchError, map, switchMap } from "rxjs/operators";
 import {
   MatTable,
   MatTableDataSource,
   MatTableModule,
 } from "@angular/material/table";
-import {Ages, Categories, Supplies, Tools} from "../../../models/accessories";
+import {User, Registration, Project, Ages, Categories, Supplies, Tools} from "@models";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: "app-project-detail",
@@ -106,7 +100,6 @@ export class ProjectDetailComponent implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private authService: AuthService,
-    private mapsApiService: GoogleMapsApiService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {}
@@ -268,7 +261,19 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   formatDate(date: string): string {
-    return new Date('2025-07-12T14:30:00.000Z').toLocaleDateString("en-US", {
+    const split = environment.serveDay.split("-")
+    if (split.length < 3) {
+      return new Date('2025-07-12T14:30:00.000Z').toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    }
+    const isoDate = split[2] + "-" + split[0] + "-" + split[1]
+
+    const project_date = new Date(isoDate + 'T14:30:00.000Z');
+    return new Date(project_date).toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -282,7 +287,13 @@ export class ProjectDetailComponent implements OnInit {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const project_date = new Date('2025-07-12T14:30:00.000Z');
+    const split = environment.serveDay.split("-")
+    if (split.length < 3) {
+      return 45;
+    }
+    const isoDate = split[2] + "-" + split[0] + "-" + split[1]
+
+    const project_date = new Date(isoDate + 'T14:30:00.000Z');
     project_date.setHours(0, 0, 0, 0);
 
     const diffTime = project_date.getTime() - today.getTime();

@@ -1,5 +1,5 @@
 {
-  "name": "project-registration-frontend",
+  "name": "serve-frontend",
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",

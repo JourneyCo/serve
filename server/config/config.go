@@ -8,6 +8,9 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
+	// Date
+	ServeDay string
+
 	// Server config
 	ServerPort string
 
@@ -26,11 +29,12 @@ type Config struct {
 	Auth0ClientSecret string
 
 	// Email config
-	SMTPHost     string
-	SMTPPort     string
-	SMTPUsername string
-	SMTPPassword string
-	EmailFrom    string
+	MailHost string
+	MailKey  string
+	MailFrom string
+	MailUser string
+	MailPass string
+	MailPort string
 
 	// Text config
 	ClearStreamAPIKey string
@@ -46,6 +50,9 @@ func Load() (*Config, error) {
 	devMode := getEnv("DEV_MODE", "true") == "true"
 
 	config := &Config{
+		// Serve Day Date
+		ServeDay: getEnv("SERVE_DAY", "07-12-25"),
+
 		// Server config with default
 		ServerPort: getEnv("PORT", "8080"),
 
@@ -64,11 +71,12 @@ func Load() (*Config, error) {
 		Auth0ClientSecret: getEnv("AUTH0_CLIENT_SECRET", "dev-client-secret"),
 
 		// Email config - in dev mode use placeholders
-		SMTPHost:     getEnv("SMTP_HOST", "smtp.example.com"),
-		SMTPPort:     getEnv("SMTP_PORT", "587"),
-		SMTPUsername: getEnv("SMTP_USERNAME", "dev@example.com"),
-		SMTPPassword: getEnv("SMTP_PASSWORD", "dev-password"),
-		EmailFrom:    getEnv("EMAIL_FROM", "noreply@projectregistration.com"),
+		MailHost: getEnv("MAIL_HOST", "smtp.example.com"),
+		MailKey:  getEnv("MAIL_KEY", "apikey"),
+		MailFrom: getEnv("MAIL_FROM", "from@example.com"),
+		MailPort: getEnv("MAIL_PORT", "587"),
+		MailUser: getEnv("MAIL_USER", "user"),
+		MailPass: getEnv("MAIL_PASS", "password"),
 
 		// Text config
 		ClearStreamAPIKey: getEnv("CS_API_KEY", "apikey"),

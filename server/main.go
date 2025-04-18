@@ -58,10 +58,6 @@ func main() {
 	api := r.PathPrefix("/api").Subrouter()
 	api.Use(middleware.AuthMiddleware(cfg))
 
-	// Public routes
-	// No public routes needed for now
-	r.PathPrefix("/api/public").Subrouter()
-
 	// User routes
 	userRouter := api.PathPrefix("/users").Subrouter()
 	handlers.RegisterUserRoutes(userRouter, db, emailService)
