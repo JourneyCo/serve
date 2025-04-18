@@ -1,114 +1,221 @@
-CREATE TABLE IF NOT EXISTS accounts(
-    id TEXT PRIMARY KEY,
-    first TEXT DEFAULT '',
-    last TEXT DEFAULT '',
-    email TEXT UNIQUE,
-    cellphone TEXT DEFAULT '',
-    text_permission BOOLEAN DEFAULT false,
-    lead BOOLEAN DEFAULT false,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
-    updated_at TIMESTAMPTZ
+CREATE TABLE IF NOT EXISTS users (
+                                     id TEXT PRIMARY KEY,
+                                     email TEXT NOT NULL DEFAULT '' UNIQUE,
+                                     first_name TEXT NOT NULL DEFAULT '',
+                                     last_name TEXT NOT NULL DEFAULT '',
+                                     phone TEXT DEFAULT '',
+                                     text_permission BOOLEAN DEFAULT FALSE,
+                                     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                                     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS locations(
-   id SERIAL PRIMARY KEY,
-   latitude TEXT NOT NULL,
-   longitude TEXT NOT NULL,
-   info TEXT NOT NULL,
-    street TEXT NOT NULL,
-    number INT NOT NULL,
-    city TEXT NOT NULL,
-    state TEXT NOT NULL,
-    postal_code TEXT NOT NULL,
-    formatted_address TEXT NOT NULL,
-   created_at TIMESTAMPTZ NOT NULL,
-   updated_at TIMESTAMPTZ
+INSERT INTO users (id, email, first_name, last_name, phone, text_permission)
+VALUES (
+           'example-user-123',
+           'project.lead@example.com',
+           'Doug',
+           'DoesGood',
+           '303-555-0123',
+           true
+       );
+
+CREATE TYPE status AS ENUM ('pending', 'open', 'not_approved', 'did_not_occur', 'in_review');
+
+CREATE TABLE IF NOT EXISTS projects (
+                                        id SERIAL PRIMARY KEY,
+                                        title TEXT NOT NULL,
+                                        short_description TEXT NOT NULL,
+                                        description TEXT NOT NULL,
+                                        time TEXT NOT NULL,
+                                        project_date DATE NOT NULL,
+                                        max_capacity INTEGER NOT NULL,
+                                        location_name TEXT,
+                                        latitude DOUBLE PRECISION,
+                                        longitude DOUBLE PRECISION,
+                                        location_address TEXT,
+                                        wheelchair_accessible BOOLEAN NOT NULL DEFAULT FALSE,
+                                        lead_user_id TEXT REFERENCES users(id),
+                                        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                                        updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                                        status status NOT NULL DEFAULT 'open'
+);
+
+INSERT INTO projects (title, short_description, description, time, project_date,
+                      max_capacity, location_name, latitude, longitude, lead_user_id, wheelchair_accessible, location_address
+) VALUES (
+             'Community Park Cleanup',
+             'cleanup project',
+             'Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
+             '9:00AM - 9:30AM',
+             '2025-07-12',
+             25,
+             'Central Community Park',
+             40.7128,
+             -74.0060,
+             'example-user-123',
+             true,
+             '123 Main Street, New York, NY 10001'
+         );
+
+CREATE TABLE IF NOT EXISTS registrations (
+                                             id SERIAL PRIMARY KEY,
+                                             user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                                             project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+                                             status TEXT NOT NULL DEFAULT 'registered',
+                                             guest_count INTEGER NOT NULL DEFAULT 0,
+                                             lead_interest BOOLEAN NOT NULL DEFAULT FALSE,
+                                             created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                                             updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+                                             UNIQUE(user_id, project_id),
+                                             FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
+                                             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS categories (
+                                          id SERIAL PRIMARY KEY,
+                                          category TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS project_categories (
+                                                  project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                                                  category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+                                                  PRIMARY KEY (project_id, category_id)
 );
 
 CREATE TABLE IF NOT EXISTS ages(
-    id SERIAL PRIMARY KEY,
-    min INT,
-    max INT
-);
-INSERT INTO ages(min, max)  VALUES (18, 100);
-
-CREATE TYPE status AS ENUM ('pending', 'open', 'not_approved', 'did_not_occur', 'in_review');
-CREATE TABLE IF NOT EXISTS projects(
-   id SERIAL PRIMARY KEY,
-   name TEXT NOT NULL,
-   enabled BOOLEAN NOT NULL DEFAULT FALSE,
-   status status NOT NULL,
-   required TEXT NOT NULL,
-   registered TEXT NOT NULL,
-   leader_id TEXT NOT NULL,
-   location_id BIGINT NOT NULL,
-   start_time TIMESTAMPTZ NOT NULL,
-   end_time TIMESTAMPTZ NOT NULL,
-   category TEXT DEFAULT '',
-   ages_id BIGINT,
-   wheelchair BOOLEAN NOT NULL DEFAULT FALSE,
-   short_description TEXT NOT NULL,
-   long_description TEXT DEFAULT '',
-   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
-   updated_at TIMESTAMPTZ,
-   FOREIGN KEY (leader_id) REFERENCES accounts(id) ON DELETE RESTRICT,
-   FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE RESTRICT,
-   FOREIGN KEY (ages_id) REFERENCES ages(id) ON DELETE RESTRICT
+                                   id SERIAL PRIMARY KEY,
+                                   name TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS registrations(
-    project_id BIGINT NOT NULL,
-    account_id TEXT NOT NULL,
-    quantity INT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
-    updated_at TIMESTAMPTZ,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
-    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE RESTRICT,
-    UNIQUE (project_id, account_id)
+-- Insert age categories
+INSERT INTO ages (name) VALUES
+                            ('All ages'),
+                            ('11-14'),
+                            ('15-18'),
+                            ('19-22'),
+                            ('20s'),
+                            ('30s'),
+                            ('40s'),
+                            ('50s'),
+                            ('60s+');
+
+
+CREATE TABLE IF NOT EXISTS project_ages (
+                                            project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                                            ages_id INTEGER REFERENCES ages(id) ON DELETE CASCADE,
+                                            PRIMARY KEY (project_id, ages_id)
 );
 
-CREATE OR REPLACE FUNCTION update_total()
-    RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE projects
-    SET registered = (SELECT COALESCE(SUM(quantity), 0)
-                 FROM registrations
-                 WHERE project_id = NEW.project_id)
-    WHERE id = NEW.project_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+-- Insert categories
+INSERT INTO categories (category) VALUES
+                                      ('Arts & Crafts'),
+                                      ('Community Outreach'),
+                                      ('Español'),
+                                      ('Family/Kid Friendly'),
+                                      ('Food Prep & Distribution'),
+                                      ('Indoors'),
+                                      ('Landscaping'),
+                                      ('Minor Home Repairs'),
+                                      ('Outdoor'),
+                                      ('Painting'),
+                                      ('Prayer & Visitations'),
+                                      ('Skilled Construction'),
+                                      ('Sorting/Assembly'),
+                                      ('Block Party'),
+                                      ('Kids Ministry');
 
-
-CREATE TRIGGER trigger_update_total
-    AFTER INSERT OR UPDATE OR DELETE ON registrations
-    FOR EACH ROW
-EXECUTE FUNCTION update_total();
-
-
-CREATE TABLE IF NOT EXISTS project_skills(
-     project_id BIGINT NOT NULL,
-     skill TEXT NOT NULL,
-     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT
+CREATE TABLE IF NOT EXISTS skills (
+                                      id SERIAL PRIMARY KEY,
+                                      name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS project_tools(
-     project_id BIGINT NOT NULL,
-     tool TEXT NOT NULL,
-     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT
+CREATE TABLE IF NOT EXISTS project_skills (
+                                              project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                                              skill_id INTEGER REFERENCES skills(id) ON DELETE CASCADE,
+                                              PRIMARY KEY (project_id, skill_id)
 );
 
-INSERT INTO accounts (id, first, last, email, cellphone, created_at, updated_at)
-VALUES ('exampleid' , 'admin', 'user', 'adminserve@gmail.com', '303-947-7791',  LOCALTIMESTAMP, LOCALTIMESTAMP);
+-- Insert skills
+INSERT INTO skills (name) VALUES
+                              ('Carpentry'),
+                              ('Communication'),
+                              ('Construction'),
+                              ('Cooking'),
+                              ('Hospitality'),
+                              ('Landscaping'),
+                              ('Musical'),
+                              ('Organizational'),
+                              ('Painting'),
+                              ('Photography');
 
-INSERT INTO locations (latitude, longitude, info, street, number, city, state, postal_code, formatted_address, created_at, updated_at)
-VALUES ('39.5023509486161', '-104.87569755087917', 'Journey Church', 'Clydesdale Road', '9009', 'Castle Rock', 'Colorado', '80108', '9009 Clydesdale Rd, Castle Rock, CO 80108', LOCALTIMESTAMP, LOCALTIMESTAMP);
+CREATE TABLE IF NOT EXISTS supplies (
+                                        id SERIAL PRIMARY KEY,
+                                        name TEXT NOT NULL UNIQUE
+);
 
-INSERT INTO projects (name, enabled, status, required, registered, start_time, end_time, category, ages_id, leader_id, location_id, short_description, long_description, created_at, updated_at)
-VALUES ('Base Project Example', true, 'open',  200, 0, LOCALTIMESTAMP, LOCALTIMESTAMP, 'open', 1, 'exampleid', 1, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.', 'Nam pharetra neque et ornare consequat. Cras nec porttitor leo. Integer in pellentesque felis, sit amet mattis lorem. Nullam laoreet risus a diam posuere, id ultrices urna elementum. Vestibulum quis nisi sed lorem scelerisque dignissim ultrices in justo. Quisque pellentesque mattis justo eget ornare.', LOCALTIMESTAMP, LOCALTIMESTAMP);
+CREATE TABLE IF NOT EXISTS project_supplies (
+                                                project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                                                supply_id INTEGER REFERENCES supplies(id) ON DELETE CASCADE,
+                                                PRIMARY KEY (project_id, supply_id)
+);
 
-INSERT INTO project_skills(project_id, skill) VALUES (1, 'carpentry');
-INSERT INTO project_skills(project_id, skill) VALUES (1, 'painting');
-INSERT INTO project_tools(project_id, tool) VALUES (1, 'hammer');
-INSERT INTO project_tools(project_id, tool) VALUES (1, 'screwdriver');
+-- Insert supplies
+INSERT INTO supplies (name) VALUES
+                                ('Bleach'),
+                                ('Car Wash Supplies'),
+                                ('Cleaning supplies'),
+                                ('Craft supplies'),
+                                ('Duct tape'),
+                                ('Grilling Supplies'),
+                                ('Landscape supplies'),
+                                ('Nails'),
+                                ('Paint supplies'),
+                                ('Screws');
 
+CREATE TABLE IF NOT EXISTS tools (
+                                     id SERIAL PRIMARY KEY,
+                                     name TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS project_tools (
+                                             project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+                                             tool_id INTEGER REFERENCES tools(id) ON DELETE CASCADE,
+                                             PRIMARY KEY (project_id, tool_id)
+);
+
+-- Insert tools
+INSERT INTO tools (name) VALUES
+                             ('Chainsaw'),
+                             ('Drill'),
+                             ('Gloves'),
+                             ('Hacksaw'),
+                             ('Hammer'),
+                             ('Hand saw'),
+                             ('Hedge trimmers'),
+                             ('Hoe'),
+                             ('Ladder'),
+                             ('Lawn mower'),
+                             ('Leaf blower'),
+                             ('Level'),
+                             ('Miter saw'),
+                             ('Nail gun'),
+                             ('Paint gun'),
+                             ('Pickaxe'),
+                             ('Pitch fork'),
+                             ('Pliers'),
+                             ('Pressure washer'),
+                             ('Pruners'),
+                             ('Putty knife'),
+                             ('Rake'),
+                             ('Sander'),
+                             ('Sawhorse'),
+                             ('Screwdriver'),
+                             ('Shovel'),
+                             ('Sledgehammer'),
+                             ('Socket set'),
+                             ('Spanner wrench'),
+                             ('Tape measure'),
+                             ('Utility knife'),
+                             ('Weedeater'),
+                             ('Wheelbarrow'),
+                             ('Wrench');

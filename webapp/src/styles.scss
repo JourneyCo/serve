@@ -1,11 +1,7 @@
-@use '@angular/material' as mat;
+/* You can add global styles to this file, and also import other style files */
+/* Importing Bootstrap SCSS file. */
+@import 'bootstrap/scss/bootstrap';
 
-@import url("https://fonts.googleapis.com/css?family=Montserrat:500,600,700");
-
-@include mat.core();
-
-
-/* Journey Colors */
 :root {
   --journeyGray: #676767;
   --journeyGrayRGB: 103, 103, 103;
@@ -17,55 +13,47 @@
   --journeyWhiteRGB: 255, 255, 255;
 }
 
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+html, body { height: 100%; }
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
   background-color: #f5f5f5;
   color: var(--journeyGray);
 }
 
-h1 {
-  font-weight: 700;
-  letter-spacing: 1px;
-  line-height: 30px;
-  color: white;
-  font-size: 25px;
-  text-transform: capitalize;
-}
-
-html, body { height: 100%; }
-
-/* Forms */
-
-.form-error {
-  margin-bottom: 10px !important;
-  color: red;
-}
-
-
-/* Helpers */
-
-.w-100 {
-  width: 100%
-}
-
-.journey-blue {
-  color: var(--journeyBlue);
-}
-
-.journey-gray {
-  color: var(--journeyGray);
-}
-
-.journey-lightgray {
-  color: var(--journeyLightGray);
-}
-
-
 .container {
-  padding: 20px;
+  padding: 15px;
   max-width: 1200px;
   margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .button-row {
+    flex-direction: column;
+    gap: 8px;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .mat-mdc-card {
+    margin-bottom: 15px;
+  }
+  
+  .table-container {
+    margin: 0 -10px;
+    
+    table {
+      min-width: 100%;
+    }
+  }
 }
 
 .flex-spacer {
@@ -159,7 +147,7 @@ html, body { height: 100%; }
 a {
   color: var(--journeyBlue);
   text-decoration: none;
-
+  
   &:hover {
     text-decoration: underline;
   }
@@ -179,4 +167,8 @@ a {
 .mat-column-actions {
   width: 120px;
   text-align: center;
+}
+
+.status-badge {
+  padding: 4px 8px;
 }

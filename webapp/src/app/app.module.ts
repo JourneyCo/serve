@@ -1,37 +1,28 @@
-import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {HTTP_INTERCEPTORS } from '@angular/common/http';
-import {HeaderComponent} from './header/header.component';
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {AppRoutingModule} from './app-routing.module';
-import {MapComponent} from "@components";
-import {ProjectsComponent} from "./pages/projects/projects.component";
-import {AuthHttpInterceptor, authHttpInterceptorFn, AuthModule} from "@auth0/auth0-angular";
-import {environment as env} from "../environments/environment.development"
-import {APIService } from "@services";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {ProjectComponent} from "./pages/projects/project/project.component";
+import { ApplicationConfig, importProvidersFrom, InjectionToken } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAuth0 } from '@auth0/auth0-angular';
+import { GoogleMapsModule } from '@angular/google-maps';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { routes } from './app-routing.module';
+import { environment as env } from '../environments/environment';
+export const GOOGLE_MAPS_API_KEY = new InjectionToken<string>('google-maps-api-key');
+import { authInterceptor } from '@services';
 
-@NgModule({
-  declarations: [],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  bootstrap: [AppModule],
-  imports: [BrowserModule,
-    NgbModule,
-    AppRoutingModule,
-    MapComponent,
-    AuthModule.forRoot({
-      ...env.auth0,
-    }),
-    ProjectsComponent,
-    HeaderComponent,
-    ProjectComponent,
-  ],
-  providers:
-    [
-      APIService,
-      provideAnimationsAsync(),
-      { provide: HTTP_INTERCEPTORS, useClass: AuthHttpInterceptor, multi: true },
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideAnimations(),
+    provideAuth0({...env.auth0}),
+    importProvidersFrom(
+      GoogleMapsModule,
+      NgbModule
+    ),
+    {
+      provide: GOOGLE_MAPS_API_KEY,
+      useValue: env.googleMapsApiKey
+    }
   ]
-})
-export class AppModule { }
+};

@@ -1,99 +1,107 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { AuthModule, AuthService as Auth0Service } from '@auth0/auth0-angular';
-import { Observable, from, of, throwError } from 'rxjs';
-import { tap, catchError, switchMap, shareReplay, map, timeout } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { AuthModule, AuthService as Auth0Service } from "@auth0/auth0-angular";
+import { Observable, from, of, throwError, Subscription } from "rxjs";
+import {
+  tap,
+  catchError,
+  switchMap,
+  shareReplay,
+  map,
+  timeout,
+} from "rxjs/operators";
+import { environment } from "../../environments/environment";
+import { User } from "../models/user.model";
+import { UserService } from "./user.service";
+import { jwtDecode } from "jwt-decode";
 
-// interface AuthConfig {
-//   domain: string;
-//   clientId: string;
-//   audience: string;
-//   redirectUri: string;
-// }
+interface AuthConfig {
+  domain: string;
+  clientId: string;
+  audience: string;
+  redirectUri: string;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AuthService {
   private authConfigUrl = `${environment.apiUrl}/auth/config`;
+  private cachedUser: User | null = null;
   private isInitialized = false;
 
   constructor(
     private http: HttpClient,
     private auth0Service: Auth0Service,
+    private userService: UserService,
   ) {}
 
-  // initAuth(): Observable<any> {
-  //   if (this.isInitialized) {
-  //     return of(true);
-  //   }
-  //
-  //   // Add timeout of 10 seconds to avoid hanging indefinitely
-  //   return this.http.get<AuthConfig>(this.authConfigUrl, {
-  //     headers: { 'Cache-Control': 'no-cache' }
-  //   }).pipe(
-  //     timeout(10000), // 10 seconds timeout
-  //     tap((config: AuthConfig) => {
-  //       console.log('Auth0 config loaded successfully');
-  //       // Dynamically configure Auth0
-  //       // This is a hack since Angular doesn't allow dynamic module configuration after bootstrap
-  //       // In a real app, we'd use Angular's APP_INITIALIZER for this
-  //       const auth0Module = (this.auth0Service as any)['auth0Client'];
-  //       if (auth0Module) {
-  //         auth0Module['options'] = {
-  //           domain: config.domain,
-  //           clientId: config.clientId,
-  //           authorizationParams: {
-  //             redirect_uri: config.redirectUri,
-  //             audience: config.audience
-  //           }
-  //         };
-  //       }
-  //
-  //       this.isInitialized = true;
-  //     }),
-  //     catchError(error => {
-  //       console.error('Failed to load Auth0 configuration', error);
-  //       // Allow the app to continue even without Auth0 in development
-  //       this.isInitialized = true;
-  //       return throwError(() => 'Failed to initialize authentication. Please try again later.');
-  //     })
-  //   );
-  // }
-
   login(): void {
-    this.auth0Service.loginWithRedirect();
+    this.auth0Service.loginWithRedirect({
+      appState: {
+        target: "/projects",
+      },
+      authorizationParams: {
+        prompt: "login",
+      },
+    });
   }
 
   logout(): void {
     this.auth0Service.logout({
       logoutParams: {
-        returnTo: window.location.origin
-      }
+        returnTo: window.location.origin,
+      },
     });
+    this.cachedUser = null;
   }
 
   isAuthenticated(): Observable<boolean> {
     return this.auth0Service.isAuthenticated$;
   }
 
-  // getToken(): Observable<string> {
-  //   // Make sure auth is initialized first
-  //   if (!this.isInitialized) {
-  //     return this.initAuth().pipe(
-  //       switchMap(() => this.auth0Service.getAccessTokenSilently()),
-  //       catchError(error => {
-  //         console.error('Error getting auth token:', error);
-  //         return of(''); // Return empty token if there's an error
-  //       })
-  //     );
-  //   }
-  //   return this.auth0Service.getAccessTokenSilently().pipe(
-  //     catchError(error => {
-  //       console.error('Error getting auth token:', error);
-  //       return of(''); // Return empty token if there's an error
-  //     })
-  //   );
-  // }
+  getToken(): Observable<string> {
+    return this.auth0Service.getAccessTokenSilently().pipe(
+      catchError((error) => {
+        console.error("Error getting auth token:", error);
+        return of(""); // Return empty token if there's an error
+      }),
+    );
+  }
+
+  getCurrentUser(): Observable<User | null> {
+    if (this.cachedUser) {
+      return of(this.cachedUser);
+    }
+
+    return this.auth0Service.user$.pipe(
+      switchMap((auth0User) => {
+        if (!auth0User) {
+          return of(null);
+        }
+
+        // Try to get the user profile from our server
+        return this.userService.getUserProfile().pipe(
+          tap((user) => {
+            this.cachedUser = user;
+          }),
+          catchError((error) => {
+            console.error("Error fetching user profile:", error);
+            return of(null);
+          }),
+        );
+      }),
+      shareReplay(1),
+    );
+  }
+
+  isAdmin(): Observable<boolean> {
+    return this.auth0Service.getAccessTokenSilently().pipe(
+      map((token) => {
+        const decodedToken: any = jwtDecode(token);
+        const perms = decodedToken.permissions || [];
+        return perms.includes("edit:projects");
+      }),
+    );
+  }
 }
