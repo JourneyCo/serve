@@ -23,6 +23,17 @@ data "aws_subnets" "public" {
   }
 }
 
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.this.id]
+  }
+
+  tags = {
+    Name = "serve-uw2-private-*"
+  }
+}
+
 data "aws_route53_zone" "this" {
   provider = aws.dns
   name     = "ravn.systems"

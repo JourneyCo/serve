@@ -1,5 +1,5 @@
 #!/bin/bash
-cat > /etc/environment <<EOF
+cat > /home/ec2-user/serve/server/.env <<EOF
 DEV_MODE=${dev_mode}
 SERVE_DAY=${serve_day}
 
@@ -12,7 +12,7 @@ PGPORT=${db_port}
 PGUSER=${db_user}
 PGPASSWORD=${db_pass}
 PGDATABASE=${db_name}
-DATABASE_URL=""
+DATABASE_URL=
 
 # Auth0 config
 AUTH0_DOMAIN=${auth0_domain}
@@ -34,8 +34,9 @@ CS_TEXT_FROM=${clearstream_text_from}
 # Google Maps API config
 GOOGLE_MAPS_API_KEY=${google_key}
 EOF
-
-# pushd /home/ec2-user/serve
-# docker compose -f docker-compose-dev.yml up -d
-# systemctl start nginx
-# systemctl start serve-be
+chown ec2-user:ec2-user /home/ec2-user/serve/server/.env
+pushd /home/ec2-user/serve
+systemctl start docker
+docker compose -f docker-compose-dev.yml up -d
+systemctl start nginx
+systemctl start serve-be

@@ -10,13 +10,13 @@ resource "aws_vpc_security_group_ingress_rule" "allow_lb" {
   ip_protocol       = "-1"
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ssh" {
-  security_group_id = aws_security_group.serve_vm.id
-  cidr_ipv4         = "76.131.61.220/32"
-  from_port         = 22
-  ip_protocol       = "tcp"
-  to_port           = 22
-}
+# resource "aws_vpc_security_group_ingress_rule" "ssh" {
+#   security_group_id = aws_security_group.serve_vm.id
+#   cidr_ipv4         = "76.131.61.220/32"
+#   from_port         = 22
+#   ip_protocol       = "tcp"
+#   to_port           = 22
+# }
 
 resource "aws_vpc_security_group_egress_rule" "egress" {
   security_group_id = aws_security_group.serve_vm.id
