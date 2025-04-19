@@ -21,12 +21,18 @@ resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   ip_protocol       = "tcp"
 }
 
+resource "aws_vpc_security_group_egress_rule" "alb_egress" {
+  security_group_id = aws_security_group.serve_alb.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
 ### Load Balancer
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "9.15.0"
 
-  name    = "servev2"
+  name    = "serve"
   vpc_id  = data.aws_vpc.this.id
   subnets = data.aws_subnets.public.ids
 
@@ -51,10 +57,10 @@ module "alb" {
 
 
     https = {
-      port            = 443
-      protocol        = "HTTPS"
-      ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-      certificate_arn = data.aws_acm_certificate.serve.arn
+      port                        = 443
+      protocol                    = "HTTPS"
+      ssl_policy                  = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+      certificate_arn             = data.aws_acm_certificate.serve.arn
       additional_certificate_arns = []
       forward = {
         target_group_key = "serve-fe"
@@ -84,9 +90,9 @@ module "alb" {
 
   target_groups = {
     serve-fe = {
-        name = "serve-frontend"
+      name        = "serve-frontend"
       target_type = "instance"
-      target_id   = "i-0c1267556bad83229"
+      target_id   = aws_instance.serve_app.id
       port        = 3000
       protocol    = "HTTP"
       health_check = {
@@ -102,11 +108,11 @@ module "alb" {
       }
     }
     serve-api = {
-        name = "serve-api"
+      name      = "serve-api"
       port      = 8080
       protocol  = "HTTP"
       vpc_id    = data.aws_vpc.this.id
-      target_id = "i-0c1267556bad83229"
+      target_id = aws_instance.serve_app.id
       health_check = {
         enabled             = true
         healthy_threshold   = 5
