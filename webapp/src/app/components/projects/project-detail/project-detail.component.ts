@@ -93,6 +93,8 @@ export class ProjectDetailComponent implements OnInit {
 
   @ViewChild("registrationDialog")
   registrationDialogTemplate!: TemplateRef<any>;
+  @ViewChild("cancellationDialog")
+  cancellationDialogTemplate!: TemplateRef<any>;
   dialogRef: any;
 
   constructor(
@@ -236,6 +238,20 @@ export class ProjectDetailComponent implements OnInit {
         this.showError(this.registrationError);
       },
     );
+  }
+
+  openCancellationDialog(): void {
+    this.dialogRef = this.dialog.open(this.cancellationDialogTemplate, {
+      width: "400px",
+      disableClose: false
+    });
+  }
+
+  confirmCancellation(): void {
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
+    this.cancelRegistration();
   }
 
   cancelRegistration(): void {

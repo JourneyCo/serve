@@ -321,7 +321,7 @@
           <button
             mat-raised-button
             color="warn"
-            (click)="cancelRegistration()"
+            (click)="openCancellationDialog()"
             [disabled]="loadingRegistration"
           >
             <mat-icon>event_busy</mat-icon>
@@ -333,6 +333,22 @@
             }
           </button>
         }
+
+  <!-- Cancellation Dialog Template -->
+  <ng-template #cancellationDialog>
+    <div class="cancellation-dialog">
+      <h2 mat-dialog-title>Cancel Registration</h2>
+      <mat-dialog-content>
+        <p>Are you sure you want to cancel your registration for {{ project?.title }}?</p>
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button mat-dialog-close>No, Keep Registration</button>
+        <button mat-raised-button color="warn" (click)="confirmCancellation()">
+          Yes, Cancel Registration
+        </button>
+      </mat-dialog-actions>
+    </div>
+  </ng-template>
       </mat-card-actions>
     </mat-card>
 
