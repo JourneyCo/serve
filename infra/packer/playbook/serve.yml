@@ -27,6 +27,7 @@
         wget https://go.dev/dl/go1.23.4.linux-amd64.tar.gz
         tar -C /usr/local -xzf go1.23.4.linux-amd64.tar.gz
         echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+        rm go1.23.4.linux-amd64.tar.gz
 
     - name: Install nvm
       ansible.builtin.shell: >
@@ -71,8 +72,6 @@
         curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
         chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
         usermod -a -G docker ec2-user
-        systemctl enable docker
-        systemctl start docker
 
     - name: Copy serve-be service file
       become: true
@@ -102,7 +101,7 @@
 
     - name: Copy git key
       ansible.builtin.copy:
-        src: files/deploy.key
+        src: ~/.ssh/id_rsa
         dest: /home/ec2-user/.ssh/id_rsa
         owner: ec2-user
         group: ec2-user
@@ -122,7 +121,6 @@
         group: ec2-user
         mode: '0600'
       loop:
-        - .env
         - public.key
 
     - name: Build backend
@@ -144,7 +142,7 @@
       become: true
       ansible.builtin.copy:
         remote_src: yes
-        src: /home/ec2-user/serve/webapp/build/browser/
+        src: /home/ec2-user/serve/webapp/dist/serve/
         dest: /usr/share/nginx/serve/
         owner: root
         group: root

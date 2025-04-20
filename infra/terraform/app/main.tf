@@ -16,3 +16,9 @@ provider "aws" {
     }
   }
 }
+
+provider "aws" {
+  alias   = "dns"
+  region  = "us-east-1"
+  profile = "admin"
+}
