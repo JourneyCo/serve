@@ -38,7 +38,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 
 	issuer, err := url.Parse(issuerURL)
 	if err != nil {
-		log.Fatalf("Failed to parse the issuer URL: %v", err)
+		log.Printf("Failed to parse the issuer URL: %v", err)
 	}
 
 	provider := jwks.NewCachingProvider(issuer, 5*60)
@@ -56,7 +56,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 		validator.WithAllowedClockSkew(30),
 	)
 	if err != nil {
-		log.Fatalf("Failed to set up JWT validator: %v", err)
+		log.Printf("Failed to set up JWT validator: %v", err)
 	}
 
 	middleware := jwtmiddleware.New(

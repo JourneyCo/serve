@@ -10,12 +10,12 @@ export const environment = {
       redirect_uri: "http://localhost:3000",
       audience: "https://serve.journeyco.com",
     },
-    errorPath: "/projects",
+    errorPath: "/",
     // The AuthHttpInterceptor configuration
     httpInterceptor: {
       allowedList: [
         // Attach access tokens to any calls to '/api' (exact match)
-        // '/api',
+        '/api',
 
         // Attach access tokens to any calls that start with '/api/'
         "/api/v1/*",

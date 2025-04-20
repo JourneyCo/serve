@@ -10,11 +10,13 @@
         <div class="actions-bar">
           <mat-form-field appearance="outline">
             <mat-label>Filter Projects</mat-label>
-            <input
-              matInput
-              (keyup)="applyProjectFilter($event)"
-              placeholder="Search..."
-            />
+            <label>
+              <input
+                matInput
+                (keyup)="applyProjectFilter($event)"
+                placeholder="Search..."
+              />
+            </label>
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
 

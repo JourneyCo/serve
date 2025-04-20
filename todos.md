@@ -3,17 +3,13 @@
 ### Misc notes
 - Corey not back until May 4th
 - Need to sync with Dave on the logic / rules / etc in the application
-- What are the fields that they want?
-
 
 ### Project Stories
 - Are you willing to be a project lead? (Need to Test)
-- Oauth User(s)
 - Ability to email
 - Number of registrants under the age of 18
 - Check rollback errors
 - Add unit testing
-- Emailer - We need to figure out if we are already sending emails and if we can use existing info to do this
 - Emailer
   - Send confirmation
   - At time of signup
@@ -34,4 +30,9 @@
 - Soft number and hard number (discuss more?)
 - Don't need date (its all on serve day), don't need created/updated
 - long description on caret dropdown
-- 
+
+
+COMPLETED
+- Oauth User(s)
+- Emailer - We need to figure out if we are already sending emails and if we can use existing info to do this
+- What are the fields that they want?

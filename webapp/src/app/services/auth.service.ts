@@ -11,7 +11,7 @@ import {
   timeout,
 } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import { User } from "../models/user.model";
+import { User } from '@models';
 import { UserService } from "./user.service";
 import { jwtDecode } from "jwt-decode";
 

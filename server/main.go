@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -81,9 +82,10 @@ func main() {
 	}
 	api.HandleFunc("/geocode", geocodingHandler.GeocodeAddress).Methods("POST")
 
+	origin := "http://localhost:" + cfg.ServerPort
 	corsHandler := gorhandler.CORS(
 		gorhandler.AllowedOrigins(
-			[]string{"http://localhost:3000", "http://localhost:5000", "http://localhost:8080"},
+			[]string{"http://localhost:3000", "http://localhost:5000", origin},
 		), // Allowed origins
 		gorhandler.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),           // Allowed methods
 		gorhandler.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), // Allowed headers
@@ -91,9 +93,10 @@ func main() {
 	)(r)
 
 	// Server setup
+	address := ":" + cfg.ServerPort
 	srv := &http.Server{
 		Handler:      corsHandler,
-		Addr:         ":8080",
+		Addr:         address,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -102,7 +105,7 @@ func main() {
 	// Start server in a goroutine
 	go func() {
 		log.Printf("Server started on %s", srv.Addr)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()

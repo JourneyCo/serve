@@ -1,8 +1,3 @@
-export interface ProjectAccessory {
-    id: number;
-    name: string;
-}
-
 export const Tools: Record<number, string> = {
     1: "Chainsaw",
     2: "Drill",

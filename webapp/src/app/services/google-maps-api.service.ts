@@ -1,13 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, of, throwError } from "rxjs";
+import { Observable, throwError } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { environment } from "../../environments/environment";
-import {
-  GoogleMap,
-  MapGeocoder,
-  MapGeocoderResponse,
-} from "@angular/google-maps";
+import { MapGeocoder, MapGeocoderResponse } from "@angular/google-maps";
 
 export interface GeocodingResult {
   latitude: number;
@@ -19,8 +15,6 @@ export interface GeocodingResult {
   providedIn: "root",
 })
 export class GoogleMapsApiService {
-  private apiKey = environment.googleMapsApiKey;
-
   constructor(
     private http: HttpClient,
     private geocoder: MapGeocoder,
@@ -66,12 +60,5 @@ export class GoogleMapsApiService {
           );
         }),
       );
-  }
-
-  /**
-   * Get Google Maps API Key
-   */
-  getApiKey(): string {
-    return this.apiKey;
   }
 }
