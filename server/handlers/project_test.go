@@ -5,27 +5,31 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
-	"net/http/httptest"
 	"testing"
-	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"serve/testutils"
 )
 
 func TestGetProjects(t *testing.T) {
-	// Setup router and handler
-	router := mux.NewRouter()
-	handler := &ProjectHandler{DB: nil} // Mock DB would be used here
-	router.HandleFunc("", handler.GetProjects).Methods("GET")
+	// Setup test server
+	ts := testutils.NewTestServer()
+	defer ts.Close()
 
-	// Create test request
-	req := httptest.NewRequest("GET", "/", nil)
-	w := httptest.NewRecorder()
+	// Create test project
+	_, err := testutils.CreateTestProject(ts.DB)
+	assert.NoError(t, err)
 
-	// Serve the request
-	router.ServeHTTP(w, req)
+	// Make request to test server
+	resp, err := http.Get(ts.Server.URL + "/api/projects")
+	assert.NoError(t, err)
+	defer resp.Body.Close()
 
 	// Assert response
-	assert.Equal(t, http.StatusInternalServerError, w.Code, "Should return 500 when DB is nil")
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	// Clean up
+	err = testutils.CleanTestData(ts.DB)
+	assert.NoError(t, err)
 }
 
 func TestRegisterForProject(t *testing.T) {
