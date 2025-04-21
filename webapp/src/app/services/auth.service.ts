@@ -1,34 +1,23 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { AuthModule, AuthService as Auth0Service } from "@auth0/auth0-angular";
-import { Observable, from, of, throwError, Subscription } from "rxjs";
+import { AuthService as Auth0Service } from "@auth0/auth0-angular";
+import { Observable, of } from "rxjs";
 import {
   tap,
   catchError,
   switchMap,
   shareReplay,
-  map,
-  timeout,
+  map
 } from "rxjs/operators";
-import { environment } from "../../environments/environment";
 import { User } from '@models';
 import { UserService } from "./user.service";
 import { jwtDecode } from "jwt-decode";
-
-interface AuthConfig {
-  domain: string;
-  clientId: string;
-  audience: string;
-  redirectUri: string;
-}
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  private authConfigUrl = `${environment.apiUrl}/auth/config`;
   private cachedUser: User | null = null;
-  private isInitialized = false;
 
   constructor(
     private http: HttpClient,
@@ -58,15 +47,6 @@ export class AuthService {
 
   isAuthenticated(): Observable<boolean> {
     return this.auth0Service.isAuthenticated$;
-  }
-
-  getToken(): Observable<string> {
-    return this.auth0Service.getAccessTokenSilently().pipe(
-      catchError((error) => {
-        console.error("Error getting auth token:", error);
-        return of(""); // Return empty token if there's an error
-      }),
-    );
   }
 
   getCurrentUser(): Observable<User | null> {

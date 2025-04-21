@@ -369,45 +369,6 @@ func DeleteProject(db *sql.DB, id int) error {
 	return err
 }
 
-// GetUpcomingProjects retrieves projects that are starting within the given days
-func GetUpcomingProjects(db *sql.DB, days int) ([]Project, error) {
-	query := `
-                SELECT p.id, p.title, p.description, p.time, p.project_date, 
-                p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
-                p.created_at, p.updated_at, 
-                COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN r.id END), 0) as current_registrations
-                FROM projects p
-                LEFT JOIN registrations r ON p.id = r.project_id
-                WHERE p.project_date BETWEEN CURRENT_DATE AND CURRENT_DATE + $1::integer
-                GROUP BY p.id
-        `
-
-	rows, err := db.Query(query, days)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var projects []Project
-	for rows.Next() {
-		var p Project
-		if err := rows.Scan(
-			&p.ID, &p.Title, &p.Description, &p.Time, &p.ProjectDate,
-			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
-		); err != nil {
-			return nil, err
-		}
-		projects = append(projects, p)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return projects, nil
-}
-
 func insertAccessories(db *sql.DB, p *Project) error {
 	accs := []string{}
 	var stmt string

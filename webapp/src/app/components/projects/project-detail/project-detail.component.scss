@@ -305,17 +305,17 @@
       margin-bottom: 16px;
     }
 
-    .project-lead-checkbox {
-      display: block;
-      margin: 16px 0;
-    }
-
     .lead-description {
       font-size: 0.9rem;
       color: var(--journeyGray);
       margin: 20px 0 16px 0;
     }
   }
+}
+
+.project-lead-checkbox {
+  display: block;
+  margin-top: 2rem;
 }
 
 .project-tools {

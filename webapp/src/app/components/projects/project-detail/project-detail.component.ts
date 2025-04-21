@@ -17,7 +17,7 @@ import { MatInputModule } from "@angular/material/input";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatDialogModule, MatDialog } from "@angular/material/dialog";
 import { GoogleMapsModule } from "@angular/google-maps";
-import { AuthService, ProjectService } from "@services";
+import { AuthService, ProjectService, HelperService } from "@services";
 import { Observable, forkJoin, of } from "rxjs";
 import {
   MatTable,
@@ -25,7 +25,6 @@ import {
   MatTableModule,
 } from "@angular/material/table";
 import {User, Registration, Project, Ages, Categories, Supplies, Tools} from "@models";
-import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: "app-project-detail",
@@ -70,6 +69,7 @@ export class ProjectDetailComponent implements OnInit {
   supplies = Supplies
   categories = Categories
   ages = Ages
+  serve_date: Date;
 
   // Registration form properties
   guest_count: number = 0;
@@ -104,7 +104,10 @@ export class ProjectDetailComponent implements OnInit {
     private authService: AuthService,
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
-  ) {}
+    private helper: HelperService
+  ) {
+    this.serve_date = helper.GetServeDate();
+  }
 
   ngOnInit(): void {
     // Google Maps API is automatically loaded by the Angular Google Maps module
@@ -276,43 +279,13 @@ export class ProjectDetailComponent implements OnInit {
     );
   }
 
-  formatDate(date: string): string {
-    const split = environment.serveDay.split("-")
-    if (split.length < 3) {
-      return new Date('2025-07-12T14:30:00.000Z').toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    }
-    const isoDate = split[2] + "-" + split[0] + "-" + split[1]
-
-    const project_date = new Date(isoDate + 'T14:30:00.000Z');
-    return new Date(project_date).toLocaleDateString("en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-
   getDaysUntilStart(): number {
     if (!this.project) return 0;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const split = environment.serveDay.split("-")
-    if (split.length < 3) {
-      return 45;
-    }
-    const isoDate = split[2] + "-" + split[0] + "-" + split[1]
-
-    const project_date = new Date(isoDate + 'T14:30:00.000Z');
-    project_date.setHours(0, 0, 0, 0);
-
-    const diffTime = project_date.getTime() - today.getTime();
+    const diffTime = this.serve_date.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 

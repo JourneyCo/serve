@@ -43,18 +43,18 @@ CREATE TABLE IF NOT EXISTS projects (
 INSERT INTO projects (title, short_description, description, time, project_date,
                       max_capacity, location_name, latitude, longitude, lead_user_id, wheelchair_accessible, location_address
 ) VALUES (
-             'Community Park Cleanup',
-             'cleanup project',
-             'Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
+             'Title Community Park Cleanup',
+             'short description cleanup project',
+             'Long Description Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
              '9:00AM - 9:30AM',
              '2025-07-12',
              25,
-             'Central Community Park',
-             40.7128,
-             -74.0060,
+             'Journey Church',
+             39.491482,
+             -104.874878,
              'example-user-123',
              true,
-             '123 Main Street, New York, NY 10001'
+             '9009 Clydesdale Rd, Castle Rock, CO 80108'
          );
 
 CREATE TABLE IF NOT EXISTS registrations (

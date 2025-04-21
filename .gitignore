@@ -20,3 +20,4 @@ infra/packer/playbook/files/deploy.key
 terraform.tfstate*
 *.tfvars
 webapp/.vscode
+webapp/.env

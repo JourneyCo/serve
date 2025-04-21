@@ -120,7 +120,7 @@
             @if (getDaysUntilStart() > 0) {
               <span>
                 Starting in {{ getDaysUntilStart() }} days ({{
-                  formatDate(project.project_date)
+                  serve_date | date:'fullDate'
                 }})
               </span>
             }
@@ -145,7 +145,7 @@
       <mat-card-content>
         <div class="project-dates">
           <div class="date-field">
-            <strong>Date:</strong> {{ formatDate(project.project_date) }}
+            <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
           </div>
           <div class="date-field">
             <strong>Time:</strong> {{ project.time }}
@@ -299,7 +299,7 @@
           }
         </div>
       </mat-card-content>
-      <h2>TODO - DIALOG BOX FOR CANCELLING</h2>
+
       <mat-card-actions align="end">
         <button mat-button color="accent" routerLink="/projects">
           <mat-icon>arrow_back</mat-icon> Back to Projects
@@ -339,7 +339,7 @@
     <div class="cancellation-dialog">
       <h2 mat-dialog-title>Cancel Registration</h2>
       <mat-dialog-content>
-        <p>Are you sure you want to cancel your registration for {{ project?.title }}?</p>
+        <p>Are you sure you want to cancel your registration for {{ project.title }}?</p>
       </mat-dialog-content>
       <mat-dialog-actions align="end">
         <button mat-button mat-dialog-close>No, Keep Registration</button>
@@ -404,7 +404,7 @@
                 <ng-container matColumnDef="registrationDate">
                   <th mat-header-cell *matHeaderCellDef>Registration Date</th>
                   <td mat-cell *matCellDef="let reg">
-                    {{ formatDate(reg.created_at) }}
+                    {{ reg.created_at | date:'fullDate' }}
                     @if (reg.guest_count > 0) {
                       <span class="guest-badge"
                         >+{{ reg.guest_count }} guests</span

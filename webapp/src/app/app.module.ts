@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, InjectionToken } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -7,7 +7,6 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
-export const GOOGLE_MAPS_API_KEY = new InjectionToken<string>('google-maps-api-key');
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,10 +17,6 @@ export const appConfig: ApplicationConfig = {
       GoogleMapsModule,
       NgbModule
     ),
-    {
-      provide: GOOGLE_MAPS_API_KEY,
-      useValue: env.googleMapsApiKey
-    },
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
   ]
 };
