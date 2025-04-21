@@ -362,3 +362,9 @@
     }
   }
 }
+.registration-dialog {
+  mat-form-field {
+    display: block;
+    margin-bottom: 1rem;
+  }
+}
