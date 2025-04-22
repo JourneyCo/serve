@@ -19,12 +19,9 @@ import { MatDialogModule, MatDialog } from "@angular/material/dialog";
 import { GoogleMapsModule } from "@angular/google-maps";
 import { AuthService, ProjectService, HelperService } from "@services";
 import { Observable, forkJoin, of } from "rxjs";
-import {
-  MatTable,
-  MatTableDataSource,
-  MatTableModule,
-} from "@angular/material/table";
-import {User, Registration, Project, Ages, Categories, Supplies, Tools} from "@models";
+import {MatTableModule, } from "@angular/material/table";
+import {User, Project, Ages, Categories, Supplies, Tools} from "@models";
+import {AdminProjectPanelComponent} from '../../admin/admin-project-panel/admin-project-panel.component';
 
 @Component({
   selector: "app-project-detail",
@@ -48,17 +45,14 @@ import {User, Registration, Project, Ages, Categories, Supplies, Tools} from "@m
     MatCheckboxModule,
     MatDialogModule,
     GoogleMapsModule,
-    MatTable,
     MatTableModule,
+    AdminProjectPanelComponent,
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
 })
 export class ProjectDetailComponent implements OnInit {
-  registrationsColumns = ["name", "email", "phone", "registrationDate"];
   project: Project | null = null;
-  registrations: Registration[] = [];
-  registrationsDataSource = new MatTableDataSource<Registration>();
   currentUser: User | null = null;
   isAdmin: Observable<boolean> | undefined;
   isRegistered = false;
@@ -159,18 +153,11 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe(
       (result) => {
         this.project = result.project;
-        console.log(this.project);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
           (reg) => reg.project_id === project_id && reg.status === "registered",
         );
-
-        // If admin, get all registrations for the project
-        if (this.isAdmin) {
-          this.registrations = result.projectRegs;
-          this.registrationsDataSource.data = this.registrations;
-        }
 
         // Set up google-map marker if coordinates are available
         this.updateMapMarker();

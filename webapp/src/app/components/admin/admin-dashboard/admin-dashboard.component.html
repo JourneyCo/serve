@@ -119,56 +119,5 @@
         }
       </div>
     </mat-tab>
-
-
-    <!-- Registrations Tab -->
-    <mat-tab label="Manage Registrations">
-      <mat-card class="registrations-card">
-        <mat-card-header>
-          <mat-card-title>Project Registrations</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <table mat-table [dataSource]="registrationsDataSource" matSort>
-            <!-- User Name Column -->
-            <ng-container matColumnDef="userName">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
-              <td mat-cell *matCellDef="let reg">{{reg.user?.first_name || 'N/A'}} {{reg.user?.last_name}}</td>
-            </ng-container>
-
-            <!-- Project Title Column -->
-            <ng-container matColumnDef="projectTitle">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
-              <td mat-cell *matCellDef="let reg">{{reg.project?.title || 'N/A'}}</td>
-            </ng-container>
-
-            <!-- Guest Count Column -->
-            <ng-container matColumnDef="guestCount">
-              <th mat-header-cell *matHeaderCellDef>Guests</th>
-              <td mat-cell *matCellDef="let reg">
-                <button mat-icon-button (click)="editGuestCount(reg)">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                {{reg.guest_count}}
-              </td>
-            </ng-container>
-
-            <!-- Actions Column -->
-            <ng-container matColumnDef="actions">
-              <th mat-header-cell *matHeaderCellDef>Actions</th>
-              <td mat-cell *matCellDef="let reg">
-                <button mat-icon-button color="warn" (click)="deleteRegistration(reg)" matTooltip="Delete Registration">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </td>
-            </ng-container>
-
-            <tr mat-header-row *matHeaderRowDef="registrationsColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: registrationsColumns;"></tr>
-          </table>
-
-          <mat-paginator #registrationsPaginator [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
-        </mat-card-content>
-      </mat-card>
-    </mat-tab>
   </mat-tab-group>
 </div>
