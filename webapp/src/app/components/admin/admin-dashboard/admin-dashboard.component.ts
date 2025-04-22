@@ -56,6 +56,15 @@ export class AdminDashboardComponent implements OnInit {
     "actions",
   ];
 
+  registrationsColumns: string[] = [
+    "userName",
+    "projectTitle",
+    "guestCount",
+    "actions"
+  ];
+  
+  registrationsDataSource = new MatTableDataSource<Registration>([]);
+
   // Loading states
   loadingProjects = true;
   processingAction = false;
@@ -77,11 +86,57 @@ export class AdminDashboardComponent implements OnInit {
     this.loadProjects();
   }
 
+  @ViewChild('registrationsPaginator') registrationsPaginator!: MatPaginator;
+
   ngAfterViewInit(): void {
     // Set up sorting and pagination after view init
     setTimeout(() => {
       this.projectsDataSource.paginator = this.projectsPaginator;
       this.projectsDataSource.sort = this.projectsSort;
+      this.registrationsDataSource.paginator = this.registrationsPaginator;
+    });
+  }
+
+  editGuestCount(registration: Registration): void {
+    const dialogRef = this.dialog.open(MatDialog, {
+      width: '300px',
+      data: {
+        title: 'Edit Guest Count',
+        content: 'Enter new guest count:',
+        value: registration.guest_count
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result !== undefined) {
+        this.projectService.updateRegistration(registration.id, { guest_count: result }).subscribe({
+          next: () => {
+            this.loadProjects();
+            this.showSuccess('Guest count updated successfully');
+          },
+          error: (error) => {
+            console.error('Error updating guest count:', error);
+            this.showError('Failed to update guest count');
+          }
+        });
+      }
+    });
+  }
+
+  deleteRegistration(registration: Registration): void {
+    if (!confirm('Are you sure you want to delete this registration?')) {
+      return;
+    }
+
+    this.projectService.deleteRegistration(registration.id).subscribe({
+      next: () => {
+        this.loadProjects();
+        this.showSuccess('Registration deleted successfully');
+      },
+      error: (error) => {
+        console.error('Error deleting registration:', error);
+        this.showError('Failed to delete registration');
+      }
     });
   }
 
