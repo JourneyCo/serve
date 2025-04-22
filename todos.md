@@ -30,6 +30,7 @@
 - Soft number and hard number (discuss more?)
 - Don't need date (its all on serve day), don't need created/updated
 - long description on caret dropdown
+- Can a user sign up for more than one project?
 
 
 COMPLETED

@@ -181,7 +181,7 @@ func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Reg
 }
 
 // GetProjectRegistrations gets all registrations for a project
-func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) {
+func GetProjectRegistrations(ctx context.Context, db *sql.DB, projectID int) ([]Registration, error) {
 	query := `
 									SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 									r.created_at, r.updated_at,
@@ -192,7 +192,7 @@ func GetProjectRegistrations(db *sql.DB, projectID int) ([]Registration, error) 
 									ORDER BY r.status, r.created_at
 					`
 
-	rows, err := db.Query(query, projectID)
+	rows, err := db.QueryContext(ctx, query, projectID)
 	if err != nil {
 		return nil, err
 	}
