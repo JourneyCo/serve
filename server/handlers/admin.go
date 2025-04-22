@@ -52,7 +52,8 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 
 // GetAllUsers returns all users
 func (h *AdminHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := models.GetAllUsers(h.DB)
+	ctx := r.Context()
+	users, err := models.GetAllUsers(ctx, h.DB)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve users")
 		return
@@ -63,6 +64,7 @@ func (h *AdminHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 // CreateProject creates a new project
 func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	var input ProjectInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println(err)
@@ -101,7 +103,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	project = applyAccessories(input, project)
 
-	if err = models.CreateProject(h.DB, project); err != nil {
+	if err = models.CreateProject(ctx, h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create project")
 		return
 	}
@@ -111,6 +113,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 // UpdateProject updates an existing project
 func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -119,7 +122,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if project exists
-	project, err := models.GetProjectByID(h.DB, id)
+	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
@@ -145,9 +148,10 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 
 	// Parse project date
 	if input.ProjectDate == "" {
-		input.ProjectDate = "2025-07-12"
+		input.ProjectDate = "07-12-25"
+		// TODO: get the cfg date
 	}
-	projectDate, err := time.Parse("2006-01-02", input.ProjectDate)
+	projectDate, err := time.Parse("01-02-06", input.ProjectDate)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
 		return
@@ -165,11 +169,11 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Longitude = input.Longitude
 	project.WheelchairAccessible = input.WheelchairAccessible
 
-	// TODO: Need to delete accessories here for an existing projct before adding accessories
+	// TODO: Need to delete accessories here for an existing project before adding accessories
 
 	project = applyAccessories(input, project)
 
-	if err = models.UpdateProject(h.DB, project); err != nil {
+	if err = models.UpdateProject(ctx, h.DB, project); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project")
 		return
 	}
@@ -179,6 +183,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 
 // DeleteProject deletes a project
 func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -187,7 +192,7 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if project exists
-	project, err := models.GetProjectByID(h.DB, id)
+	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
@@ -199,7 +204,7 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete project
-	if err := models.DeleteProject(h.DB, id); err != nil {
+	if err := models.DeleteProject(ctx, h.DB, id); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to delete project")
 		return
 	}

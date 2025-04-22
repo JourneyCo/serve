@@ -32,6 +32,8 @@ func RegisterUserRoutes(router *mux.Router, db *sql.DB, emailService *services.E
 
 // GetUserProfile returns the profile of the authenticated user
 func (h *UserHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	// Get user ID from the token
 	userID, err := middleware.GetUserIDFromRequest(r)
 	if err != nil {
@@ -47,7 +49,7 @@ func (h *UserHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get or create user in database
-	user, err := models.GetUserByID(h.DB, userID)
+	user, err := models.GetUserByID(ctx, h.DB, userID)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve user profile")
 		return
@@ -60,7 +62,7 @@ func (h *UserHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Create the user in the database
-		err = models.CreateUser(h.DB, user)
+		err = models.CreateUser(ctx, h.DB, user)
 		if err != nil {
 			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user profile")
 			return
@@ -86,6 +88,8 @@ func (h *UserHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 
 // GetUserRegistrations returns all registrations for the authenticated user
 func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	// Get user ID from the token
 	userID, err := middleware.GetUserIDFromRequest(r)
 	if err != nil {
@@ -93,7 +97,7 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	registrations, err := models.GetUserRegistrations(h.DB, userID)
+	registrations, err := models.GetUserRegistrations(ctx, h.DB, userID)
 	if err != nil {
 		log.Println("failed to retrieve user registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
@@ -105,6 +109,8 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 
 // UpdateUserProfile updates the profile of the authenticated user
 func (h *UserHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
 	userID, err := middleware.GetUserIDFromRequest(r)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
@@ -120,7 +126,7 @@ func (h *UserHandler) UpdateUserProfile(w http.ResponseWriter, r *http.Request) 
 	// Ensure the user can only update their own profile
 	user.ID = userID
 
-	if err = models.UpdateUser(h.DB, &user); err != nil {
+	if err = models.UpdateUser(ctx, h.DB, &user); err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update user profile")
 		return
 	}

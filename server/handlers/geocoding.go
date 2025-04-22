@@ -20,12 +20,6 @@ type GeocodeRequest struct {
 
 // GeocodeAddress handles requests to geocode an address
 func (h *GeocodingHandler) GeocodeAddress(w http.ResponseWriter, r *http.Request) {
-	// Only allow POST requests
-	if r.Method != http.MethodPost {
-		middleware.RespondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
-		return
-	}
-
 	// Parse the request body
 	var req GeocodeRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

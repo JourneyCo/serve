@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+
+	"golang.org/x/net/context"
 )
 
 // User represents a user in the system
@@ -20,7 +22,7 @@ type User struct {
 }
 
 // GetUserByID retrieves a user by their ID
-func GetUserByID(db *sql.DB, id string) (*User, error) {
+func GetUserByID(ctx context.Context, db *sql.DB, id string) (*User, error) {
 	query := `
 		SELECT id, email, first_name, last_name, phone, text_permission, created_at, updated_at
 		FROM users
@@ -28,7 +30,7 @@ func GetUserByID(db *sql.DB, id string) (*User, error) {
 	`
 
 	var user User
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&user.ID, &user.Email, &user.FirstName, &user.LastName, &user.Phone, &user.TextPermission,
 		&user.CreatedAt, &user.UpdatedAt,
 	)
@@ -44,14 +46,15 @@ func GetUserByID(db *sql.DB, id string) (*User, error) {
 }
 
 // CreateUser creates a new user in the database
-func CreateUser(db *sql.DB, user *User) error {
+func CreateUser(ctx context.Context, db *sql.DB, user *User) error {
 	query := `
 		INSERT INTO users (id, email, first_name, last_name, phone, text_permission)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING created_at, updated_at
 	`
 
-	return db.QueryRow(
+	return db.QueryRowContext(
+		ctx,
 		query,
 		user.ID,
 		user.Email,
@@ -63,7 +66,7 @@ func CreateUser(db *sql.DB, user *User) error {
 }
 
 // UpdateUser updates an existing user
-func UpdateUser(db *sql.DB, user *User) error {
+func UpdateUser(ctx context.Context, db *sql.DB, user *User) error {
 	query := `
 		UPDATE users
 		SET email = $1, first_name = $2, last_name = $3, phone = $4, text_permission = $5, updated_at = CURRENT_TIMESTAMP
@@ -71,7 +74,8 @@ func UpdateUser(db *sql.DB, user *User) error {
 		RETURNING updated_at
 	`
 
-	return db.QueryRow(
+	return db.QueryRowContext(
+		ctx,
 		query,
 		user.Email,
 		user.FirstName,
@@ -83,14 +87,14 @@ func UpdateUser(db *sql.DB, user *User) error {
 }
 
 // GetAllUsers retrieves all users from the database
-func GetAllUsers(db *sql.DB) ([]User, error) {
+func GetAllUsers(ctx context.Context, db *sql.DB) ([]User, error) {
 	query := `
 		SELECT id, email, first_name, last_name, phone, text_permission, created_at, updated_at
 		FROM users
 		ORDER BY last_name
 	`
 
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +103,7 @@ func GetAllUsers(db *sql.DB) ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var u User
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&u.ID, &u.Email, &u.FirstName, &u.LastName, &u.Phone, &u.TextPermission,
 			&u.CreatedAt, &u.UpdatedAt,
 		); err != nil {
@@ -108,7 +112,7 @@ func GetAllUsers(db *sql.DB) ([]User, error) {
 		users = append(users, u)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 

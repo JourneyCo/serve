@@ -1,6 +1,7 @@
 package models
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -135,7 +136,7 @@ func CancelRegistration(db *sql.DB, userID string, projectID int) error {
 }
 
 // GetUserRegistrations gets all registrations for a user
-func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
+func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Registration, error) {
 	query := `
 									SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 									r.created_at, r.updated_at,
@@ -147,7 +148,7 @@ func GetUserRegistrations(db *sql.DB, userID string) ([]Registration, error) {
 									ORDER BY p.project_date
 					`
 
-	rows, err := db.Query(query, userID)
+	rows, err := db.QueryContext(ctx, query, userID)
 	if err != nil {
 		return nil, err
 	}

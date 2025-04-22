@@ -107,6 +107,7 @@ export class ProjectDetailComponent implements OnInit {
     private helper: HelperService
   ) {
     this.serve_date = helper.GetServeDate();
+    this.isAdmin = authService.isAdmin();
   }
 
   ngOnInit(): void {

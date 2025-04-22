@@ -1,7 +1,9 @@
 package models
 
 import (
+	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -49,18 +51,18 @@ type ProjectAccessory struct {
 }
 
 // GetAllProjects retrieves all projects from the database
-func GetAllProjects(db *sql.DB) ([]Project, error) {
+func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
                 SELECT p.id, p.title, p.short_description, p.description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
-                LEFT JOIN registrations r ON p.id = r.project_id
+                LEFT JOIN registrations r ON p.id = r.project_id 
                 GROUP BY p.id
         `
 
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +71,7 @@ func GetAllProjects(db *sql.DB) ([]Project, error) {
 	var projects []Project
 	for rows.Next() {
 		var p Project
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&p.ID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
@@ -77,98 +79,14 @@ func GetAllProjects(db *sql.DB) ([]Project, error) {
 			return nil, err
 		}
 
-		// Get tools for this project
-		toolsQuery := `
-			SELECT t.id, t.name FROM tools t
-			JOIN project_tools pt ON t.id = pt.tool_id
-			WHERE pt.project_id = $1
-		`
-		toolRows, err := db.Query(toolsQuery, p.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer toolRows.Close()
-
-		for toolRows.Next() {
-			var tool ProjectAccessory
-			if err := toolRows.Scan(&tool.ID, &tool.Name); err != nil {
-				return nil, err
-			}
-			p.Tools = append(p.Tools, tool)
-		}
-
-		// Get supplies for this project
-		suppliesQuery := `
-			SELECT s.id, s.name FROM supplies s
-			JOIN project_supplies ps ON s.id = ps.supply_id
-			WHERE ps.project_id = $1
-		`
-		supplyRows, err := db.Query(suppliesQuery, p.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer supplyRows.Close()
-
-		for supplyRows.Next() {
-			var supply ProjectAccessory
-			if err := supplyRows.Scan(&supply.ID, &supply.Name); err != nil {
-				return nil, err
-			}
-			p.Supplies = append(p.Supplies, supply)
-		}
-
-		// Get categories for this project
-		categoriesQuery := `
-			SELECT c.id, c.category FROM categories c
-			JOIN project_categories pc ON c.id = pc.category_id
-			WHERE pc.project_id = $1
-		`
-		categoryRows, err := db.Query(categoriesQuery, p.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer categoryRows.Close()
-
-		for categoryRows.Next() {
-			var category ProjectAccessory
-			if err := categoryRows.Scan(&category.ID, &category.Name); err != nil {
-				return nil, err
-			}
-			p.Categories = append(p.Categories, category)
-		}
-
-		// Get ages for this project
-		agesQuery := `
-			SELECT a.id, a.name FROM ages a
-			JOIN project_ages pa ON a.id = pa.ages_id
-			WHERE pa.project_id = $1
-		`
-		ageRows, err := db.Query(agesQuery, p.ID)
-		if err != nil {
-			return nil, err
-		}
-		defer ageRows.Close()
-
-		for ageRows.Next() {
-			var age ProjectAccessory
-			if err := ageRows.Scan(&age.ID, &age.Name); err != nil {
-				return nil, err
-			}
-			p.Ages = append(p.Ages, age)
-		}
-
 		projects = append(projects, p)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 
 	return projects, nil
 }
 
 // GetProjectByID retrieves a project by its ID
-func GetProjectByID(db *sql.DB, id int) (*Project, error) {
+func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.short_description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.lead_user_id,
@@ -181,14 +99,14 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
         `
 
 	var p Project
-	err := db.QueryRow(query, id).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.LeadUserID,
 		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil // Project not found
 		}
 		return nil, err
@@ -200,7 +118,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		JOIN project_tools pt ON t.id = pt.tool_id
 		WHERE pt.project_id = $1
 	`
-	toolRows, err := db.Query(toolsQuery, id)
+	toolRows, err := db.QueryContext(ctx, toolsQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -220,7 +138,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		JOIN project_supplies ps ON s.id = ps.supply_id
 		WHERE ps.project_id = $1
 	`
-	supplyRows, err := db.Query(suppliesQuery, id)
+	supplyRows, err := db.QueryContext(ctx, suppliesQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +158,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		JOIN project_categories pc ON c.id = pc.category_id
 		WHERE pc.project_id = $1
 	`
-	categoryRows, err := db.Query(categoriesQuery, id)
+	categoryRows, err := db.QueryContext(ctx, categoriesQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -260,7 +178,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		JOIN project_ages pa ON a.id = pa.ages_id
 		WHERE pa.project_id = $1
 	`
-	ageRows, err := db.Query(agesQuery, id)
+	ageRows, err := db.QueryContext(ctx, agesQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +198,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 		JOIN project_ages pa ON a.id = pa.ages_id
 		WHERE pa.project_id = $1
 	`
-	skillsRows, err := db.Query(skillsQuery, id)
+	skillsRows, err := db.QueryContext(ctx, skillsQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -298,7 +216,7 @@ func GetProjectByID(db *sql.DB, id int) (*Project, error) {
 }
 
 // CreateProject creates a new project in the database
-func CreateProject(db *sql.DB, project *Project) error {
+func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (title, short_description, description, time, project_date, max_capacity, 
@@ -307,7 +225,9 @@ func CreateProject(db *sql.DB, project *Project) error {
                 RETURNING id, created_at, updated_at
         `
 
-	err := db.QueryRow(
+	// TODO: Need rollbacks here
+	err := db.QueryRowContext(
+		ctx,
 		query,
 		project.Title,
 		project.ShortDescription,
@@ -335,7 +255,7 @@ func CreateProject(db *sql.DB, project *Project) error {
 }
 
 // UpdateProject updates an existing project
-func UpdateProject(db *sql.DB, project *Project) error {
+func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 	query := `
                 UPDATE projects
                 SET title = $1, short_description = $2, description = $3, time = $4, project_date = $5, 
@@ -344,8 +264,9 @@ func UpdateProject(db *sql.DB, project *Project) error {
                 WHERE id = $12
                 RETURNING updated_at
         `
-
-	return db.QueryRow(
+	// TODO: Need rollbacks here
+	return db.QueryRowContext(
+		ctx,
 		query,
 		project.Title,
 		project.ShortDescription,
@@ -363,9 +284,9 @@ func UpdateProject(db *sql.DB, project *Project) error {
 }
 
 // DeleteProject deletes a project by its ID
-func DeleteProject(db *sql.DB, id int) error {
+func DeleteProject(ctx context.Context, db *sql.DB, id int) error {
 	query := `DELETE FROM projects WHERE id = $1`
-	_, err := db.Exec(query, id)
+	_, err := db.ExecContext(ctx, query, id)
 	return err
 }
 

@@ -44,7 +44,8 @@ func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *service
 
 // GetProjects returns all projects
 func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
-	projects, err := models.GetAllProjects(h.DB)
+	ctx := r.Context()
+	projects, err := models.GetAllProjects(ctx, h.DB)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve projects")
 		return
@@ -55,6 +56,7 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 
 // GetProject returns a specific project by ID
 func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -62,7 +64,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	project, err := models.GetProjectByID(h.DB, id)
+	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
@@ -75,7 +77,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 
 	// Get lead user details if lead user ID exists
 	if project.LeadUserID != "" {
-		leadUser, err := models.GetUserByID(h.DB, project.LeadUserID)
+		leadUser, err := models.GetUserByID(ctx, h.DB, project.LeadUserID)
 		if err == nil && leadUser != nil {
 			project.LeadUser = leadUser
 		}
@@ -86,6 +88,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 
 // RegisterForProject registers a user for a project
 func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -101,7 +104,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get or create user in database
-	user, err := models.GetUserByID(h.DB, userID)
+	user, err := models.GetUserByID(ctx, h.DB, userID)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
 		return
@@ -112,7 +115,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		user = &models.User{
 			ID: userID,
 		}
-		err = models.CreateUser(h.DB, user)
+		err = models.CreateUser(ctx, h.DB, user)
 		if err != nil {
 			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
 			return
@@ -133,7 +136,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	user.LastName = reg.LastName
 	user.Phone = reg.Phone
 	user.Email = reg.Email
-	if err = models.UpdateUser(h.DB, user); err != nil {
+	if err = models.UpdateUser(ctx, h.DB, user); err != nil {
 		log.Printf("Failed to update user information: %v\n", err)
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Failed to update user information",
@@ -157,7 +160,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get project details for email
-	project, err := models.GetProjectByID(h.DB, projectID)
+	project, err := models.GetProjectByID(ctx, h.DB, projectID)
 	if err != nil {
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
@@ -166,7 +169,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get user details for email
-	user, err = models.GetUserByID(h.DB, userID)
+	user, err = models.GetUserByID(ctx, h.DB, userID)
 	if err != nil {
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
