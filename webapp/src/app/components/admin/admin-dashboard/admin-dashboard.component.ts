@@ -135,7 +135,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     this.processingAction = true;
     this.projectService.deleteRegistration(registration.id).subscribe({
       next: () => {
-        this.loadProjects();
+        this.loadRegistrations();
         this.showSuccess('Registration deleted successfully');
         this.processingAction = false;
       },
@@ -163,7 +163,6 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
 
   loadRegistrations(): void {
-<<<<<<< HEAD
     this.processingAction = true;
     this.projectService.getAllRegistrations().subscribe({
       next: (registrations) => {

@@ -18,6 +18,40 @@ type AdminHandler struct {
 	DB *sql.DB
 }
 
+// ProjectInput represents the input for creating or updating a project
+type ProjectInput struct {
+	Title                string  `json:"title"`
+	Description          string  `json:"description"`
+	ShortDescription     string  `json:"short_description"`
+	Time                 string  `json:"time"`
+	ProjectDate          string  `json:"project_date"`
+	MaxCapacity          int     `json:"max_capacity"`
+	WheelchairAccessible bool    `json:"wheelchair_accessible"`
+	LeadUserID           string  `json:"lead_user_id"`
+	Tools                []int   `json:"tools,omitempty"`
+	Skills               []int   `json:"skills,omitempty"`
+	Categories           []int   `json:"categories,omitempty"`
+	Ages                 []int   `json:"ages,omitempty"`
+	Supplies             []int   `json:"supplies,omitempty"`
+	LocationName         string  `json:"location_name"`
+	Latitude             float64 `json:"latitude"`
+	Longitude            float64 `json:"longitude"`
+}
+
+// RegisterAdminRoutes registers the routes for admin handlers
+func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
+	handler := &AdminHandler{
+		DB: db,
+	}
+
+	router.HandleFunc("/users", handler.GetAllUsers).Methods(http.MethodGet)
+	router.HandleFunc("/registrations", handler.GetAllRegistrations).Methods(http.MethodGet)
+	router.HandleFunc("/projects", handler.CreateProject).Methods(http.MethodPost)
+	router.HandleFunc("/projects/{id:[0-9]+}", handler.UpdateProject).Methods(http.MethodPut)
+	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods(http.MethodDelete)
+	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
+}
+
 // GetAllRegistrations returns all registrations across all projects
 func (h *AdminHandler) GetAllRegistrations(w http.ResponseWriter, r *http.Request) {
 	query := `
@@ -124,39 +158,6 @@ func (h *AdminHandler) DeleteRegistration(w http.ResponseWriter, r *http.Request
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Registration deleted successfully"})
-}
-
-// ProjectInput represents the input for creating or updating a project
-type ProjectInput struct {
-	Title                string  `json:"title"`
-	Description          string  `json:"description"`
-	ShortDescription     string  `json:"short_description"`
-	Time                 string  `json:"time"`
-	ProjectDate          string  `json:"project_date"`
-	MaxCapacity          int     `json:"max_capacity"`
-	WheelchairAccessible bool    `json:"wheelchair_accessible"`
-	LeadUserID           string  `json:"lead_user_id"`
-	Tools                []int   `json:"tools,omitempty"`
-	Skills               []int   `json:"skills,omitempty"`
-	Categories           []int   `json:"categories,omitempty"`
-	Ages                 []int   `json:"ages,omitempty"`
-	Supplies             []int   `json:"supplies,omitempty"`
-	LocationName         string  `json:"location_name"`
-	Latitude             float64 `json:"latitude"`
-	Longitude            float64 `json:"longitude"`
-}
-
-// RegisterAdminRoutes registers the routes for admin handlers
-func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
-	handler := &AdminHandler{
-		DB: db,
-	}
-
-	router.HandleFunc("/users", handler.GetAllUsers).Methods("GET")
-	router.HandleFunc("/registrations", handler.GetAllRegistrations).Methods("GET")
-	router.HandleFunc("/projects", handler.CreateProject).Methods("POST")
-	router.HandleFunc("/projects/{id:[0-9]+}", handler.UpdateProject).Methods("PUT")
-	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods("DELETE")
 }
 
 // GetAllUsers returns all users
@@ -296,6 +297,7 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
+		log.Println("invalid project id")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
 		return
 	}
@@ -303,6 +305,7 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	// Check if project exists
 	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
+		log.Println("error querying for project")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
 	}
