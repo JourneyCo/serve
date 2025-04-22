@@ -18,6 +18,51 @@ type AdminHandler struct {
 	DB *sql.DB
 }
 
+// GetAllRegistrations returns all registrations across all projects
+func (h *AdminHandler) GetAllRegistrations(w http.ResponseWriter, r *http.Request) {
+	query := `
+		SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
+		r.created_at, r.updated_at,
+		u.email, u.first_name, u.last_name,
+		p.title, p.description, p.time, p.project_date
+		FROM registrations r
+		JOIN users u ON r.user_id = u.id
+		JOIN projects p ON r.project_id = p.id
+		ORDER BY r.created_at DESC
+	`
+
+	rows, err := h.DB.Query(query)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
+		return
+	}
+	defer rows.Close()
+
+	var registrations []models.Registration
+	for rows.Next() {
+		var r models.Registration
+		r.User = &models.User{}
+		r.Project = &models.Project{}
+
+		err := rows.Scan(
+			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
+			&r.CreatedAt, &r.UpdatedAt,
+			&r.User.Email, &r.User.FirstName, &r.User.LastName,
+			&r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
+		)
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Error scanning registrations")
+			return
+		}
+
+		r.User.ID = r.UserID
+		r.Project.ID = r.ProjectID
+		registrations = append(registrations, r)
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, registrations)
+}
+
 // UpdateRegistrationGuestCount updates the guest count for a registration
 func (h *AdminHandler) UpdateRegistrationGuestCount(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -108,6 +153,7 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	}
 
 	router.HandleFunc("/users", handler.GetAllUsers).Methods("GET")
+	router.HandleFunc("/registrations", handler.GetAllRegistrations).Methods("GET")
 	router.HandleFunc("/projects", handler.CreateProject).Methods("POST")
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.UpdateProject).Methods("PUT")
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods("DELETE")

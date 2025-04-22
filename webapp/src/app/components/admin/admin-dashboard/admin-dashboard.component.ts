@@ -84,6 +84,7 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadProjects();
+    this.loadRegistrations();
   }
 
   @ViewChild('registrationsPaginator') registrationsPaginator!: MatPaginator;
@@ -159,6 +160,21 @@ export class AdminDashboardComponent implements OnInit {
         this.loadingProjects = false;
       },
     );
+  }
+
+  loadRegistrations(): void {
+    this.processingAction = true;
+    this.projectService.getAllRegistrations().subscribe({
+      next: (registrations) => {
+        this.registrationsDataSource.data = registrations;
+        this.processingAction = false;
+      },
+      error: (error) => {
+        console.error("Error loading registrations:", error);
+        this.showError("Failed to load registrations");
+        this.processingAction = false;
+      }
+    });
   }
 
   applyProjectFilter(event: Event): void {

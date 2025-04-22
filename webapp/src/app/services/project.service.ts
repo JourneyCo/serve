@@ -74,4 +74,8 @@ export class ProjectService {
   deleteRegistration(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/admin/registrations/${id}`);
   }
+
+  getAllRegistrations(): Observable<Registration[]> {
+    return this.http.get<Registration[]>(`${this.apiUrl}/admin/registrations`);
+  }
 }
