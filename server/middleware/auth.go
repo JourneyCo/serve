@@ -88,6 +88,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 func AdminMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
 			token := r.Context().Value(jwtmiddleware.ContextKey{})
 			if token == nil {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -108,13 +109,16 @@ func AdminMiddleware(next http.Handler) http.Handler {
 
 			// Check if user has admin role
 			isAdmin := slices.Contains(customClaims.Permissions, adminProjects)
+			if isAdmin {
+				ctx = context.WithValue(ctx, "isAdmin", true)
+			}
 
 			if !isAdmin {
 				http.Error(w, "Forbidden: admin role required", http.StatusForbidden)
 				return
 			}
 
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		},
 	)
 }

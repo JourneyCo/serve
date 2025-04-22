@@ -219,6 +219,7 @@ func (h *ProjectHandler) CancelRegistration(w http.ResponseWriter, r *http.Reque
 
 // GetProjectRegistrations returns all registrations for a project (admin only)
 func (h *ProjectHandler) GetProjectRegistrations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -226,7 +227,7 @@ func (h *ProjectHandler) GetProjectRegistrations(w http.ResponseWriter, r *http.
 		return
 	}
 
-	registrations, err := models.GetProjectRegistrations(h.DB, projectID)
+	registrations, err := models.GetProjectRegistrations(ctx, h.DB, projectID)
 	if err != nil {
 		log.Println("failed to get project registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")

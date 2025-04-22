@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
@@ -16,7 +16,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { ProjectService } from "@services";
-import { Project } from "@models";
+import {Project, Registration} from '@models';
 import { ProjectFormComponent } from "../project-form/project-form.component";
 
 @Component({
@@ -39,12 +39,11 @@ import { ProjectFormComponent } from "../project-form/project-form.component";
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
-    ProjectFormComponent,
   ],
   templateUrl: "./admin-dashboard.component.html",
   styleUrls: ["./admin-dashboard.component.scss"],
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, AfterViewInit {
   // Data sources for tables
   projectsDataSource = new MatTableDataSource<Project>([]);
 
@@ -62,11 +61,12 @@ export class AdminDashboardComponent implements OnInit {
     "guestCount",
     "actions"
   ];
-  
+
   registrationsDataSource = new MatTableDataSource<Registration>([]);
 
   // Loading states
   loadingProjects = true;
+  loadingRegistrations = true;
   processingAction = false;
 
   // ViewChild references for table sorting and pagination
@@ -163,6 +163,7 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadRegistrations(): void {
+<<<<<<< HEAD
     this.processingAction = true;
     this.projectService.getAllRegistrations().subscribe({
       next: (registrations) => {
@@ -236,10 +237,6 @@ export class AdminDashboardComponent implements OnInit {
         this.processingAction = false;
       },
     );
-  }
-
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString();
   }
 
   isProjectAtCapacity(project: Project): boolean {
