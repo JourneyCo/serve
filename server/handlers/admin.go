@@ -18,6 +18,69 @@ type AdminHandler struct {
 	DB *sql.DB
 }
 
+// UpdateRegistrationGuestCount updates the guest count for a registration
+func (h *AdminHandler) UpdateRegistrationGuestCount(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	regID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid registration ID")
+		return
+	}
+
+	var input struct {
+		GuestCount int `json:"guest_count"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+
+	if input.GuestCount < 0 {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Guest count cannot be negative")
+		return
+	}
+
+	query := `UPDATE registrations SET guest_count = $1 WHERE id = $2`
+	result, err := h.DB.Exec(query, input.GuestCount, regID)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update registration")
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		middleware.RespondWithError(w, http.StatusNotFound, "Registration not found")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Registration updated successfully"})
+}
+
+// DeleteRegistration deletes a registration
+func (h *AdminHandler) DeleteRegistration(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	regID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid registration ID")
+		return
+	}
+
+	query := `DELETE FROM registrations WHERE id = $1`
+	result, err := h.DB.Exec(query, regID)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to delete registration")
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil || rowsAffected == 0 {
+		middleware.RespondWithError(w, http.StatusNotFound, "Registration not found")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Registration deleted successfully"})
+}
+
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
 	Title                string  `json:"title"`

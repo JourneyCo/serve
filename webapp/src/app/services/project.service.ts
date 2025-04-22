@@ -66,4 +66,12 @@ export class ProjectService {
       `${this.apiUrl}/projects/${project_id}/registrations`,
     );
   }
+
+  updateRegistration(id: number, updates: { guest_count: number }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/registrations/${id}`, updates);
+  }
+
+  deleteRegistration(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/admin/registrations/${id}`);
+  }
 }

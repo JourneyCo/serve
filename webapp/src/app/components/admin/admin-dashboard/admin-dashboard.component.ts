@@ -108,15 +108,18 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
+      if (result !== undefined && result >= 0) {
+        this.processingAction = true;
         this.projectService.updateRegistration(registration.id, { guest_count: result }).subscribe({
           next: () => {
             this.loadProjects();
             this.showSuccess('Guest count updated successfully');
+            this.processingAction = false;
           },
           error: (error) => {
             console.error('Error updating guest count:', error);
             this.showError('Failed to update guest count');
+            this.processingAction = false;
           }
         });
       }
@@ -124,18 +127,21 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   deleteRegistration(registration: Registration): void {
-    if (!confirm('Are you sure you want to delete this registration?')) {
+    if (!confirm('Are you sure you want to delete this registration? This cannot be undone.')) {
       return;
     }
 
+    this.processingAction = true;
     this.projectService.deleteRegistration(registration.id).subscribe({
       next: () => {
         this.loadProjects();
         this.showSuccess('Registration deleted successfully');
+        this.processingAction = false;
       },
       error: (error) => {
         console.error('Error deleting registration:', error);
         this.showError('Failed to delete registration');
+        this.processingAction = false;
       }
     });
   }
