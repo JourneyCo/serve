@@ -70,6 +70,10 @@ variable "auth0_client_id" {
   type = string
 }
 
+variable "auth0_client_secret" {
+  type = string
+}
+
 variable "mailtrap_host" {
   type    = string
   default = "sandbox.smtp.mailtrap.io"

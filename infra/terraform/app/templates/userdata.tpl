@@ -18,7 +18,7 @@ DATABASE_URL=
 AUTH0_DOMAIN=${auth0_domain}
 AUTH0_AUDIENCE=${auth0_audience}
 AUTH0_CLIENT_ID=${auth0_client_id}
-AUTH0_CLIENT_SECRET=
+AUTH0_CLIENT_SECRET=${auth0_client_secret}
 
 # MailTrap config
 MAIL_HOST=${mailtrap_host}

@@ -47,6 +47,7 @@ resource "aws_instance" "serve_app" {
     auth0_domain          = var.auth0_domain,
     auth0_audience        = var.auth0_audience,
     auth0_client_id       = var.auth0_client_id,
+    auth0_client_secret   = var.auth0_client_secret,
     mailtrap_host         = var.mailtrap_host,
     mailtrap_key          = var.mailtrap_key,
     mailtrap_from         = var.mailtrap_from,
