@@ -33,28 +33,6 @@
         </div>
       }
 
-      <!-- Map View -->
-      @if (!isLoading && viewGroup.value === 'map' && mapsLoaded) {
-        <div class="map-container">
-          <google-map [options]="mapOptions" height="500px" width="100%">
-            @for (marker of markers; track marker.position.lat) {
-              <map-marker
-                [position]="marker.position"
-                [label]="marker.label"
-                [title]="marker.title"
-                (mapClick)="markerClicked(marker, dataSource.data[+marker.label - 1])">
-              </map-marker>
-            }
-          </google-map>
-
-          @if (markers.length === 0) {
-            <div class="no-locations">
-              <p>No projects with location data available.</p>
-            </div>
-          }
-        </div>
-      }
-
       <!-- List View -->
       @if (!isLoading && (viewGroup.value === 'list' || !mapsLoaded)) {
         <div class="table-container">
@@ -135,9 +113,29 @@
         </mat-paginator>
         </div>
       }
-            <map-info-window #infoWindow>
-              {{ selectedMarkerInfo }}
-            </map-info-window>
+
+      <!-- Map View -->
+      @if (!isLoading && viewGroup.value === 'map' && mapsLoaded) {
+        <div class="map-container">
+          <google-map [options]="mapOptions" height="500px" width="100%">
+            @for (marker of markers; track marker.position.lat) {
+              <map-marker
+                [position]="marker.position"
+                [label]="marker.label"
+                [title]="marker.title"
+                (mapClick)="markerClicked(marker, dataSource.data[+marker.label - 1])">
+              </map-marker>
+            }
+          </google-map>
+
+          @if (markers.length === 0) {
+            <div class="no-locations">
+              <p>No projects with location data available.</p>
+            </div>
+          }
+        </div>
+      }
+
     </mat-card-content>
   </mat-card>
 </div>
