@@ -52,6 +52,52 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.UpdateProject).Methods(http.MethodPut)
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods(http.MethodDelete)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
+	router.HandleFunc("/projects/{id:[0-9]+}/associations", handler.DeleteProjectAssociations).Methods(http.MethodDelete)
+}
+
+// DeleteProjectAssociations deletes all associated records for a project from various tables
+func (h *AdminHandler) DeleteProjectAssociations(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
+		return
+	}
+
+	// Start a transaction
+	tx, err := h.DB.Begin()
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to start transaction")
+		return
+	}
+
+	// Define tables to clean
+	tables := []string{
+		"project_tools",
+		"project_ages",
+		"project_categories",
+		"project_supplies",
+		"project_skills",
+	}
+
+	// Delete from each table
+	for _, table := range tables {
+		_, err = tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE project_id = $1", table), projectID)
+		if err != nil {
+			tx.Rollback()
+			middleware.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to delete from %s", table))
+			return
+		}
+	}
+
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to commit transaction")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Project associations deleted successfully"})
 }
 
 // GetAllRegistrations returns all registrations across all projects
