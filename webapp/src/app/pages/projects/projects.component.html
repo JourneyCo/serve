@@ -54,7 +54,7 @@
 
           <!-- Time Column -->
           <ng-container matColumnDef="time">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+            <th mat-header-cell *matHeaderCellDef>Time</th>
             <td mat-cell *matCellDef="let project">{{project.time}}</td>
           </ng-container>
 
@@ -117,15 +117,23 @@
       <!-- Map View -->
       @if (!isLoading && viewGroup.value === 'map' && mapsLoaded) {
         <div class="map-container">
-          <google-map [options]="mapOptions" height="500px" width="100%">
-            @for (marker of markers; track marker.position.lat) {
-              <map-marker
-                [position]="marker.position"
-                [label]="marker.label"
-                [title]="marker.title"
-                (mapClick)="markerClicked(marker, dataSource.data[+marker.label - 1])">
-              </map-marker>
+          <google-map [options]="mapOptions" height="500px" width="100%" mapId="18c474b41c1ac65a">
+            @for (marker of markers; track marker.project.id) {
+              <map-advanced-marker
+                #markerElem="mapAdvancedMarker"
+                [position]="marker.mark.position"
+                [title]="marker.mark.title"
+                (mapClick)="markerClicked(markerElem, marker)">
+              </map-advanced-marker>
             }
+            <map-info-window>
+              <a href="javascript:void(0);" (click)="viewProject(selectedProject);" >
+                <div>{{selectedProject?.title}}</div>
+                <div class="mt-2">{{selectedProject?.short_description}}</div>
+                <div class="mt-2">{{selectedProject?.time}}</div>
+                <div class="mt-2">{{selectedProject?.location_address}}</div>
+              </a>
+            </map-info-window>
           </google-map>
 
           @if (markers.length === 0) {

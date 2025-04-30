@@ -1,5 +1,6 @@
 export interface Project {
   id: number;
+  google_id: number;
   title: string;
   short_description: string;
   description: string;

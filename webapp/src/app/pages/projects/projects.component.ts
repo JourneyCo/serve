@@ -1,11 +1,10 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
-import { GoogleMapsModule } from "@angular/google-maps";
+import {GoogleMapsModule, MapAdvancedMarker, MapInfoWindow} from '@angular/google-maps';
 import {HelperService} from '@services';
 import { Project } from '@models';
 import { ProjectService } from '@services';
-import { Marker } from '@models';
 import {Subject} from 'rxjs';
 import {MaterialModule} from '@material';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
@@ -19,7 +18,7 @@ import {MatSort} from '@angular/material/sort';
     CommonModule,
     RouterModule,
     GoogleMapsModule,
-    MaterialModule
+    MaterialModule,
   ],
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.component.scss"],
@@ -35,10 +34,11 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Project>([]);
   isLoading = true;
   eventsSubject: Subject<any> = new Subject<any>();
+
+
+  // Pagination and Sorting
   pageIndex: number = 0;
   pageSize: number = 10;
-
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -47,8 +47,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     center: { lat: 40.0, lng: -95.0 },
     zoom: 12,
   };
-  markers: Marker[] = [];
+  markers: any[];
   mapsLoaded = false;
+  @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
+  selectedProject: Project | null;
 
   constructor(
     private projectService: ProjectService,
@@ -77,7 +79,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
         this.dataSource.data = projects;
 
         // Create markers for projects with valid coordinates
-        this.markers = [];
         const validProjects = projects.filter((p) => p.latitude && p.longitude);
 
         if (validProjects.length > 0) {
@@ -101,14 +102,27 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
           };
 
           // Create markers
-          this.markers = validProjects.map((project, index) => ({
-            position: {
-              lat: project.latitude || 0,
-              lng: project.longitude || 0,
-            },
-            label: String(index + 1),
-            title: project.title,
-          }));
+          this.markers = [];
+          validProjects.forEach((project) => {
+            const markerContent = document.createElement('div');
+            markerContent.className = 'custom-marker';
+            markerContent.textContent = 'Marker';
+            markerContent.setAttribute('data-id', String(project.id));
+            // @ts-ignore
+            const mark: MapAdvancedMarker = {
+              position: {
+                lat: project.latitude || 0,
+                lng: project.longitude || 0,
+              },
+              title: project.title,
+              content: markerContent,
+            }
+            const set = {
+              mark: mark,
+              project: project
+            }
+            this.markers.push(set);
+          })
         }
 
         const startIndex = this.pageIndex * this.pageSize;
@@ -136,7 +150,10 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  viewProject(project: Project): void {
+  viewProject(project: Project | null): void {
+    if (!project) {
+      return
+    }
     this.router.navigate(["/projects", project.id]);
   }
 
@@ -158,49 +175,28 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  formatDate(date: string): string {
-    return new Date(date).toLocaleDateString();
+  markerClicked(marker: MapAdvancedMarker, mark: any): void {
+    this.selectedProject = mark.project
+    this.infoWindow.open(marker);
   }
 
-  formatTime(time: string): string {
-    if (!time) return "";
-
-    // Assuming time is in format "HH:MM:SS" or "HH:MM"
-    const parts = time.split(":");
-    if (parts.length < 2) return time;
-
-    // Convert to 12-hour format
-    let hours = parseInt(parts[0], 10);
-    const minutes = parts[1];
-    const ampm = hours >= 12 ? "PM" : "AM";
-
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-
-    return `${hours}:${minutes} ${ampm}`;
-  }
-
-  markerClicked(marker: any, project: Project): void {
-    this.viewProject(project);
-  }
-
-  centerMap(): void {
-    if (this.markers.length > 0) {
-      // Recalculate center and zoom to fit all markers
-      const bounds = new google.maps.LatLngBounds();
-      this.markers.forEach((marker) => {
-        bounds.extend(marker.position);
-      });
-
-      this.mapOptions = {
-        ...this.mapOptions,
-        center: {
-          lat: bounds.getCenter().lat(),
-          lng: bounds.getCenter().lng(),
-        },
-      };
-    }
-  }
+  // centerMap(): void {
+  //   if (this.markers.length > 0) {
+  //     // Recalculate center and zoom to fit all markers
+  //     const bounds = new google.maps.LatLngBounds();
+  //     this.markers.forEach((marker) => {
+  //       bounds.extend(marker.position);
+  //     });
+  //
+  //     this.mapOptions = {
+  //       ...this.mapOptions,
+  //       center: {
+  //         lat: bounds.getCenter().lat(),
+  //         lng: bounds.getCenter().lng(),
+  //       },
+  //     };
+  //   }
+  // }
 
   handlePageEvent(event: PageEvent) {
     this.pageSize = event.pageSize;

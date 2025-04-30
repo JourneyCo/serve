@@ -16,7 +16,6 @@ import {ProjectService, GoogleMapsService, UserService, HelperService} from '@se
 import { Project, Tools, Skills, Categories, Ages, Supplies } from "@models";
 import { MatSelectModule } from "@angular/material/select";
 import {MaterialModule} from '@material';
-import {MatCheckbox} from '@angular/material/checkbox';
 
 interface DialogData {
   projectID: number | null;
@@ -93,7 +92,6 @@ export class ProjectFormComponent implements OnInit {
     if (id) {
       this.projectService.getProject(id).subscribe(data => {
         this.project = data
-        console.log(this.project);
         this.loading = false;
         this.initForm();
       })
@@ -157,6 +155,7 @@ export class ProjectFormComponent implements OnInit {
 
     const project: Project = {
       id: this.project?.id || 0,
+      google_id: this.project?.google_id || 0,
       title: formValues.title,
       short_description: formValues.short_description,
       description: formValues.description,
