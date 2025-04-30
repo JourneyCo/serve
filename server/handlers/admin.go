@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -51,8 +52,11 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	router.HandleFunc("/projects", handler.CreateProject).Methods(http.MethodPost)
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.UpdateProject).Methods(http.MethodPut)
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods(http.MethodDelete)
+	router.HandleFunc("/registrations/{id:[0-9]+}", handler.UpdateRegistrationGuestCount).Methods(http.MethodPut)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
-	router.HandleFunc("/projects/{id:[0-9]+}/associations", handler.DeleteProjectAssociations).Methods(http.MethodDelete)
+	router.HandleFunc(
+		"/projects/{id:[0-9]+}/associations", handler.DeleteProjectAssociations,
+	).Methods(http.MethodDelete)
 }
 
 // DeleteProjectAssociations deletes all associated records for a project from various tables
@@ -85,7 +89,9 @@ func (h *AdminHandler) DeleteProjectAssociations(w http.ResponseWriter, r *http.
 		_, err = tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE project_id = $1", table), projectID)
 		if err != nil {
 			tx.Rollback()
-			middleware.RespondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to delete from %s", table))
+			middleware.RespondWithError(
+				w, http.StatusInternalServerError, fmt.Sprintf("Failed to delete from %s", table),
+			)
 			return
 		}
 	}
@@ -97,7 +103,9 @@ func (h *AdminHandler) DeleteProjectAssociations(w http.ResponseWriter, r *http.
 		return
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Project associations deleted successfully"})
+	middleware.RespondWithJSON(
+		w, http.StatusOK, map[string]string{"message": "Project associations deleted successfully"},
+	)
 }
 
 // GetAllRegistrations returns all registrations across all projects
@@ -150,6 +158,7 @@ func (h *AdminHandler) UpdateRegistrationGuestCount(w http.ResponseWriter, r *ht
 	vars := mux.Vars(r)
 	regID, err := strconv.Atoi(vars["id"])
 	if err != nil {
+		log.Println("invalid registration id to update registration")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid registration ID")
 		return
 	}
@@ -158,11 +167,13 @@ func (h *AdminHandler) UpdateRegistrationGuestCount(w http.ResponseWriter, r *ht
 		GuestCount int `json:"guest_count"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		log.Println("invalid payload to update registration")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 
 	if input.GuestCount < 0 {
+		log.Println("invalid guest count to update registration")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Guest count cannot be negative")
 		return
 	}
@@ -170,12 +181,14 @@ func (h *AdminHandler) UpdateRegistrationGuestCount(w http.ResponseWriter, r *ht
 	query := `UPDATE registrations SET guest_count = $1 WHERE id = $2`
 	result, err := h.DB.Exec(query, input.GuestCount, regID)
 	if err != nil {
+		log.Println("failed to update guest count: ", err)
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update registration")
 		return
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil || rowsAffected == 0 {
+		log.Println("failed to find registration for updating guest count: ", err)
 		middleware.RespondWithError(w, http.StatusNotFound, "Registration not found")
 		return
 	}

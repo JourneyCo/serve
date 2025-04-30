@@ -1,16 +1,17 @@
 
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MaterialModule } from '@material';
 import { Registration } from '@models';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-edit-guest-count-dialog',
   templateUrl: './edit-guest-count-dialog.component.html',
   styleUrls: ['./edit-guest-count-dialog.component.scss'],
   standalone: true,
-  imports: [MaterialModule]
+  imports: [MaterialModule, CommonModule, ReactiveFormsModule]
 })
 export class EditGuestCountDialogComponent {
   form: FormGroup;
