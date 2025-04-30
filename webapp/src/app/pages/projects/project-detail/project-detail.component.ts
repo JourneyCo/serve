@@ -7,7 +7,7 @@ import { GoogleMapsModule } from "@angular/google-maps";
 import { AuthService, ProjectService, HelperService, RegistrationService } from "@services";
 import {Observable, forkJoin, of, Subscription} from 'rxjs';
 import {User, Project, Ages, Categories, Supplies, Tools, Skills} from '@models';
-import {AdminProjectPanelComponent} from '@components';
+import {AdminProjectPanelComponent, RegistrationDialogComponent} from '@components';
 import { MaterialModule } from '@material';
 
 @Component({
@@ -40,15 +40,6 @@ export class ProjectDetailComponent implements OnInit {
   skills = Skills
   serve_date: Date;
   registrationSubscription: Subscription;
-
-
-  // Registration form properties
-  guest_count: number = 0;
-  lead_interest: boolean = false;
-  first_name: string = "";
-  last_name: string = "";
-  phone: string = "";
-  email: string = "";
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {
@@ -154,26 +145,26 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   openRegistrationForm(): void {
-    // Reset form values
-    this.guest_count = 0;
-    this.lead_interest = false;
-
     // Open dialog
-    this.dialogRef = this.dialog.open(this.registrationDialogTemplate, {
+    this.dialogRef = this.dialog.open(RegistrationDialogComponent, {
       width: "500px",
       disableClose: false,
+      data: { project: this.project, user: this.currentUser }
     });
 
     // Handle dialog closure
-    this.dialogRef.afterClosed().subscribe((result: boolean) => {
+    this.dialogRef.afterClosed().subscribe((data: any) => {
       // If dialog was dismissed, do nothing
-      if (!result) {
+      if (!data.success) {
         this.dialogRef = null;
+        return
       }
+
+      this.registerForProject(data.values)
     });
   }
 
-  registerForProject(): void {
+  registerForProject(data: any): void {
     if (!this.project) return;
 
     this.loadingRegistration = true;
@@ -185,12 +176,12 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     const body = {
-      guest_count: this.guest_count,
-      email: this.email,
-      phone: this.phone,
-      first_name: this.first_name,
-      last_name: this.last_name,
-      lead_interest: this.lead_interest,
+      guest_count: data.guest_count,
+      email: data.email,
+      phone: data.phone,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      lead_interest: data.lead_interest,
     };
 
     this.projectService.registerForProject(this.project.id, body).subscribe(

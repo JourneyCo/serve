@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import {AbstractControl, ValidatorFn} from '@angular/forms';
 
 @Injectable({
   providedIn: "root",
@@ -34,6 +35,17 @@ export class HelperService {
       duration: 5000,
       panelClass: ["error-snackbar"],
     });
+  }
+
+
+  // Form Validation
+
+
+  PhoneValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const valid = /^\d{3}-\d{3}-\d{4}$/.test(control.value);
+      return valid ? null : { 'phone': { value: control.value } };
+    };
   }
 
 }

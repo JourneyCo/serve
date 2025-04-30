@@ -2,3 +2,5 @@ export * from './admin-project-panel/admin-project-panel.component';
 export * from './google-map/google-map.component';
 export * from './nav/nav.component';
 export * from './project-form/project-form.component';
+export * from './dialogs/registration-dialog/registration-dialog.component';
+export * from './dialogs/edit-profile-dialog/edit-profile-dialog.component';

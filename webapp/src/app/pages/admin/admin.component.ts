@@ -12,7 +12,7 @@ import { ProjectFormComponent } from '@components';
 import {MaterialModule} from '@material';
 
 @Component({
-  selector: "app-admin-dashboard",
+  selector: "app-admin",
   standalone: true,
   imports: [
     CommonModule,

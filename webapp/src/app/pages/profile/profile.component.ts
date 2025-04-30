@@ -5,7 +5,7 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 import {UserService, ProjectService, AuthService, HelperService} from '@services';
 import { User, Registration } from "@models";
 import { Observable } from "rxjs";
-import {EditProfileDialogComponent} from "./edit-profile-dialog/edit-profile-dialog.component";
+import {EditProfileDialogComponent} from '@components';
 import {MatDialog} from "@angular/material/dialog";
 import {MaterialModule} from '@material';
 import {MatTableDataSource} from '@angular/material/table';
