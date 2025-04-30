@@ -28,6 +28,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   // Column definitions
   projectColumns: string[] = [
+    "id", "google_id",
     "title",
     "time",
     "capacity",

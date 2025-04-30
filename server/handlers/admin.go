@@ -274,6 +274,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.ProjectDate = projectDate
 	project.MaxCapacity = input.MaxCapacity
 	project.LocationName = input.LocationName
+	project.LocationAddress = input.LocationAddress
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
 	project.WheelchairAccessible = input.WheelchairAccessible

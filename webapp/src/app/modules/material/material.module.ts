@@ -30,7 +30,7 @@ import {MatTabsModule} from '@angular/material/tabs';
     MatSortModule,
     MatTableModule, MatProgressSpinnerModule, MatSnackBarModule, MatButtonToggleModule,
     MatListModule, MatDividerModule, MatChipsModule, MatBadgeModule, MatProgressBarModule, MatCheckboxModule,
-    MatDialogModule, MatTabsModule, MatChipsModule
+    MatDialogModule, MatTabsModule, MatChipsModule, MatCheckboxModule
   ]
 })
 export class MaterialModule { }

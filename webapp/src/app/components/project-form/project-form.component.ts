@@ -16,6 +16,7 @@ import {ProjectService, GoogleMapsService, UserService, HelperService} from '@se
 import { Project, Tools, Skills, Categories, Ages, Supplies } from "@models";
 import { MatSelectModule } from "@angular/material/select";
 import {MaterialModule} from '@material';
+import {MatCheckbox} from '@angular/material/checkbox';
 
 interface DialogData {
   projectID: number | null;
@@ -30,7 +31,7 @@ interface DialogData {
     ReactiveFormsModule,
     FormsModule,
     MatSelectModule,
-    MaterialModule
+    MaterialModule,
   ],
   templateUrl: "./project-form.component.html",
   styleUrls: ["./project-form.component.scss"],

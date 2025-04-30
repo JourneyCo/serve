@@ -212,20 +212,7 @@ BEGIN
 
 INSERT INTO projects (google_id, title, short_description, description, time, project_date,
                       max_capacity, location_name, latitude, longitude, lead_user_id, wheelchair_accessible, location_address
-) VALUES (9999999,
-          'Title Community Park Cleanup',
-          'short description cleanup project',
-          'Long Description Join us for a community park cleanup event! We will be cleaning up trash, planting flowers, and making general improvements to our local park. All supplies will be provided. Please wear comfortable clothes and bring water.',
-          '9:00AM - 9:30AM',
-          serve_day,
-          25,
-          'Journey Church',
-          39.491482,
-          -104.874878,
-          'example-user-123',
-          true,
-          '9009 Clydesdale Rd, Castle Rock, CO 80108'
-         ),
+) VALUES
       (1, 'Aging Resources Douglas County (Home 1)', 'Elderly Support', 'Project scope to include yard work, landscaping, and gardening at the homes of senior adults. Tasks may include trimming branches, planting bulbs, spreading mulch, raking pine needles, etc. Location will be in Douglas County from 9:00 AM to 12:00 PM. Address will be provided closer to Serve Day. Any age welcome – kids must be accompanied by an adult. Volunteers younger than middle school will not be counted in the volunteer numbers.
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
