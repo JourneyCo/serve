@@ -23,11 +23,6 @@
         </div>
 
         <div class="detail-item">
-          <span class="label">Member Since:</span>
-          <span class="value">{{ user.created_at | date: "medium" }}</span>
-        </div>
-
-        <div class="detail-item">
           <span class="label">Text Notifications:</span>
           <span class="value ms-2">
               <mat-icon [class.enabled]="user.text_permission">

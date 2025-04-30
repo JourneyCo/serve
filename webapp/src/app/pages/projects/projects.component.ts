@@ -1,24 +1,16 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
-import { MatPaginator, MatPaginatorModule } from "@angular/material/paginator";
-import { MatSort, MatSortModule } from "@angular/material/sort";
-import { MatTableModule, MatTableDataSource } from "@angular/material/table";
-import { MatCardModule } from "@angular/material/card";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { GoogleMapsModule } from "@angular/google-maps";
-import { GoogleMapsApiService } from '@services';
+import {HelperService} from '@services';
 import { Project } from '@models';
 import { ProjectService } from '@services';
-import { GoogleMapComponent } from "../../google-map/google-map.component";
 import { Marker } from '@models';
-import { Subject } from "rxjs";
+import {Subject} from 'rxjs';
+import {MaterialModule} from '@material';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: "app-project-list",
@@ -26,23 +18,13 @@ import { Subject } from "rxjs";
   imports: [
     CommonModule,
     RouterModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    MatButtonToggleModule,
     GoogleMapsModule,
+    MaterialModule
   ],
-  templateUrl: "./project-list.component.html",
-  styleUrls: ["./project-list.component.scss"],
+  templateUrl: "./projects.component.html",
+  styleUrls: ["./projects.component.scss"],
 })
-export class ProjectListComponent implements OnInit {
+export class ProjectsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "title",
     "projectLocation",
@@ -53,6 +35,9 @@ export class ProjectListComponent implements OnInit {
   dataSource = new MatTableDataSource<Project>([]);
   isLoading = true;
   eventsSubject: Subject<any> = new Subject<any>();
+  pageIndex: number = 0;
+  pageSize: number = 10;
+
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -68,14 +53,14 @@ export class ProjectListComponent implements OnInit {
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private snackBar: MatSnackBar,
-    private mapsApiService: GoogleMapsApiService,
+    private helper: HelperService,
   ) {}
 
   ngOnInit(): void {
     // Google Maps API is automatically loaded by the Angular Google Maps module
     this.mapsLoaded = true;
     this.loadProjects();
+
   }
 
   ngAfterViewInit() {
@@ -126,18 +111,18 @@ export class ProjectListComponent implements OnInit {
           }));
         }
 
+        const startIndex = this.pageIndex * this.pageSize;
+        const endIndex = startIndex + this.pageSize;
+        this.dataSource.data = Array.from({ length: this.dataSource.data.length }, (_, i) =>
+          this.dataSource.data[i]).slice(startIndex, endIndex);
+
         this.isLoading = false;
       },
       (error) => {
         console.error("Error loading projects:", error);
         this.isLoading = false;
-        this.snackBar.open(
-          "Error loading projects. Please try again.",
-          "Close",
-          {
-            duration: 5000,
-          },
-        );
+        this.helper.showError(
+          "Error loading projects. Please try again.");
       },
     );
   }
@@ -153,10 +138,6 @@ export class ProjectListComponent implements OnInit {
 
   viewProject(project: Project): void {
     this.router.navigate(["/projects", project.id]);
-  }
-
-  isAtCapacity(project: Project): boolean {
-    return project.current_registrations >= project.max_capacity;
   }
 
   getCapacityPercentage(project: Project): number {
@@ -219,6 +200,12 @@ export class ProjectListComponent implements OnInit {
         },
       };
     }
+  }
+
+  handlePageEvent(event: PageEvent) {
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+    this.loadProjects();
   }
 
   trackByFn(index: number, project: Project): number {

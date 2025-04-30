@@ -4,7 +4,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="30">
+          <list size="37">
             <item index="0" class="java.lang.String" itemvalue="matInput" />
             <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="2" class="java.lang.String" itemvalue="mat-table" />
@@ -35,6 +35,13 @@
             <item index="27" class="java.lang.String" itemvalue="width" />
             <item index="28" class="java.lang.String" itemvalue="matColumnDef" />
             <item index="29" class="java.lang.String" itemvalue="color" />
+            <item index="30" class="java.lang.String" itemvalue="appearance" />
+            <item index="31" class="java.lang.String" itemvalue="align" />
+            <item index="32" class="java.lang.String" itemvalue="routerLink" />
+            <item index="33" class="java.lang.String" itemvalue="routerLinkActive" />
+            <item index="34" class="java.lang.String" itemvalue="diameter" />
+            <item index="35" class="java.lang.String" itemvalue="value" />
+            <item index="36" class="java.lang.String" itemvalue="showFirstLastButtons" />
           </list>
         </value>
       </option>
@@ -43,7 +50,7 @@
     <inspection_tool class="HtmlUnknownTag" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="40">
+          <list size="41">
             <item index="0" class="java.lang.String" itemvalue="nobr" />
             <item index="1" class="java.lang.String" itemvalue="noembed" />
             <item index="2" class="java.lang.String" itemvalue="comment" />
@@ -84,6 +91,7 @@
             <item index="37" class="java.lang.String" itemvalue="map-marker" />
             <item index="38" class="java.lang.String" itemvalue="app-root" />
             <item index="39" class="java.lang.String" itemvalue="ng-template" />
+            <item index="40" class="java.lang.String" itemvalue="mat-checkbox" />
           </list>
         </value>
       </option>

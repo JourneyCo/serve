@@ -14,7 +14,7 @@ export interface GeocodingResult {
 @Injectable({
   providedIn: "root",
 })
-export class GoogleMapsApiService {
+export class GoogleMapsService {
   constructor(
     private http: HttpClient,
     private geocoder: MapGeocoder,

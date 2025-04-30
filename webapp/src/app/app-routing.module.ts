@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 
 // Components
-import { HomeComponent } from './components/home/home.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { ProjectListComponent } from './components/projects/project-list/project-list.component';
-import { ProjectDetailComponent } from './components/projects/project-detail/project-detail.component';
-import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
+import { HomeComponent } from './pages/home.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { ProjectsComponent } from './pages/projects/projects.component';
+import { ProjectDetailComponent } from './pages/projects/project-detail/project-detail.component';
+import { AdminComponent } from './pages/admin-dashboard/admin.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -14,25 +14,25 @@ import { AdminGuard } from './guards/admin.guard';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'callback', component: HomeComponent },
-  { 
-    path: 'profile', 
-    component: ProfileComponent, 
-    canActivate: [AuthGuard] 
+  {
+    path: 'profile',
+    component: ProfileComponent,
+    canActivate: [AuthGuard]
   },
-  { 
-    path: 'projects', 
-    component: ProjectListComponent, 
-    canActivate: [AuthGuard] 
+  {
+    path: 'projects',
+    component: ProjectsComponent,
+    canActivate: [AuthGuard]
   },
-  { 
-    path: 'projects/:id', 
-    component: ProjectDetailComponent, 
-    canActivate: [AuthGuard] 
+  {
+    path: 'projects/:id',
+    component: ProjectDetailComponent,
+    canActivate: [AuthGuard]
   },
-  { 
-    path: 'admin', 
-    component: AdminDashboardComponent, 
-    canActivate: [AuthGuard, AdminGuard] 
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [AuthGuard, AdminGuard]
   },
   { path: '**', redirectTo: '' }
 ];

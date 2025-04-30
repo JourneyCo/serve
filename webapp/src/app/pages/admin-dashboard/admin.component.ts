@@ -1,23 +1,15 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterLink } from "@angular/router";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { MatTabsModule, MatTabGroup } from "@angular/material/tabs";
-import { MatTableModule, MatTableDataSource } from "@angular/material/table";
-import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
-import { MatSortModule, MatSort } from "@angular/material/sort";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatCardModule } from "@angular/material/card";
-import { MatInputModule } from "@angular/material/input";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatDialog } from "@angular/material/dialog";
+import { MatTabGroup } from "@angular/material/tabs";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 import {HelperService, ProjectService} from '@services';
 import {Project, Registration} from '@models';
-import { ProjectFormComponent } from "../project-form/project-form.component";
+import { ProjectFormComponent } from '@components';
+import {MaterialModule} from '@material';
 
 @Component({
   selector: "app-admin-dashboard",
@@ -25,25 +17,12 @@ import { ProjectFormComponent } from "../project-form/project-form.component";
   imports: [
     CommonModule,
     RouterLink,
-    MatDialogModule,
-    MatTabsModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatSnackBarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
-    MatTooltipModule,
+    MaterialModule,
   ],
-  templateUrl: "./admin-dashboard.component.html",
-  styleUrls: ["./admin-dashboard.component.scss"],
+  templateUrl: "./admin.component.html",
+  styleUrls: ["./admin.component.scss"],
 })
-export class AdminDashboardComponent implements OnInit, AfterViewInit {
+export class AdminComponent implements OnInit, AfterViewInit {
   // Data sources for tables
   projectsDataSource = new MatTableDataSource<Project>([]);
 
@@ -133,7 +112,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   createProject(): void {
     const dialogRef = this.dialog.open(ProjectFormComponent, {
       width: "600px",
-      data: { project: null, isEdit: false },
+      data: { projectID: null, isEdit: false },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -147,7 +126,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   editProject(project: Project): void {
     const dialogRef = this.dialog.open(ProjectFormComponent, {
       width: "600px",
-      data: { project: { ...project }, isEdit: true },
+      data: { projectID: project.id, isEdit: true },
     });
 
     dialogRef.afterClosed().subscribe((result) => {

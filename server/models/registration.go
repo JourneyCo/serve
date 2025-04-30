@@ -63,7 +63,7 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	// Check if there's enough capacity
 	if currentCount+totalSpots > maxCapacity {
-		return nil, errors.New("project does not have enough capacity for you and your guests")
+		return nil, errors.New("Capacity not available for total # of volunteers requested")
 	}
 
 	// Check if user is already registered for this project

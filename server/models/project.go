@@ -13,6 +13,7 @@ import (
 // Project represents a project in the system
 type Project struct {
 	ID                   int                `json:"id"`
+	GoogleID             *int               `json:"google_id"`
 	Title                string             `json:"title"`
 	ShortDescription     string             `json:"short_description"`
 	Description          string             `json:"description"`
@@ -53,7 +54,7 @@ type ProjectAccessory struct {
 // GetAllProjects retrieves all projects from the database
 func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
-                SELECT p.id, p.title, p.short_description, p.description, p.time, p.project_date, 
+                SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
@@ -72,7 +73,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err = rows.Scan(
-			&p.ID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
+			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 		); err != nil {
@@ -193,16 +194,12 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	}
 
 	// Get skills for this project
-	skillsQuery := `
-		SELECT a.id, a.name FROM ages a
-		JOIN project_ages pa ON a.id = pa.ages_id
-		WHERE pa.project_id = $1
-	`
+	skillsQuery := `SELECT s.id, s.name FROM skills s JOIN project_skills ps ON s.id = ps.skill_id WHERE ps.project_id = $1`
 	skillsRows, err := db.QueryContext(ctx, skillsQuery, id)
 	if err != nil {
 		return nil, err
 	}
-	defer ageRows.Close()
+	defer skillsRows.Close()
 
 	for skillsRows.Next() {
 		var skill ProjectAccessory
@@ -219,9 +216,9 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
-                INSERT INTO projects (title, short_description, description, time, project_date, max_capacity, 
+                INSERT INTO projects (google_id, title, short_description, description, time, project_date, max_capacity, 
                                     location_name, location_address, latitude, longitude, wheelchair_accessible, lead_user_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id, created_at, updated_at
         `
 
@@ -229,6 +226,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 	err := db.QueryRowContext(
 		ctx,
 		query,
+		project.GoogleID,
 		project.Title,
 		project.ShortDescription,
 		project.Description,
@@ -258,12 +256,14 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 	query := `
                 UPDATE projects
-                SET title = $1, short_description = $2, description = $3, time = $4, project_date = $5, 
+                SET google_id=$13, title = $1, short_description = $2, description = $3, time = $4, project_date = $5, 
                 max_capacity = $6, location_name = $7, location_address = $8, latitude = $9, longitude = $10,
                 wheelchair_accessible = $11, updated_at = CURRENT_TIMESTAMP
                 WHERE id = $12
                 RETURNING updated_at
         `
+
+	// TODO: Need to apply accessories here as well
 	// TODO: Need rollbacks here
 	return db.QueryRowContext(
 		ctx,
@@ -280,6 +280,7 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Longitude,
 		project.WheelchairAccessible,
 		project.ID,
+		project.GoogleID,
 	).Scan(&project.UpdatedAt)
 }
 

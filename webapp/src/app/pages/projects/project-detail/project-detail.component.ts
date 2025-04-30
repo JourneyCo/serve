@@ -2,26 +2,13 @@ import {Component, OnInit, ViewChild, TemplateRef} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatCardModule } from "@angular/material/card";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatListModule } from "@angular/material/list";
-import { MatDividerModule } from "@angular/material/divider";
-import { MatChipsModule } from "@angular/material/chips";
-import { MatBadgeModule } from "@angular/material/badge";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatDialogModule, MatDialog } from "@angular/material/dialog";
+import { MatDialog} from '@angular/material/dialog';
 import { GoogleMapsModule } from "@angular/google-maps";
-import { AuthService, ProjectService, HelperService } from "@services";
-import { Observable, forkJoin, of } from "rxjs";
-import {MatTableModule, } from "@angular/material/table";
-import {User, Project, Ages, Categories, Supplies, Tools} from "@models";
-import {AdminProjectPanelComponent} from '../../admin/admin-project-panel/admin-project-panel.component';
+import { AuthService, ProjectService, HelperService, RegistrationService } from "@services";
+import {Observable, forkJoin, of, Subscription} from 'rxjs';
+import {User, Project, Ages, Categories, Supplies, Tools, Skills} from '@models';
+import {AdminProjectPanelComponent} from '@components';
+import { MaterialModule } from '@material';
 
 @Component({
   selector: "app-project-detail",
@@ -30,27 +17,14 @@ import {AdminProjectPanelComponent} from '../../admin/admin-project-panel/admin-
     CommonModule,
     FormsModule,
     RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatListModule,
-    MatDividerModule,
-    MatChipsModule,
-    MatBadgeModule,
-    MatProgressBarModule,
-    MatSnackBarModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCheckboxModule,
-    MatDialogModule,
     GoogleMapsModule,
-    MatTableModule,
     AdminProjectPanelComponent,
+    MaterialModule
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
 })
+
 export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   currentUser: User | null = null;
@@ -63,7 +37,10 @@ export class ProjectDetailComponent implements OnInit {
   supplies = Supplies
   categories = Categories
   ages = Ages
+  skills = Skills
   serve_date: Date;
+  registrationSubscription: Subscription;
+
 
   // Registration form properties
   guest_count: number = 0;
@@ -96,9 +73,9 @@ export class ProjectDetailComponent implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
-    private helper: HelperService
+    private helper: HelperService,
+    private registrationService: RegistrationService,
   ) {
     this.serve_date = helper.GetServeDate();
     this.isAdmin = authService.isAdmin();
@@ -108,6 +85,9 @@ export class ProjectDetailComponent implements OnInit {
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
+    this.registrationSubscription = this.registrationService.registrationChange$.subscribe(() => {
+      this.loadProjectData();
+    });
   }
 
   loadProjectData(): void {
@@ -116,7 +96,7 @@ export class ProjectDetailComponent implements OnInit {
     // Get the project ID from the route
     const project_id = this.route.snapshot.paramMap.get("id");
     if (!project_id || isNaN(+project_id)) {
-      this.showError("Invalid project ID");
+      this.helper.showError("Invalid project ID");
       this.router.navigate(["/projects"]);
       return;
     }
@@ -131,7 +111,7 @@ export class ProjectDetailComponent implements OnInit {
       },
       (error: any) => {
         console.error("Error getting user:", error);
-        this.showError("Error loading user information");
+        this.helper.showError("Error loading user information");
         this.isLoading = false;
       },
     );
@@ -153,6 +133,7 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe(
       (result) => {
         this.project = result.project;
+        console.log(this.project);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
@@ -166,7 +147,7 @@ export class ProjectDetailComponent implements OnInit {
       },
       (error: any) => {
         console.error("Error loading project details:", error);
-        this.showError("Error loading project details");
+        this.helper.showError("Error loading project details");
         this.isLoading = false;
       },
     );
@@ -216,17 +197,18 @@ export class ProjectDetailComponent implements OnInit {
       (_) => {
         this.loadingRegistration = false;
         this.isRegistered = true;
-        this.showSuccess("Successfully registered for the project");
+        this.helper.showSuccess("Successfully registered for the project");
 
         // Reload project to get updated capacity
         this.loadProjectDetails(this.project!.id);
+        this.registrationService.triggerRegistrationChange();
       },
       (error: any) => {
         this.loadingRegistration = false;
         console.error("Registration error:", error);
         this.registrationError =
           error.error?.error || "Failed to register for the project";
-        this.showError(this.registrationError);
+        this.helper.showError(this.registrationError);
       },
     );
   }
@@ -254,15 +236,16 @@ export class ProjectDetailComponent implements OnInit {
       (_) => {
         this.loadingRegistration = false;
         this.isRegistered = false;
-        this.showSuccess("Registration cancelled successfully");
+        this.helper.showSuccess("Registration cancelled successfully");
 
         // Reload project to get updated capacity
         this.loadProjectDetails(this.project!.id);
+        this.registrationService.triggerRegistrationChange();
       },
       (error: any) => {
         this.loadingRegistration = false;
         console.error("Cancellation error:", error);
-        this.showError(error.error?.error || "Failed to cancel registration");
+        this.helper.showError(error.error?.error || "Failed to cancel registration");
       },
     );
   }
@@ -273,7 +256,7 @@ export class ProjectDetailComponent implements OnInit {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const diffTime = this.serve_date.getTime() - today.getTime();
+    const diffTime = this.helper.GetServeDate().getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
 
@@ -288,35 +271,22 @@ export class ProjectDetailComponent implements OnInit {
     return (this.project.current_registrations / this.project.max_capacity) * 100;
   }
 
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, "Close", {
-      duration: 5000,
-      panelClass: ["success-snackbar"],
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(message, "Close", {
-      duration: 5000,
-      panelClass: ["error-snackbar"],
-    });
-  }
-
   updateMapMarker(): void {
-    if (this.project && this.project.latitude && this.project.longitude) {
-      // Set the marker position and google-map center
-      this.markerPosition = {
-        lat: this.project.latitude,
-        lng: this.project.longitude,
-      };
-
-      // Update google-map options to center on project location
-      this.mapOptions = {
-        ...this.mapOptions,
-        center: this.markerPosition,
-      };
-    } else {
+    if (!this.project || !this.project.latitude || !this.project.longitude) {
       this.markerPosition = null;
+      return
     }
-  }
+
+    // Set the marker position and google-map center
+    this.markerPosition = {
+      lat: this.project.latitude,
+      lng: this.project.longitude,
+    };
+
+    // Update google-map options to center on project location
+    this.mapOptions = {
+      ...this.mapOptions,
+      center: this.markerPosition,
+    };
+    }
 }

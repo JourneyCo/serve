@@ -1,6 +1,7 @@
 <div class="project-form-container">
   <h2 mat-dialog-title>{{ dialogTitle }}</h2>
 
+  @if (!loading) {
   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
     <mat-dialog-content>
       <div class="form-row">
@@ -181,16 +182,16 @@
           <mat-label>Location Address</mat-label>
           <input
                   matInput
-                  formControlName="location_name"
+                  formControlName="location_address"
                   placeholder="e.g., 123 Main St, San Francisco, CA"
                   required
           />
-          @if (projectForm.get("location_name")?.value && !geocoding) {
+          @if (projectForm.get("location_address")?.value && !geocoding) {
           <button
                   type="button"
                   matSuffix
                   mat-icon-button
-                  (click)="geocodeLocation(projectForm.get('location_name')?.value)"
+                  (click)="geocodeLocation(projectForm.get('location_address')?.value)"
                   aria-label="Geocode address"
                   matTooltip="Find coordinates for this address"
           >
@@ -261,4 +262,5 @@
       </button>
     </mat-dialog-actions>
   </form>
+  }
 </div>

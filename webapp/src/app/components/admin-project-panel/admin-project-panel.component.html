@@ -22,10 +22,22 @@
             <td mat-cell *matCellDef="let reg">{{reg.user?.first_name || 'N/A'}} {{reg.user?.last_name}}</td>
           </ng-container>
 
-          <!-- Project Title Column -->
-          <ng-container matColumnDef="projectTitle">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
-            <td mat-cell *matCellDef="let reg">{{reg.project?.title || 'N/A'}}</td>
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+            <td mat-cell *matCellDef="let reg">{{reg.user?.email || 'N/A'}}</td>
+          </ng-container>
+
+          <!-- Phone Column -->
+          <ng-container matColumnDef="phone">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+            <td mat-cell *matCellDef="let reg">{{reg.user?.phone || 'N/A'}}</td>
+          </ng-container>
+
+          <!-- Lead Interest Column -->
+          <ng-container matColumnDef="lead_interest">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Lead Interest?</th>
+            <td mat-cell *matCellDef="let reg">{{reg.lead_interest ? 'Yes' : '' }}</td>
           </ng-container>
 
           <!-- Guest Count Column -->

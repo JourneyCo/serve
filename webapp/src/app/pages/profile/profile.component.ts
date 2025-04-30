@@ -1,19 +1,14 @@
 import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
-import { MatCardModule } from "@angular/material/card";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import { MatIconModule } from "@angular/material/icon";
-import { MatTableModule } from "@angular/material/table";
-import { MatButtonModule } from "@angular/material/button";
-import { MatTooltipModule } from "@angular/material/tooltip";
-import { UserService, ProjectService, AuthService } from "@services";
+import {UserService, ProjectService, AuthService, HelperService} from '@services';
 import { User, Registration } from "@models";
-import { MatTableDataSource } from "@angular/material/table";
 import { Observable } from "rxjs";
 import {EditProfileDialogComponent} from "./edit-profile-dialog/edit-profile-dialog.component";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
+import {MaterialModule} from '@material';
+import {MatTableDataSource} from '@angular/material/table';
 
 @Component({
   selector: "app-profile",
@@ -21,12 +16,8 @@ import {MatDialog} from "@angular/material/dialog";
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
     MatProgressSpinnerModule,
-    MatIconModule,
-    MatTableModule,
-    MatButtonModule,
-    MatTooltipModule,
+    MaterialModule
   ],
   templateUrl: "./profile.component.html",
   styleUrls: ["./profile.component.scss"],
@@ -52,7 +43,7 @@ export class ProfileComponent implements OnInit {
       private projectService: ProjectService,
       private authService: AuthService,
       private dialog: MatDialog,
-      private snackBar: MatSnackBar
+      private helper: HelperService,
   ) {}
 
   openEditDialog(): void {
@@ -65,16 +56,11 @@ export class ProfileComponent implements OnInit {
         this.userService.updateProfile(result).subscribe({
           next: (updatedUser) => {
             this.user = updatedUser;
-            this.snackBar.open('Profile updated successfully', 'Close', {
-              duration: 3000
-            });
+            this.helper.showSuccess('Profile updated successfully');
           },
           error: (error) => {
             console.error('Error updating profile:', error);
-            this.snackBar.open('Failed to update profile', 'Close', {
-              duration: 3000,
-              panelClass: ['error-snackbar']
-            });
+            this.helper.showError('Failed to update profile');
           }
         });
       }

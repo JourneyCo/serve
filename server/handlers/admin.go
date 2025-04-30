@@ -20,6 +20,7 @@ type AdminHandler struct {
 
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
+	GoogleID             *int    `json:"google_id"`
 	Title                string  `json:"title"`
 	Description          string  `json:"description"`
 	ShortDescription     string  `json:"short_description"`
@@ -34,6 +35,7 @@ type ProjectInput struct {
 	Ages                 []int   `json:"ages,omitempty"`
 	Supplies             []int   `json:"supplies,omitempty"`
 	LocationName         string  `json:"location_name"`
+	LocationAddress      string  `json:"location_address"`
 	Latitude             float64 `json:"latitude"`
 	Longitude            float64 `json:"longitude"`
 }
@@ -190,10 +192,10 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse project date
-	projectDate, err := time.Parse("2006-01-02", input.ProjectDate)
+	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
+
 	if err != nil {
-		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format")
 		return
 	}
 
@@ -206,6 +208,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		ProjectDate:      projectDate,
 		MaxCapacity:      input.MaxCapacity,
 		LocationName:     input.LocationName,
+		LocationAddress:  input.LocationAddress,
 		Latitude:         input.Latitude,
 		Longitude:        input.Longitude,
 		LeadUserID:       input.LeadUserID,
@@ -256,18 +259,14 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse project date
-	if input.ProjectDate == "" {
-		input.ProjectDate = "07-12-25"
-		// TODO: get the cfg date
-	}
-	projectDate, err := time.Parse("01-02-06", input.ProjectDate)
+	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
 		return
 	}
 
 	// Update project
+	project.GoogleID = input.GoogleID
 	project.Title = input.Title
 	project.Description = input.Description
 	project.ShortDescription = input.ShortDescription

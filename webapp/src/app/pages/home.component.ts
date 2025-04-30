@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '@services';
+import {MaterialModule} from '@material';
 
 @Component({
   selector: 'app-home',
@@ -12,9 +10,7 @@ import { AuthService } from '@services';
   imports: [
     CommonModule,
     RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule
+    MaterialModule,
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
