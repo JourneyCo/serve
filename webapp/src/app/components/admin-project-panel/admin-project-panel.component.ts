@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import { EditGuestCountDialogComponent } from '../dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component';
 import {HelperService, ProjectService} from '@services';
 import {Registration} from '@models';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
@@ -76,14 +77,9 @@ export class AdminProjectPanelComponent implements OnInit {
   }
 
   editGuestCount(registration: Registration): void {
-    //TODO: Need to make a dialog box for this
-    const dialogRef = this.dialog.open(MatDialog, {
+    const dialogRef = this.dialog.open(EditGuestCountDialogComponent, {
       width: '300px',
-      data: {
-        title: 'Edit Guest Count',
-        content: 'Enter new guest count:',
-        value: registration.guest_count
-      }
+      data: { registration }
     });
 
     dialogRef.afterClosed().subscribe(result => {

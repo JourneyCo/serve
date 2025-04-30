@@ -1,0 +1,19 @@
+
+<h2 mat-dialog-title>Edit Guest Count</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Number of Guests</mat-label>
+      <input matInput type="number" formControlName="guest_count" min="0">
+      <mat-error *ngIf="form.get('guest_count')?.hasError('min')">
+        Guest count cannot be negative
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!form.valid">
+    Save
+  </button>
+</mat-dialog-actions>
