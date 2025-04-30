@@ -9,7 +9,7 @@
   font-weight: 500;
   display: flex;
   align-items: center;
-  
+
   mat-icon {
     margin-right: 8px;
   }
@@ -17,33 +17,22 @@
 
 .nav-links {
   display: flex;
-  
+
   a {
     margin: 0 4px;
     display: flex;
     align-items: center;
-    
+
     mat-icon {
       margin-right: 4px;
     }
   }
 }
 
-.journey-img {
-  -webkit-filter: invert(1);
-  filter: invert(1);
-}
 
 .active {
   background-color: rgba(255, 255, 255, 0.15);
   border-bottom: 2px solid var(--journeyWhite);
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .user-menu-header {
@@ -54,18 +43,14 @@
 .user-info {
   display: flex;
   align-items: center;
-  
-  .user-avatar {
-    margin-right: 12px;
-  }
-  
+
   .user-details {
     .user-name {
       font-weight: 500;
       margin: 0;
       font-size: 14px;
     }
-    
+
     .user-email {
       margin: 0;
       font-size: 12px;

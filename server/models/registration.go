@@ -77,7 +77,7 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	if err == nil {
 		return nil, errors.New("user is already registered for this project")
-	} else if err != sql.ErrNoRows {
+	} else if !errors.Is(err, sql.ErrNoRows) {
 		return nil, err
 	}
 

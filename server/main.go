@@ -22,7 +22,10 @@ import (
 
 func main() {
 
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("error loading env file: ", err)
+	}
 
 	// Load configuration
 	cfg, err := config.Load()

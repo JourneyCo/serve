@@ -93,19 +93,19 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     // Get current user and check if admin
-    this.authService.getCurrentUser().subscribe(
-      (user) => {
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
         this.currentUser = user;
 
         // Load project data
         this.loadProjectDetails(+project_id);
       },
-      (error: any) => {
+      error: (error: any) => {
         console.error("Error getting user:", error);
         this.helper.showError("Error loading user information");
         this.isLoading = false;
       },
-    );
+    });
   }
 
   loadProjectDetails(project_id: number): void {
@@ -121,10 +121,9 @@ export class ProjectDetailComponent implements OnInit {
       project: projectObs,
       userRegs: registrationsObs,
       projectRegs: projectRegistrationsObs,
-    }).subscribe(
-      (result) => {
+    }).subscribe({
+      next: (result) => {
         this.project = result.project;
-        console.log(this.project);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
@@ -136,12 +135,12 @@ export class ProjectDetailComponent implements OnInit {
 
         this.isLoading = false;
       },
-      (error: any) => {
+      error: (error: any) => {
         console.error("Error loading project details:", error);
         this.helper.showError("Error loading project details");
         this.isLoading = false;
       },
-    );
+    });
   }
 
   openRegistrationForm(): void {
@@ -184,8 +183,8 @@ export class ProjectDetailComponent implements OnInit {
       lead_interest: data.lead_interest,
     };
 
-    this.projectService.registerForProject(this.project.id, body).subscribe(
-      (_) => {
+    this.projectService.registerForProject(this.project.id, body).subscribe({
+      next: () => {
         this.loadingRegistration = false;
         this.isRegistered = true;
         this.helper.showSuccess("Successfully registered for the project");
@@ -194,14 +193,14 @@ export class ProjectDetailComponent implements OnInit {
         this.loadProjectDetails(this.project!.id);
         this.registrationService.triggerRegistrationChange();
       },
-      (error: any) => {
+      error: (error: any) => {
         this.loadingRegistration = false;
         console.error("Registration error:", error);
         this.registrationError =
           error.error?.error || "Failed to register for the project";
         this.helper.showError(this.registrationError);
       },
-    );
+    });
   }
 
   openCancellationDialog(): void {
@@ -223,8 +222,8 @@ export class ProjectDetailComponent implements OnInit {
 
     this.loadingRegistration = true;
 
-    this.projectService.cancelRegistration(this.project.id).subscribe(
-      (_) => {
+    this.projectService.cancelRegistration(this.project.id).subscribe({
+      next: () => {
         this.loadingRegistration = false;
         this.isRegistered = false;
         this.helper.showSuccess("Registration cancelled successfully");
@@ -233,12 +232,12 @@ export class ProjectDetailComponent implements OnInit {
         this.loadProjectDetails(this.project!.id);
         this.registrationService.triggerRegistrationChange();
       },
-      (error: any) => {
+      error: (error: any) => {
         this.loadingRegistration = false;
         console.error("Cancellation error:", error);
         this.helper.showError(error.error?.error || "Failed to cancel registration");
       },
-    );
+    });
   }
 
   getDaysUntilStart(): number {

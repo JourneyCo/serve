@@ -20,7 +20,6 @@ export class AdminProjectPanelComponent implements OnInit {
   registrationsColumns = ["userName", "email", "phone", "guestCount", "lead_interest", "actions"];
   registrations: Registration[] = [];
   registrationsDataSource = new MatTableDataSource<Registration>();
-  loadingRegistrations = true;
   processingAction = false;
   registrationSubscription: Subscription;
 

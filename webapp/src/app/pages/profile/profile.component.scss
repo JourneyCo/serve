@@ -37,11 +37,6 @@
   .profile-card {
     margin-bottom: 32px;
 
-    .profile-avatar {
-      background-size: cover;
-      background-position: center;
-    }
-
     .user-details {
       margin-top: 20px;
       padding: 16px;
@@ -119,15 +114,6 @@
           background-color: var(--journeyWhite);
         }
 
-        .days-info {
-          font-size: 0.8rem;
-          color: var(--journeyBlue);
-
-          &.started {
-            color: #f44336;
-          }
-        }
-
         .detail-badge {
           display: inline-block;
           padding: 3px 8px;
@@ -151,14 +137,6 @@
         .location-info {
           display: flex;
           align-items: center;
-
-          .location-icon {
-            font-size: 16px;
-            height: 16px;
-            width: 16px;
-            margin-right: 4px;
-            color: #f57c00;
-          }
         }
 
         .no-location {
@@ -176,16 +154,6 @@
           &.registered {
             background-color: #e3f2fd;
             color: var(--journeyBlue);
-          }
-
-          &.cancelled {
-            background-color: var(--journeyWhite);
-            color: #d32f2f;
-          }
-
-          &.completed {
-            background-color: var(--journeyWhite);
-            color: #388e3c;
           }
         }
 

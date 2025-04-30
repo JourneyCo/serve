@@ -14,9 +14,9 @@
 }
 
 html, body { height: 100%; }
-body { 
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   background-color: #f5f5f5;
   color: var(--journeyGray);
 }
@@ -33,23 +33,23 @@ body {
   .container {
     padding: 10px;
   }
-  
+
   .button-row {
     flex-direction: column;
     gap: 8px;
-    
+
     button {
       width: 100%;
     }
   }
-  
+
   .mat-mdc-card {
     margin-bottom: 15px;
   }
-  
+
   .table-container {
     margin: 0 -10px;
-    
+
     table {
       min-width: 100%;
     }
@@ -124,18 +124,6 @@ body {
   margin-top: 5px;
 }
 
-.capacity-low {
-  background-color: #4caf50; /* Keeping green for available capacity for better contrast */
-}
-
-.capacity-medium {
-  background-color: var(--journeyBlue);
-}
-
-.capacity-high {
-  background-color: var(--journeyGray);
-}
-
 .mat-mdc-form-field-focus-overlay {
   background-color: rgba(var(--journeyBlueRGB), 0.05);
 }
@@ -147,7 +135,7 @@ body {
 a {
   color: var(--journeyBlue);
   text-decoration: none;
-  
+
   &:hover {
     text-decoration: underline;
   }
@@ -155,13 +143,6 @@ a {
 
 .mat-mdc-icon-button.mat-accent {
   color: var(--journeyBlue);
-}
-
-.capacity-info {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
 }
 
 .mat-column-actions {

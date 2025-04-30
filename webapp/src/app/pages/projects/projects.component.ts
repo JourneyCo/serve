@@ -5,7 +5,6 @@ import {GoogleMapsModule, MapAdvancedMarker, MapInfoWindow} from '@angular/googl
 import {HelperService} from '@services';
 import { Project } from '@models';
 import { ProjectService } from '@services';
-import {Subject} from 'rxjs';
 import {MaterialModule} from '@material';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatTableDataSource} from '@angular/material/table';
@@ -33,7 +32,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   ];
   dataSource = new MatTableDataSource<Project>([]);
   isLoading = true;
-  eventsSubject: Subject<any> = new Subject<any>();
 
 
   // Pagination and Sorting
@@ -74,8 +72,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
   loadProjects(): void {
     this.isLoading = true;
-    this.projectService.getProjects().subscribe(
-      (projects) => {
+    this.projectService.getProjects().subscribe({
+      next: (projects) => {
         this.dataSource.data = projects;
 
         // Create markers for projects with valid coordinates
@@ -97,17 +95,13 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
           // Update google-map center
           this.mapOptions = {
             ...this.mapOptions,
-            center: { lat: avgLat, lng: avgLng },
+            center: {lat: avgLat, lng: avgLng},
             zoom: validProjects.length > 1 ? 10 : 12, // Zoom level based on number of markers
           };
 
           // Create markers
           this.markers = [];
           validProjects.forEach((project) => {
-            const markerContent = document.createElement('div');
-            markerContent.className = 'custom-marker';
-            markerContent.textContent = 'Marker';
-            markerContent.setAttribute('data-id', String(project.id));
             // @ts-ignore
             const mark: MapAdvancedMarker = {
               position: {
@@ -115,7 +109,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
                 lng: project.longitude || 0,
               },
               title: project.title,
-              content: markerContent,
             }
             const set = {
               mark: mark,
@@ -127,18 +120,18 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         const startIndex = this.pageIndex * this.pageSize;
         const endIndex = startIndex + this.pageSize;
-        this.dataSource.data = Array.from({ length: this.dataSource.data.length }, (_, i) =>
+        this.dataSource.data = Array.from({length: this.dataSource.data.length}, (_, i) =>
           this.dataSource.data[i]).slice(startIndex, endIndex);
 
         this.isLoading = false;
       },
-      (error) => {
+      error: (error) => {
         console.error("Error loading projects:", error);
         this.isLoading = false;
         this.helper.showError(
           "Error loading projects. Please try again.");
       },
-    );
+    });
   }
 
   applyFilter(event: Event): void {

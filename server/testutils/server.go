@@ -109,7 +109,7 @@ func setupTestDB() *sql.DB {
 
 	root, err := find.Repo()
 	if err != nil {
-		// handle error
+		log.Fatal("cannot find root of project: ", err)
 	}
 
 	// Run database migrations

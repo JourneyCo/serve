@@ -82,10 +82,14 @@ export class ProjectFormComponent implements OnInit {
   }
 
   loadUsers(): void {
-    this.userService.getAllUsers().subscribe(
-        (users) => (this.users = users),
-        (error) => console.error("Error loading users:", error),
-    );
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+      },
+      error: (error) => {
+        console.error("Error loading users:", error);
+      }
+    });
   }
 
   getProject(id: number | null) {
@@ -182,17 +186,17 @@ export class ProjectFormComponent implements OnInit {
         ? this.projectService.updateProject(project)
         : this.projectService.createProject(project);
 
-    request.subscribe(
-        (result) => {
-          this.submitting = false;
-          this.dialogRef.close(result);
-        },
-        (error) => {
-          this.submitting = false;
-          console.error("Error saving project:", error);
-          this.helper.showError(error.error?.error || "Failed to save project");
-        },
-    );
+    request.subscribe({
+      next: (result) => {
+        this.submitting = false;
+        this.dialogRef.close(result);
+      },
+      error: (error) => {
+        this.submitting = false;
+        console.error("Error saving project:", error);
+        this.helper.showError(error.error?.error || "Failed to save project");
+      },
+    });
   }
   setupLocationGeocoding(): void {
     this.projectForm
@@ -219,23 +223,23 @@ export class ProjectFormComponent implements OnInit {
               this.geocoding = false;
             }),
         )
-        .subscribe(
-            (result) => {
-              if (result) {
-                this.projectForm.patchValue({
-                  latitude: result.latitude,
-                  longitude: result.longitude,
-                });
+        .subscribe({
+          next: (result) => {
+            if (result) {
+              this.projectForm.patchValue({
+                latitude: result.latitude,
+                longitude: result.longitude,
+              });
 
-                this.helper.showSuccess("Location geocoded successfully");
-              }
-            },
-            (error) => {
-              console.error("Geocoding error:", error);
-              this.helper.showError(
-                  "Failed to geocode address: " + (error.message || "Unknown error"),
-              );
-            },
-        );
+              this.helper.showSuccess("Location geocoded successfully");
+            }
+          },
+          error: (error) => {
+            console.error("Geocoding error:", error);
+            this.helper.showError(
+              "Failed to geocode address: " + (error.message || "Unknown error"),
+            );
+          },
+        });
   }
 }

@@ -73,17 +73,17 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   loadProjects(): void {
     this.loadingProjects = true;
-    this.projectService.getProjects().subscribe(
-      (projects) => {
+    this.projectService.getProjects().subscribe({
+      next: (projects) => {
         this.projectsDataSource.data = projects;
         this.loadingProjects = false;
       },
-      (error) => {
+      error: (error) => {
         console.error("Error loading projects:", error);
         this.helper.showError("Failed to load projects");
         this.loadingProjects = false;
       },
-    );
+    });
   }
 
   loadRegistrations(): void {
@@ -148,18 +148,18 @@ export class AdminComponent implements OnInit, AfterViewInit {
     }
 
     this.processingAction = true;
-    this.projectService.deleteProject(project.id).subscribe(
-      () => {
+    this.projectService.deleteProject(project.id).subscribe({
+      next: () => {
         this.loadProjects();
         this.processingAction = false;
         this.helper.showSuccess("Project deleted successfully");
       },
-      (error) => {
+      error: (error) => {
         console.error("Error deleting project:", error);
         this.helper.showError("Failed to delete project");
         this.processingAction = false;
       },
-    );
+    });
   }
 
   isProjectAtCapacity(project: Project): boolean {

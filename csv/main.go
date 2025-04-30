@@ -132,7 +132,7 @@ func main() {
 
 	sqlStmt += ";"
 
-	log.Println("\n\n\nThe Final Sql Statement: \n")
+	log.Println("\n\n\nThe Final Sql Statement: ")
 	log.Print(sqlStmt)
 
 }
