@@ -160,7 +160,7 @@
     - name: Cleanup
       become: true
       ansible.builtin.file:
-        path: {{item}}
+        path: "{{ item }}"
         state: absent
       loop:
         - /home/ec2-user/.ssh/id_rsa
