@@ -105,14 +105,14 @@ func Load() (*Config, error) {
 		}
 
 		// For Email
-		if getEnv("SMTP_HOST", "") == "" {
-			missingVars = append(missingVars, "SMTP_HOST")
+		if getEnv("MAIL_HOST", "") == "" {
+			missingVars = append(missingVars, "MAIL_HOST")
 		}
-		if getEnv("SMTP_USERNAME", "") == "" {
-			missingVars = append(missingVars, "SMTP_USERNAME")
+		if getEnv("MAIL_USER", "") == "" {
+			missingVars = append(missingVars, "MAIL_USER")
 		}
-		if getEnv("SMTP_PASSWORD", "") == "" {
-			missingVars = append(missingVars, "SMTP_PASSWORD")
+		if getEnv("MAIL_PASS", "") == "" {
+			missingVars = append(missingVars, "MAIL_PASS")
 		}
 
 		// For Google Maps API

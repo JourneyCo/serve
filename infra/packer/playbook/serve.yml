@@ -123,6 +123,16 @@
       loop:
         - public.key
 
+    - name: Copy frontend configs
+      ansible.builtin.copy:
+        src: files/{{item}}
+        dest: /home/ec2-user/serve/webapp
+        owner: ec2-user
+        group: ec2-user
+        mode: '0600'
+      loop:
+        - .env
+
     - name: Build backend
       ansible.builtin.shell:
         chdir: /home/ec2-user/serve/server
@@ -146,3 +156,12 @@
         dest: /usr/share/nginx/serve/
         owner: root
         group: root
+
+    - name: Cleanup
+      become: true
+      ansible.builtin.file:
+        path: {{item}}
+        state: absent
+      loop:
+        - /home/ec2-user/.ssh/id_rsa
+        - /home/ec2-user/serve/webapp/.env
