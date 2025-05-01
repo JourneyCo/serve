@@ -13,25 +13,23 @@
 - July 6th - Church out - projects are taken out
 
 ### Project Stories
-- Number of registrants under the age of 18
+- Number of registrants under the age of 18 (Number registrants under 18 in party)
 - Need to implement db transaction atomicity
 - Emailer
 - - Test email in production
   - Send confirmation
-  - At time of signup (DONE) - Do we want a text as well?
+  - At time of signup (DONE) - Do we want a text as well (YES WE DO)?
   - 1 Week before
   - 1 day before
-  - Can we send text messages? Is it ok to text you?
-- Get Serve Day Requirements / What we liked and didn't like
-- Check how site looks on a mobile phone - will need someone w/ Android phone!
-- Open-ended Need numbers
-- Soft number and hard number (discuss more?)
-- long description on caret dropdown
+- Clearstream.io - still need an API key for that (mobile texts)
+- Check how site looks on an Android phone!
+- long description on caret dropdown / tooltip - still want!
 - Can a user sign up for more than one project?
   - Will have a hard time restricting people for multiple signups based on time
   - Some projects have multiple times/needs
 - Categories need to be wiped
-- Edit Guest Count Dialog Needs creating
+- Admin panel without admin token?
+- Multiple markers at same location
 
 ### Post Project Stories
 - Add unit testing

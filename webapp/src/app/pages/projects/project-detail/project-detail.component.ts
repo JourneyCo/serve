@@ -181,6 +181,7 @@ export class ProjectDetailComponent implements OnInit {
       first_name: data.first_name,
       last_name: data.last_name,
       lead_interest: data.lead_interest,
+      text_permission: data.text_permission,
     };
 
     this.projectService.registerForProject(this.project.id, body).subscribe({

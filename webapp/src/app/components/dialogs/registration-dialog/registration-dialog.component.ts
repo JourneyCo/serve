@@ -19,7 +19,6 @@ export class RegistrationDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { project: Project, user: User },
     private fb: FormBuilder
   ) {
-    console.log(this.data.project);
     this.registrationForm = this.fb.group({
       email: [data.user.email || ''],
       first_name: [data.user.first_name || ''],

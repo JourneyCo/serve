@@ -26,6 +26,7 @@ type regRequest struct {
 	LastName         string `json:"last_name"`
 	Phone            string `json:"phone"`
 	Email            string `json:"email"`
+	TextPerm         bool   `json:"text_permission"`
 }
 
 // RegisterProjectRoutes registers the routes for project handlers
@@ -136,6 +137,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	user.LastName = reg.LastName
 	user.Phone = reg.Phone
 	user.Email = reg.Email
+	user.TextPermission = reg.TextPerm
 	if err = models.UpdateUser(ctx, h.DB, user); err != nil {
 		log.Printf("Failed to update user information: %v\n", err)
 		middleware.RespondWithError(
