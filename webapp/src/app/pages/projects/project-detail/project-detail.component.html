@@ -276,8 +276,10 @@
     </mat-card>
 
     <!-- Admin Panel - Only visible to admins -->
-    @if (isAdmin && project) {
+    @if (isAdmin | async) {
+      @if (project) {
       <app-admin-project-panel [project_id]="project.id"></app-admin-project-panel>
+      }
     }
   }
 </div>

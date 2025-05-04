@@ -28,7 +28,6 @@ import { MaterialModule } from '@material';
 export class ProjectDetailComponent implements OnInit {
   project: Project | null = null;
   currentUser: User | null = null;
-  isAdmin: Observable<boolean> | undefined;
   isRegistered = false;
   isLoading = true;
   loadingRegistration = false;
@@ -40,6 +39,7 @@ export class ProjectDetailComponent implements OnInit {
   skills = Skills
   serve_date: Date;
   registrationSubscription: Subscription;
+  isAdmin: Observable<boolean>;
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {
@@ -69,7 +69,7 @@ export class ProjectDetailComponent implements OnInit {
     private registrationService: RegistrationService,
   ) {
     this.serve_date = helper.GetServeDate();
-    this.isAdmin = authService.isAdmin();
+    this.isAdmin = this.authService.isAdmin();
   }
 
   ngOnInit(): void {

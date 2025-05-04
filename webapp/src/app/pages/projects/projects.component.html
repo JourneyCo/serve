@@ -41,15 +41,21 @@
           <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
             <td mat-cell *matCellDef="let project">
-              <div class="project-title">{{project.title}}</div>
-              <div class="project-short-desc">{{project.short_description}}</div>
+              <div class="project-title">{{project.title}}
+                <mat-icon
+                  class="material-icons md-20"
+                  matTooltip="{{project.description}}"
+                  matTooltipPosition="after">info</mat-icon>
+              </div>
             </td>
           </ng-container>
 
           <!-- Location Column -->
             <ng-container matColumnDef="projectLocation">
               <th mat-header-cell *matHeaderCellDef>Location</th>
-              <td mat-cell *matCellDef="let project">{{ project?.location_address }}</td>
+              <td mat-cell *matCellDef="let project">
+<!--                {{ project?.location_address }}-->
+              </td>
             </ng-container>
 
           <!-- Time Column -->

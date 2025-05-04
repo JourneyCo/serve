@@ -4,7 +4,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="39">
+          <list size="40">
             <item index="0" class="java.lang.String" itemvalue="matInput" />
             <item index="1" class="java.lang.String" itemvalue="mat-raised-button" />
             <item index="2" class="java.lang.String" itemvalue="mat-table" />
@@ -44,6 +44,7 @@
             <item index="36" class="java.lang.String" itemvalue="showFirstLastButtons" />
             <item index="37" class="java.lang.String" itemvalue="mapId" />
             <item index="38" class="java.lang.String" itemvalue="email" />
+            <item index="39" class="java.lang.String" itemvalue="matTooltipPosition" />
           </list>
         </value>
       </option>

@@ -17,19 +17,19 @@
 - Need to implement db transaction atomicity
 - Emailer
 - - Test email in production
-  - Send confirmation
+  - Send confirmation (DONE)
   - At time of signup (DONE) - Do we want a text as well (YES WE DO)?
   - 1 Week before
   - 1 day before
-- Clearstream.io - still need an API key for that (mobile texts)
+  - Check the htmls on the project followups!
+- Test the mobile texting
 - Check how site looks on an Android phone!
-- long description on caret dropdown / tooltip - still want!
 - Can a user sign up for more than one project?
   - Will have a hard time restricting people for multiple signups based on time
   - Some projects have multiple times/needs
 - Categories need to be wiped
-- Admin panel without admin token?
 - Multiple markers at same location
+- -Navbar styling - needs old scss
 
 ### Post Project Stories
 - Add unit testing
@@ -43,3 +43,6 @@
 - - Are you willing to be a project lead? (Need to Test)
 - - Ability to email
 - - Don't need date (its all on serve day), don't need created/updated
+- long description on caret dropdown / tooltip - still want!
+- Admin panel without admin token?
+- 

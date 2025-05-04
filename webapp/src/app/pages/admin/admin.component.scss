@@ -71,6 +71,12 @@
         background-color: #f5f5f5;
       }
 
+      .mat-column-actions {
+        width: 160px;
+        text-align: right;
+        white-space: nowrap;
+      }
+
       .full-capacity {
         color: #f44336;
         font-weight: bold;
