@@ -8,6 +8,7 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
+	DevMode bool
 	// Date
 	ServeDay string
 
@@ -15,12 +16,13 @@ type Config struct {
 	ServerPort string
 
 	// Database config
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBURL      string
+	DBHost              string
+	DBPort              string
+	DBUser              string
+	DBPassword          string
+	DBName              string
+	DBConnectionOptions string
+	DBURL               string
 
 	// Auth0 config
 	Auth0Domain       string
@@ -46,10 +48,8 @@ type Config struct {
 
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
-	// Check for development mode
-	devMode := getEnv("DEV_MODE", "true") == "true"
-
 	config := &Config{
+		DevMode: getEnv("DEV_MODE", "true") == "true",
 		// Serve Day Date
 		ServeDay: getEnv("SERVE_DAY", "07-12-25"),
 
@@ -57,12 +57,13 @@ func Load() (*Config, error) {
 		ServerPort: getEnv("PORT", "8080"),
 
 		// Database config
-		DBHost:     getEnv("PGHOST", "localhost"),
-		DBPort:     getEnv("PGPORT", "5432"),
-		DBUser:     getEnv("PGUSER", "postgres"),
-		DBPassword: getEnv("PGPASSWORD", "postgres"),
-		DBName:     getEnv("PGDATABASE", "serve"),
-		DBURL:      getEnv("DATABASE_URL", ""),
+		DBHost:              getEnv("PGHOST", "localhost"),
+		DBPort:              getEnv("PGPORT", "5432"),
+		DBUser:              getEnv("PGUSER", "postgres"),
+		DBPassword:          getEnv("PGPASSWORD", "postgres"),
+		DBName:              getEnv("PGDATABASE", "serve"),
+		DBConnectionOptions: getEnv("DBCONN_OPTS", ""),
+		DBURL:               getEnv("DATABASE_URL", ""),
 
 		// Auth0 config - in dev mode use placeholders
 		Auth0Domain:       getEnv("AUTH0_DOMAIN", "dev-placeholder.auth0.com"),
@@ -87,7 +88,7 @@ func Load() (*Config, error) {
 	}
 
 	// In production mode, validate required configuration
-	if !devMode {
+	if !config.DevMode {
 		var missingVars []string
 
 		// For Auth0
@@ -134,9 +135,10 @@ func (c *Config) GetDBConnString() string {
 	if c.DBURL != "" {
 		return c.DBURL
 	}
+
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName,
+		"host=%s port=%s user=%s password=%s dbname=%s %s",
+		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName, c.DBConnectionOptions,
 	)
 }
 
