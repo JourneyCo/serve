@@ -1,7 +1,7 @@
 data "aws_availability_zones" "available" {}
 
 data "aws_acm_certificate" "serve" {
-  domain   = "serve.ravn.systems"
+  domain   = "serve.${var.domain}"
   statuses = ["ISSUED"]
 }
 
@@ -34,7 +34,12 @@ data "aws_subnets" "private" {
   }
 }
 
+data "aws_db_subnet_group" "this" {
+  name = "serve-uw2"
+}
+
 data "aws_route53_zone" "this" {
+  count    = var.create_dns_record ? 1 : 0
   provider = aws.dns
-  name     = "ravn.systems"
+  name     = var.domain
 }

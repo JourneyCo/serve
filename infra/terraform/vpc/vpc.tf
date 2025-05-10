@@ -12,6 +12,7 @@ module "vpc" {
   azs             = ["us-west-2a", "us-west-2b", "us-west-2c"]
   private_subnets = ["10.100.1.0/24", "10.100.2.0/24", "10.100.3.0/24"]
   public_subnets  = ["10.100.101.0/24", "10.100.102.0/24", "10.100.103.0/24"]
+  database_subnets = ["10.100.50.0/24", "10.100.51.0/24", "10.100.52.0/24"]
 
   enable_nat_gateway = false
   enable_vpn_gateway = false

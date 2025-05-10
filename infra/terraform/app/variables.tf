@@ -18,6 +18,13 @@ variable "root_block_size" {
 }
 
 ## App Config
+variable "create_dns_record" {
+  type    = bool
+  default = false
+}
+variable "domain" {
+  type = string
+}
 variable "dev_mode" {
   type    = bool
   default = true
@@ -31,11 +38,6 @@ variable "serve_day" {
 variable "api_port" {
   type    = number
   default = 8080
-}
-
-variable "db_host" {
-  type    = string
-  default = "localhost"
 }
 
 variable "db_port" {

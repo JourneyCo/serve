@@ -12,7 +12,7 @@ PGPORT=${db_port}
 PGUSER=${db_user}
 PGPASSWORD=${db_pass}
 PGDATABASE=${db_name}
-DATABASE_URL=
+DATABASE_URL=""
 
 # Auth0 config
 AUTH0_DOMAIN=${auth0_domain}
@@ -35,8 +35,5 @@ CS_TEXT_FROM=${clearstream_text_from}
 GOOGLE_MAPS_API_KEY=${google_key}
 EOF
 chown ec2-user:ec2-user /home/ec2-user/serve/server/.env
-pushd /home/ec2-user/serve
-systemctl start docker
-docker compose -f docker-compose-dev.yml up -d
 systemctl start nginx
 systemctl start serve-be

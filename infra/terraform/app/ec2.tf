@@ -10,14 +10,6 @@ resource "aws_vpc_security_group_ingress_rule" "allow_lb" {
   ip_protocol       = "-1"
 }
 
-# resource "aws_vpc_security_group_ingress_rule" "ssh" {
-#   security_group_id = aws_security_group.serve_vm.id
-#   cidr_ipv4         = "76.131.61.220/32"
-#   from_port         = 22
-#   ip_protocol       = "tcp"
-#   to_port           = 22
-# }
-
 resource "aws_vpc_security_group_egress_rule" "egress" {
   security_group_id = aws_security_group.serve_vm.id
   cidr_ipv4         = "0.0.0.0/0"
@@ -27,8 +19,8 @@ resource "aws_vpc_security_group_egress_rule" "egress" {
 resource "aws_instance" "serve_app" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  associate_public_ip_address = true
-  subnet_id                   = data.aws_subnets.public.ids[0]
+  associate_public_ip_address = false
+  subnet_id                   = data.aws_subnets.private.ids[0]
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.serve_vm.id]
   root_block_device {
@@ -39,7 +31,7 @@ resource "aws_instance" "serve_app" {
     dev_mode              = var.dev_mode,
     serve_day             = var.serve_day,
     api_port              = var.api_port,
-    db_host               = var.db_host,
+    db_host               = module.db.instance_address,
     db_port               = var.db_port,
     db_user               = var.db_user,
     db_pass               = var.db_pass,
@@ -61,4 +53,8 @@ resource "aws_instance" "serve_app" {
   tags = {
     Name = "serve-app"
   }
+
+  depends_on = [
+    module.db
+  ]
 }
