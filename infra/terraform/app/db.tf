@@ -18,7 +18,7 @@ module "db" {
   option_group_name       = "default:postgres-15"
   engine                  = "postgres"
   engine_version          = "15.12"
-  instance_class          = "db.t4g.micro"
+  instance_class          = var.db_instance
   name                    = "serve-db-1"
   subnet_ids              = data.aws_db_subnet_group.this.subnet_ids
   vpc_id                  = data.aws_db_subnet_group.this.vpc_id

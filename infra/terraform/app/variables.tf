@@ -60,6 +60,11 @@ variable "db_name" {
   default = "serve"
 }
 
+variable "db_instance" {
+  type    = string
+  default = "db.t4g.micro"
+}
+
 variable "auth0_domain" {
   type = string
 }
