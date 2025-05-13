@@ -17,12 +17,18 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Phone Number</mat-label>
-          <input matInput formControlName="phone" type="tel" required>
+          <input matInput formControlName="phone" type="tel" required placeholder="123-456-7890">
+            <mat-error *ngIf="registrationForm.get('phone')?.hasError('pattern')">
+                Phone number must be in the format xxx-xxx-xxxx.
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
           <input matInput formControlName="email" type="email" required>
+            <mat-error *ngIf="registrationForm.get('email')?.hasError('email') && registrationForm.get('email')?.touched">
+                Please enter a valid email address
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width">

@@ -20,11 +20,11 @@ export class RegistrationDialogComponent {
     private fb: FormBuilder
   ) {
     this.registrationForm = this.fb.group({
-      email: [data.user.email || ''],
+      email: [data.user.email || '', Validators.email],
       first_name: [data.user.first_name || ''],
       last_name: [data.user.last_name || ''],
       guest_count: [0, Validators.max(this.data.project.max_capacity-data.project.current_registrations - 1)],
-      phone: [data.user.phone || ''],
+      phone: [data.user.phone || '', Validators.pattern('^[0-9]{3}-[0-9]{3}-[0-9]{4}$')],
       text_permission: [data.user.text_permission || false],
       lead_interest: [data.user.text_permission || false]
     });
