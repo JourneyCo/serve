@@ -9,6 +9,7 @@ import {Observable, forkJoin, of, Subscription} from 'rxjs';
 import {User, Project, Ages, Categories, Supplies, Tools, Skills} from '@models';
 import {AdminProjectPanelComponent, RegistrationDialogComponent} from '@components';
 import { MaterialModule } from '@material';
+import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
 @Component({
   selector: "app-project-detail",
@@ -19,7 +20,8 @@ import { MaterialModule } from '@material';
     RouterModule,
     GoogleMapsModule,
     AdminProjectPanelComponent,
-    MaterialModule
+    MaterialModule,
+    NgxLinkifyjsModule,
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
@@ -67,6 +69,7 @@ export class ProjectDetailComponent implements OnInit {
     private dialog: MatDialog,
     private helper: HelperService,
     private registrationService: RegistrationService,
+    private linkifyService: NgxLinkifyjsService,
   ) {
     this.serve_date = helper.GetServeDate();
     this.isAdmin = this.authService.isAdmin();
@@ -124,6 +127,8 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe({
       next: (result) => {
         this.project = result.project;
+
+        this.project.rich_description = this.linkifyService.linkify(this.project.description);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(

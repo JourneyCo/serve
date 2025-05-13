@@ -16,7 +16,7 @@ import (
 
 const (
 	clearstreamTextURL  = "https://api.getclearstream.com/v1/texts"
-	clearstreamTextFrom = "97000"
+	clearstreamTextFrom = "94000"
 )
 
 // TextService handles text operations
@@ -32,6 +32,13 @@ type ClearStreamRequest struct {
 	TextBody   string                `json:"text_body"`
 	List       []models.Registration `json:"-"`
 	APIKey     string                `json:"-"`
+
+	// DefaultHeader is a flag to use the systems's default header for journey
+	DefaultHeader bool `json:"use_default_header"`
+
+	// OverRideOptOut is used to over ride a subscribers wish to opt out of
+	// texts. This should never be set to true per Journey's wishes.
+	OverRideOptOut bool `json:"override_optouts"`
 }
 
 type ClearStreamResponse struct {
@@ -116,6 +123,26 @@ func (s *TextService) SendReminderText(list []models.Registration, daysLeft int)
 	return req.sendText()
 }
 
+func (s *TextService) SendTestText() error {
+	req := ClearStreamRequest{
+		From:       clearstreamTextFrom,
+		TextHeader: "Journey Serve Day",
+		TextBody:   "Journey Serve",
+		List: []models.Registration{
+			{
+				ID: 1,
+				User: &models.User{
+					Phone: "+13039477791",
+				},
+			},
+		},
+		APIKey: s.APIKey,
+	}
+
+	return req.sendText()
+
+}
+
 // sendText is a helper function to send texts
 func (c *ClearStreamRequest) sendText() error {
 	var sendList []string
@@ -129,10 +156,10 @@ func (c *ClearStreamRequest) sendText() error {
 	}
 
 	csr := ClearStreamRequest{
-		To:         sendList,
-		From:       c.From,
-		TextHeader: c.TextHeader,
-		TextBody:   c.TextBody,
+		To:            sendList,
+		From:          c.From,
+		TextBody:      c.TextBody,
+		DefaultHeader: true,
 	}
 
 	b, err := json.Marshal(csr)
@@ -162,12 +189,14 @@ func (c *ClearStreamRequest) sendText() error {
 	if err != nil {
 		return fmt.Errorf("failed to read body: %w", err)
 	}
+	log.Println("text sent")
 
 	var csResp ClearStreamResponse
-	if err := json.Unmarshal(body, &csResp); err != nil {
+	if err = json.Unmarshal(body, &csResp); err != nil {
 		return fmt.Errorf("failed to unmarshal body: %w", err)
 	}
 
+	log.Printf("%v", csResp)
 	log.Printf("texts skipped: %v", csResp.Data.Skipped)
 	return nil
 }

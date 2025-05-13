@@ -4,6 +4,7 @@ export interface Project {
   title: string;
   short_description: string;
   description: string;
+  rich_description?: string;
   time: string
   project_date: string;
   max_capacity: number;

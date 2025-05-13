@@ -7,6 +7,7 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
+import {NgxLinkifyjsModule} from 'ngx-linkifyjs-v2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,7 +16,8 @@ export const appConfig: ApplicationConfig = {
     provideAuth0({...env.auth0}),
     importProvidersFrom(
       GoogleMapsModule,
-      NgbModule
+      NgbModule,
+        NgxLinkifyjsModule.forRoot()
     ),
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
   ]

@@ -98,7 +98,7 @@
           </div>
           <div class="full-description">
             <h4>Full Description</h4>
-            <p>{{ project.description }}</p>
+            <p><span [innerHTML]="project.rich_description ? project.rich_description : project.description"></span></p>
           </div>
           <div class="accessibility-info">
             <mat-icon [class.accessible]="project.wheelchair_accessible">
