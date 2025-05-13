@@ -29,6 +29,10 @@
   }
 }
 
+.journey-img {
+  -webkit-filter: invert(1);
+  filter: invert(1);
+}
 
 .active {
   background-color: rgba(255, 255, 255, 0.15);

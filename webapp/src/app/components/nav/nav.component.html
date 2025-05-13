@@ -38,50 +38,23 @@
             <span>Admin</span>
           </a>
         }
+
+          <a mat-button href="#" (click)="logout(); $event.preventDefault()">
+              <mat-icon>logout</mat-icon>
+              <span>Logout</span>
+          </a>
       }
+
+      <!-- Auth buttons -->
+        @if (!(isAuthenticated$ | async)) {
+            <button mat-button (click)="login()">
+                <mat-icon>login</mat-icon>
+                <span>Login</span>
+            </button>
+        }
     </div>
 
-    <!-- Auth buttons -->
-    @if (!(isAuthenticated$ | async)) {
-      <button mat-button (click)="login()">
-        <mat-icon>login</mat-icon>
-        <span>Login</span>
-      </button>
-    }
 
-    @if (isAuthenticated$ | async) {
-      <button
-        mat-icon-button
-        [matMenuTriggerFor]="userMenu"
-        aria-label="User menu"
-      >
-        <mat-icon>account_circle</mat-icon>
-      </button>
-
-      <mat-menu #userMenu="matMenu">
-        @if (user$ | async; as user) {
-          <div class="user-menu-header">
-            <div class="user-info">
-              <div class="user-details">
-                <p class="user-name">
-                  {{ user.first_name }} {{ user.last_name }}
-                </p>
-                <p class="user-email">{{ user.email }}</p>
-              </div>
-            </div>
-          </div>
-        }
-        <mat-divider></mat-divider>
-        <a mat-menu-item routerLink="/profile">
-          <mat-icon>account_circle</mat-icon>
-          <span>Profile</span>
-        </a>
-        <button mat-menu-item (click)="logout()">
-          <mat-icon>logout</mat-icon>
-          <span>Logout</span>
-        </button>
-      </mat-menu>
-    }
   </div>
 </mat-toolbar>
 }
