@@ -25,10 +25,9 @@ import {MatSort} from '@angular/material/sort';
 export class ProjectsComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     "title",
-    "projectLocation",
+    "address",
     "time",
     "capacity",
-    "actions",
   ];
   dataSource = new MatTableDataSource<Project>([]);
   isLoading = true;
