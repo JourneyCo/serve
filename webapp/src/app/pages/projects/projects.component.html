@@ -115,7 +115,7 @@
       <!-- Map View -->
       @if (!isLoading && viewGroup.value === 'map' && mapsLoaded) {
         <div class="map-container">
-          <google-map [options]="mapOptions" height="500px" width="100%" mapId="18c474b41c1ac65a">
+          <google-map [options]="mapOptions" height="500px" width="100%" mapId="%NG_APP_GOOGLE_MAP_ID%">
             @for (marker of markers; track marker.project.id) {
               <map-advanced-marker
                 #markerElem="mapAdvancedMarker"
