@@ -1,9 +1,21 @@
-mat-form-field {
-  width: 100%;
-}
-
 .lead-description {
   font-size: 0.9rem;
   color: var(--journeyGray);
   margin: 20px 0 16px 0;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column; // force vertical stacking
+  gap: 16px;
+  padding-top: 8px;
+}
+
+mat-form-field {
+  width: 100%; // full width for all fields
+}
+
+mat-checkbox {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }

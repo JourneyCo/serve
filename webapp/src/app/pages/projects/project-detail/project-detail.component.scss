@@ -4,7 +4,8 @@
   margin: 0 auto;
   padding: 20px 0;
 
-  .loading-container, .error-container {
+  .loading-container,
+  .error-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -58,6 +59,16 @@
       font-weight: 500;
       color: var(--journeyBlue);
     }
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+
+      .lead-label {
+        margin-right: 0;
+      }
+    }
   }
 
   .project-capacity {
@@ -93,7 +104,8 @@
           }
 
           &.almost-full {
-            background-color: #ff9800; /* Keeping orange for better warning visualization */
+            background-color: #ff9800;
+            /* Keeping orange for better warning visualization */
           }
 
           &.full {
@@ -185,7 +197,8 @@
   .registration-status {
     margin: 24px 0;
 
-    .registered-message, .error-message {
+    .registered-message,
+    .error-message {
       display: flex;
       align-items: center;
       padding: 12px;
@@ -212,6 +225,7 @@
   h3 {
     margin-bottom: 0;
   }
+
   .mat-chip {
     background-color: red;
   }
@@ -229,6 +243,7 @@
         margin-bottom: 8px;
       }
     }
+
     .mat-mdc-card {
       padding: 10px;
     }
