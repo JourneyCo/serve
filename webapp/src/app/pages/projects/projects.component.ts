@@ -1,14 +1,14 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
-import {GoogleMapsModule, MapAdvancedMarker, MapInfoWindow} from '@angular/google-maps';
-import {HelperService} from '@services';
+import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
+import { HelperService } from '@services';
 import { Project } from '@models';
 import { ProjectService } from '@services';
-import {MaterialModule} from '@material';
-import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
+import { MaterialModule } from '@material';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: "app-project-list",
@@ -53,7 +53,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     private projectService: ProjectService,
     private router: Router,
     private helper: HelperService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Google Maps API is automatically loaded by the Angular Google Maps module
@@ -68,6 +68,16 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
       this.dataSource.sort = this.sort;
     });
   }
+
+  private sortInitialized = false;
+
+  ngAfterViewChecked() {
+    if (!this.sortInitialized && this.sort && !this.isLoading) {
+      this.dataSource.sort = this.sort;
+      this.sortInitialized = true;
+    }
+  }
+
 
   loadProjects(): void {
     this.isLoading = true;
@@ -94,7 +104,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
           // Update google-map center
           this.mapOptions = {
             ...this.mapOptions,
-            center: {lat: avgLat, lng: avgLng},
+            center: { lat: avgLat, lng: avgLng },
             zoom: validProjects.length > 1 ? 10 : 12, // Zoom level based on number of markers
           };
 
@@ -119,7 +129,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
         const startIndex = this.pageIndex * this.pageSize;
         const endIndex = startIndex + this.pageSize;
-        this.dataSource.data = Array.from({length: this.dataSource.data.length}, (_, i) =>
+        this.dataSource.data = Array.from({ length: this.dataSource.data.length }, (_, i) =>
           this.dataSource.data[i]).slice(startIndex, endIndex);
 
         this.isLoading = false;
