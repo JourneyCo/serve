@@ -127,8 +127,10 @@ export class ProjectDetailComponent implements OnInit {
     }).subscribe({
       next: (result) => {
         this.project = result.project;
-
-        this.project.rich_description = this.linkifyService.linkify(this.project.description);
+        const options = {
+          target: { url: '_blank' }
+        };
+        this.project.rich_description = this.linkifyService.linkify(this.project.description, options);
 
         // Check if user is registered for this project
         this.isRegistered = result.userRegs?.some(
