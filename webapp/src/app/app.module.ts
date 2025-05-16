@@ -8,16 +8,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
 import {NgxLinkifyjsModule} from 'ngx-linkifyjs-v2';
+import {provideEnvironmentNgxMask} from 'ngx-mask';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
     provideAuth0({...env.auth0}),
+    provideEnvironmentNgxMask(),
     importProvidersFrom(
       GoogleMapsModule,
       NgbModule,
-        NgxLinkifyjsModule.forRoot()
+        NgxLinkifyjsModule.forRoot(),
     ),
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
   ]

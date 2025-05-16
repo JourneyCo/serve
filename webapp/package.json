@@ -28,6 +28,7 @@
     "bootstrap": "^5.3.3",
     "jwt-decode": "^4.0.0",
     "ngx-linkifyjs-v2": "^19.0.1",
+    "ngx-mask": "^19.0.7",
     "rxjs": "~7.8.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

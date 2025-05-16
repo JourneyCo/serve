@@ -17,7 +17,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Phone Number</mat-label>
-          <input matInput formControlName="phone" type="tel" required placeholder="123-456-7890">
+          <input matInput formControlName="phone" type="tel" required placeholder="123-456-7890" mask="000-000-0000">
             <mat-error *ngIf="registrationForm.get('phone')?.hasError('pattern')">
                 Phone number must be in the format xxx-xxx-xxxx.
             </mat-error>

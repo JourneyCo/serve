@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { User } from '@models';
 import {MaterialModule} from '@material';
+import {NgxMaskDirective} from 'ngx-mask';
 
 @Component({
     selector: 'app-edit-profile-dialog',
@@ -13,7 +14,8 @@ import {MaterialModule} from '@material';
         CommonModule,
         MatButtonModule,
         ReactiveFormsModule,
-        MaterialModule
+        MaterialModule,
+        NgxMaskDirective
     ],
     templateUrl: './edit-profile-dialog.component.html',
     styleUrls: ['./edit-profile-dialog.component.scss']

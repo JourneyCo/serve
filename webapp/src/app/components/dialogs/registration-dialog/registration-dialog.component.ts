@@ -4,10 +4,11 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {Project, User} from '@models';
 import {MaterialModule} from '@material';
 import {CommonModule} from '@angular/common';
+import {NgxMaskDirective} from 'ngx-mask';
 
 @Component({
   selector: 'app-registration-dialog',
-  imports: [MaterialModule, ReactiveFormsModule, CommonModule],
+  imports: [MaterialModule, ReactiveFormsModule, CommonModule, NgxMaskDirective],
   templateUrl: './registration-dialog.component.html',
   styleUrl: './registration-dialog.component.scss'
 })
