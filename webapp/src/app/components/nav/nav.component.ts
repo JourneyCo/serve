@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import {AuthService, HelperService} from '@services';
 import { User } from '@models';
 import {MaterialModule} from '@material';
-import {MatMenu, MatMenuTrigger} from '@angular/material/menu';
 import {MatToolbar} from '@angular/material/toolbar';
 
 @Component({
@@ -15,8 +14,6 @@ import {MatToolbar} from '@angular/material/toolbar';
     CommonModule,
     RouterModule,
     MaterialModule,
-    MatMenu,
-    MatMenuTrigger,
     MatToolbar
   ],
   templateUrl: './nav.component.html',

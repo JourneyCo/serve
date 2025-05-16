@@ -26,44 +26,15 @@
                       <mat-icon>arrow_back</mat-icon> Back to Projects
                   </button>
                 </div>
-                  @if (!isRegistered) {
-                      <div class="mt-2">
-                      <button
-                              mat-raised-button
-                              color="primary"
-                              (click)="openRegistrationForm()"
-                              [disabled]="loadingRegistration || isProjectFull()"
-                      >
-                          <mat-icon>event_available</mat-icon>
-                          <span>Register</span>
-                      </button>
-                      </div>
-                  }
               <div class="project-title-row mt-2">
                   {{ project.title }}
               </div>
           </mat-card-title>
         <mat-card-subtitle>
-          <div class="date-subtitle">
-            @if (getDaysUntilStart() > 0) {
-              <span>
-                Starting in {{ getDaysUntilStart() }} days ({{
-                  serve_date | date:'fullDate'
-                }})
-              </span>
-            }
-            @if (getDaysUntilStart() === 0) {
-              <span> Starting today! </span>
-            }
-            @if (getDaysUntilStart() < 0) {
-              <span> Started {{ -getDaysUntilStart() }} days ago </span>
-            }
-          </div>
           @if (project.lead_user) {
             <div class="lead-subtitle">
-              <span class="lead-label">Project Lead:</span>
+              <span class="lead-label">Serve Day Lead:</span>
               <span>{{ project.lead_user.first_name }} {{ project.lead_user.last_name }}</span>
-              <span><a href="tel:{{ project.lead_user.phone }}">{{ project.lead_user.phone }}</a></span>
               <span><a href="mailto:{{ project.lead_user.email }}">{{project.lead_user.email}}</a></span>
             </div>
           }
@@ -79,6 +50,21 @@
             <strong>Time:</strong> {{ project.time }}
           </div>
         </div>
+
+          @if (!isRegistered) {
+              <div class="mt-2">
+                  <button
+                          mat-raised-button
+                          color="primary"
+                          (click)="openRegistrationForm()"
+                          [disabled]="loadingRegistration || isProjectFull()"
+                  >
+                      <mat-icon>event_available</mat-icon>
+                      <span>Register</span>
+                  </button>
+              </div>
+          }
+
 
         <div class="project-capacity">
           <h3>Registration Capacity</h3>
@@ -108,12 +94,7 @@
 
         <div class="project-description">
           <h3>About This Project</h3>
-          <div class="short-description">
-            <h4>Summary</h4>
-            <p>{{ project.short_description }}</p>
-          </div>
           <div class="full-description">
-            <h4>Full Description</h4>
             <p><span [innerHTML]="project.rich_description ? project.rich_description : project.description"></span></p>
           </div>
           <div class="accessibility-info">
@@ -188,7 +169,6 @@
         <!-- Location Section - Only shown if location is provided -->
         @if (project.location_name || (project.latitude && project.longitude)) {
           <div class="project-location">
-            <h3>Location</h3>
             @if (project.location_name) {
               <p><strong>Location:</strong> {{ project.location_name }}</p>
             }

@@ -246,16 +246,6 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
-  getDaysUntilStart(): number {
-    if (!this.project) return 0;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const diffTime = this.helper.GetServeDate().getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  }
-
   isProjectFull(): boolean {
     return this.project
       ? this.project.current_registrations >= this.project.max_capacity
