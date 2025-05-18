@@ -77,10 +77,10 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get serve lead details if serve lead ID exists
-	if project.LeadUserID != "" {
-		leadUser, err := models.GetUserByID(ctx, h.DB, project.LeadUserID)
-		if err == nil && leadUser != nil {
-			project.LeadUser = leadUser
+	if project.ServeLeadID != "" {
+		serveLead, err := models.GetUserByID(ctx, h.DB, project.ServeLeadID)
+		if err == nil && serveLead != nil {
+			project.ServeLead = serveLead
 		}
 	}
 

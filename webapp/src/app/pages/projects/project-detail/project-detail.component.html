@@ -31,11 +31,11 @@
               </div>
           </mat-card-title>
         <mat-card-subtitle>
-          @if (project.lead_user) {
+          @if (project.serve_lead) {
             <div class="lead-subtitle">
               <span class="lead-label">Serve Day Lead:</span>
-              <span>{{ project.lead_user.first_name }} {{ project.lead_user.last_name }}</span>
-              <span><a href="mailto:{{ project.lead_user.email }}">{{project.lead_user.email}}</a></span>
+              <span>{{ project.serve_lead.first_name }} {{ project.serve_lead.last_name }}</span>
+              <span><a href="mailto:{{ project.serve_lead.email }}">{{project.serve_lead.email}}</a></span>
             </div>
           }
         </mat-card-subtitle>

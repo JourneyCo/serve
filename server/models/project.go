@@ -26,8 +26,8 @@ type Project struct {
 	Latitude             float64            `json:"latitude"`
 	Longitude            float64            `json:"longitude"`
 	WheelchairAccessible bool               `json:"wheelchair_accessible"`
-	LeadUserID           string             `json:"lead_user_id"`
-	LeadUser             *User              `json:"lead_user,omitempty"`
+	ServeLeadID          string             `json:"serve_lead_id"`
+	ServeLead            *User              `json:"serve_lead,omitempty"`
 	Tools                []ProjectAccessory `json:"tools,omitempty"`
 	Supplies             []ProjectAccessory `json:"supplies,omitempty"`
 	Categories           []ProjectAccessory `json:"categories,omitempty"`
@@ -90,7 +90,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.short_description, p.time, p.project_date, 
-                p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.lead_user_id,
+                p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
@@ -102,7 +102,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	var p Project
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Time, &p.ProjectDate,
-		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.LeadUserID,
+		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
 		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
 
@@ -217,7 +217,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (google_id, title, short_description, description, time, project_date, max_capacity, 
-                                    location_name, location_address, latitude, longitude, wheelchair_accessible, lead_user_id)
+                                    location_name, location_address, latitude, longitude, wheelchair_accessible, serve_lead_id)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id, created_at, updated_at
         `
@@ -238,7 +238,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Latitude,
 		project.Longitude,
 		project.WheelchairAccessible,
-		project.LeadUserID,
+		project.ServeLeadID,
 	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
 	if err != nil {
 		log.Println("error creating project: ", err)
@@ -374,8 +374,6 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 		"INSERT INTO %s (project_id, %s) VALUES %s ON CONFLICT DO NOTHING", tbl, id, strings.Join(valueStrings, ","),
 	), valueArgs
 }
-
-
 
 // DeleteProjectAssociations removes all associated records for a project
 func DeleteProjectAssociations(ctx context.Context, db *sql.DB, projectID int) error {

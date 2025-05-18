@@ -95,14 +95,14 @@
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Serve Day Leader</mat-label>
-          <mat-select formControlName="lead_user_id" required>
+          <mat-select formControlName="serve_lead_id" required>
             @for (user of sortedUsers; track user.id) {
             <mat-option [value]="user.id"
             >{{ user.last_name }}, {{ user.first_name }}</mat-option
             >
             }
           </mat-select>
-          @if (projectForm.get("lead_user_id")?.hasError("required")) {
+          @if (projectForm.get("serve_lead_id")?.hasError("required")) {
           <mat-error> Serve Day Leader is required </mat-error>
           }
         </mat-form-field>

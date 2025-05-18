@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 INSERT INTO users (id, email, first_name, last_name, phone, text_permission)
 VALUES (
            'example-user-123',
-           'project.lead@example.com',
+           'servelead@example.com',
            'Doug',
            'DoesGood',
            '303-555-0123',
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS projects (
                                         longitude DOUBLE PRECISION,
                                         location_address TEXT,
                                         wheelchair_accessible BOOLEAN NOT NULL DEFAULT FALSE,
-                                        lead_user_id TEXT REFERENCES users(id),
+                                        serve_lead_id TEXT REFERENCES users(id),
                                         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         status status NOT NULL DEFAULT 'open'
@@ -211,7 +211,7 @@ BEGIN
     serve_day := NOW();
 
 INSERT INTO projects (google_id, title, short_description, description, time, project_date,
-                      max_capacity, location_name, latitude, longitude, lead_user_id, wheelchair_accessible, location_address
+                      max_capacity, location_name, latitude, longitude, serve_lead_id, wheelchair_accessible, location_address
 ) VALUES
       (1, 'Aging Resources Douglas County (Home 1)', 'Elderly Support', 'Project scope to include yard work, landscaping, and gardening at the homes of senior adults. Tasks may include trimming branches, planting bulbs, spreading mulch, raking pine needles, etc. Location will be in Douglas County from 9:00 AM to 12:00 PM. Address will be provided closer to Serve Day. Any age welcome – kids must be accompanied by an adult. Volunteers younger than middle school will not be counted in the volunteer numbers.
 

@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"title\": \"Sample Project\",\n    \"short_description\": \"A brief description of the project\",\n    \"description\": \"A detailed description of what this project entails\",\n    \"time\": \"10:00 AM\",\n    \"project_date\": \"2024-02-01\",\n    \"max_capacity\": 20,\n    \"location_name\": \"Community Center\",\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194,\n    \"wheelchair_accessible\": true,\n    \"lead_user_id\": \"user123\",\n    \"tools\": [1, 2],\n    \"supplies\": [1],\n    \"ages\": [1, 2, 3],\n    \"categories\": [1],\n    \"skills\": [1, 2]\n}"
+              "raw": "{\n    \"title\": \"Sample Project\",\n    \"short_description\": \"A brief description of the project\",\n    \"description\": \"A detailed description of what this project entails\",\n    \"time\": \"10:00 AM\",\n    \"project_date\": \"2024-02-01\",\n    \"max_capacity\": 20,\n    \"location_name\": \"Community Center\",\n    \"latitude\": 37.7749,\n    \"longitude\": -122.4194,\n    \"wheelchair_accessible\": true,\n    \"serve_lead_id\": \"user123\",\n    \"tools\": [1, 2],\n    \"supplies\": [1],\n    \"ages\": [1, 2, 3],\n    \"categories\": [1],\n    \"skills\": [1, 2]\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/admin/projects",

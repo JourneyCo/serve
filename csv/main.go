@@ -112,7 +112,7 @@ func main() {
 	}
 
 	sqlStmt := `INSERT INTO projects (google_id, title, short_description, description, time, project_date,
-		max_capacity, location_name, latitude, longitude, lead_user_id, wheelchair_accessible, location_address
+		max_capacity, location_name, latitude, longitude, serve_lead_id, wheelchair_accessible, location_address
 	) VALUES `
 
 	for _, val := range projects {

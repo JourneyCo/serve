@@ -29,7 +29,7 @@ type ProjectInput struct {
 	ProjectDate          string  `json:"project_date"`
 	MaxCapacity          int     `json:"max_capacity"`
 	WheelchairAccessible bool    `json:"wheelchair_accessible"`
-	LeadUserID           string  `json:"lead_user_id"`
+	ServeLeadID          string  `json:"serve_lead_id"`
 	Tools                []int   `json:"tools,omitempty"`
 	Skills               []int   `json:"skills,omitempty"`
 	Categories           []int   `json:"categories,omitempty"`
@@ -270,7 +270,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		LocationAddress:  input.LocationAddress,
 		Latitude:         input.Latitude,
 		Longitude:        input.Longitude,
-		LeadUserID:       input.LeadUserID,
+		ServeLeadID:      input.ServeLeadID,
 	}
 
 	project = applyAccessories(input, project)

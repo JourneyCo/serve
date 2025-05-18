@@ -14,8 +14,8 @@ export interface Project {
   latitude: number | null;
   longitude: number | null;
   wheelchair_accessible: boolean;
-  lead_user_id: string | null;
-  lead_user?: {
+  serve_lead_id: string | null;
+  serve_lead?: {
     id: string;
     first_name: string;
     last_name: string;
