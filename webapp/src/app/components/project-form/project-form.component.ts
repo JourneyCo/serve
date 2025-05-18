@@ -129,7 +129,7 @@ export class ProjectFormComponent implements OnInit {
         this.project?.max_capacity || 10,
         [Validators.required, Validators.min(1), Validators.max(1000)],
       ],
-      location_name: [this.project?.location_name || ""],
+      area: [this.project?.area || ""],
       location_address: [this.project?.location_address || ""],
       latitude: [
         this.project?.latitude || null,
@@ -168,7 +168,7 @@ export class ProjectFormComponent implements OnInit {
       time: formValues.time,
       max_capacity: formValues.max_capacity,
       current_registrations: this.project?.current_registrations || 0,
-      location_name: formValues.location_name || null,
+      area: formValues.area || null,
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       wheelchair_accessible: formValues.wheelchair_accessible,
@@ -202,7 +202,7 @@ export class ProjectFormComponent implements OnInit {
   }
   setupLocationGeocoding(): void {
     this.projectForm
-        .get("location_name")
+        .get("area")
         ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
         .subscribe((value) => {
           if (value && value.length > 5) {

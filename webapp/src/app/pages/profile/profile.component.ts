@@ -31,7 +31,7 @@ export class ProfileComponent implements OnInit {
   registrationsColumns = [
     "projectTitle",
     "time",
-    "location",
+    "area",
     "details",
     "status",
     "actions",

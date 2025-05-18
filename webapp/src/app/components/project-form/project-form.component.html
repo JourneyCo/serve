@@ -181,15 +181,15 @@
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Location Name</mat-label>
+          <mat-label>Area</mat-label>
           <input
                   matInput
-                  formControlName="location_name"
-                  placeholder="e.g., Community Center, Main Campus"
+                  formControlName="area"
+                  placeholder="e.g., Castle Pines, Highlands Ranch, etc."
                   required
           />
-          @if (projectForm.get("location_name")?.hasError("required")) {
-          <mat-error>Location name is required</mat-error>
+          @if (projectForm.get("area")?.hasError("required")) {
+          <mat-error>Area is required</mat-error>
           }
         </mat-form-field>
       </div>
@@ -218,7 +218,7 @@
           @if (geocoding) {
           <mat-spinner matSuffix diameter="20"> </mat-spinner>
           }
-          @if (projectForm.get("location_name")?.hasError("required")) {
+          @if (projectForm.get("area")?.hasError("required")) {
           <mat-error> Location Name is required </mat-error>
           }
         </mat-form-field>

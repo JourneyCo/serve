@@ -56,7 +56,7 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		Name            string
 		ProjectTitle    string
 		ProjectDesc     string
-		Location        string
+		Area            string
 		Address         string
 		ProjectDate     string
 		Time            string
@@ -65,7 +65,7 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		Name:            fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		ProjectTitle:    project.Title,
 		ProjectDesc:     project.Description,
-		Location:        project.LocationName,
+		Area:            project.Area,
 		Address:         project.LocationAddress,
 		ProjectDate:     projectDateFormatted,
 		Time:            project.Time,

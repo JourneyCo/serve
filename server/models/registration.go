@@ -141,7 +141,7 @@ func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Reg
 									SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 									r.created_at, r.updated_at,
 									p.title, p.description, p.time, p.project_date, p.max_capacity,
-									p.location_name, p.latitude, p.longitude
+									p.area, p.latitude, p.longitude
 									FROM registrations r
 									JOIN projects p ON r.project_id = p.id
 									WHERE r.user_id = $1
@@ -164,7 +164,7 @@ func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Reg
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.Project.Title, &r.Project.Description, &r.Project.Time,
 			&r.Project.ProjectDate, &r.Project.MaxCapacity,
-			&r.Project.LocationName, &r.Project.Latitude, &r.Project.Longitude,
+			&r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
 		); err != nil {
 			return nil, err
 		}
@@ -229,7 +229,7 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 									r.created_at, r.updated_at,
 									u.email, u.first_name, u.last_name,
 									p.title, p.description, p.time, p.project_date,
-									p.location_name, p.latitude, p.longitude
+									p.area, p.latitude, p.longitude
 									FROM registrations r
 									JOIN users u ON r.user_id = u.id
 									JOIN projects p ON r.project_id = p.id
@@ -255,7 +255,7 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.User.Email, &r.User.FirstName, &r.User.LastName,
 			&r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
-			&r.Project.LocationName, &r.Project.Latitude, &r.Project.Longitude,
+			&r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
 		); err != nil {
 			return nil, err
 		}

@@ -166,11 +166,11 @@
         </div>
         }
 
-        <!-- Location Section - Only shown if location is provided -->
-        @if (project.location_name || (project.latitude && project.longitude)) {
-          <div class="project-location">
-            @if (project.location_name) {
-              <p><strong>Location:</strong> {{ project.location_name }}</p>
+        <!-- Area Section - Only shown if lat/long is provided -->
+        @if (project.latitude && project.longitude) {
+          <div class="project-area">
+            @if (project.area) {
+              <p><strong>Location:</strong> {{ project.area }}</p>
             }
 
             @if (project.latitude && project.longitude) {

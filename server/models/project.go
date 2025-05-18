@@ -22,7 +22,7 @@ type Project struct {
 	ProjectDate          time.Time          `json:"project_date"`
 	MaxCapacity          int                `json:"max_capacity"`
 	CurrentReg           int                `json:"current_registrations"`
-	LocationName         string             `json:"location_name"`
+	Area                 string             `json:"area"`
 	LocationAddress      string             `json:"location_address"`
 	Latitude             float64            `json:"latitude"`
 	Longitude            float64            `json:"longitude"`
@@ -56,7 +56,7 @@ type ProjectAccessory struct {
 func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
                 SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, p.project_date, 
-                p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
+                p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
@@ -75,7 +75,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 		var p Project
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
-			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
+			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.Website, &p.CurrentReg,
 		); err != nil {
 			return nil, err
@@ -91,7 +91,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.short_description, p.website, p.time, p.project_date, 
-                p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
+                p.max_capacity, p.area, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
@@ -103,7 +103,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	var p Project
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Website, &p.Time, &p.ProjectDate,
-		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
+		&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
 		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
 
@@ -218,7 +218,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (google_id, title, short_description, description, website, time, project_date, max_capacity, 
-                                    location_name, location_address, latitude, longitude, wheelchair_accessible, serve_lead_id)
+                                    area, location_address, latitude, longitude, wheelchair_accessible, serve_lead_id)
                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id, created_at, updated_at
         `
@@ -235,7 +235,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
-		project.LocationName,
+		project.Area,
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,
@@ -259,7 +259,7 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 	query := `
                 UPDATE projects
                 SET google_id=$14, title = $1, short_description = $2, description = $3, website = $4, time = $5, project_date = $6, 
-                max_capacity = $7, location_name = $8, location_address = $9, latitude = $10, longitude = $11,
+                max_capacity = $7, area = $8, location_address = $9, latitude = $10, longitude = $11,
                 wheelchair_accessible = $12, updated_at = CURRENT_TIMESTAMP
                 WHERE id = $13
                 RETURNING updated_at
@@ -277,7 +277,7 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
-		project.LocationName,
+		project.Area,
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,

@@ -10,7 +10,7 @@ export interface Project {
   project_date: string;
   max_capacity: number;
   current_registrations: number;
-  location_name: string | null;
+  area: string | null;
   location_address: string | null;
   latitude: number | null;
   longitude: number | null;

@@ -35,7 +35,7 @@ type ProjectInput struct {
 	Categories           []int   `json:"categories,omitempty"`
 	Ages                 []int   `json:"ages,omitempty"`
 	Supplies             []int   `json:"supplies,omitempty"`
-	LocationName         string  `json:"location_name"`
+	Area                 string  `json:"area"`
 	LocationAddress      string  `json:"location_address"`
 	Latitude             float64 `json:"latitude"`
 	Longitude            float64 `json:"longitude"`
@@ -266,7 +266,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 		Time:             input.Time,
 		ProjectDate:      projectDate,
 		MaxCapacity:      input.MaxCapacity,
-		LocationName:     input.LocationName,
+		Area:             input.Area,
 		LocationAddress:  input.LocationAddress,
 		Latitude:         input.Latitude,
 		Longitude:        input.Longitude,
@@ -332,7 +332,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Time = input.Time
 	project.ProjectDate = projectDate
 	project.MaxCapacity = input.MaxCapacity
-	project.LocationName = input.LocationName
+	project.Area = input.Area
 	project.LocationAddress = input.LocationAddress
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
