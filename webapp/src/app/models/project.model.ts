@@ -5,6 +5,7 @@ export interface Project {
   short_description: string;
   description: string;
   rich_description?: string;
+  website?: string;
   time: string
   project_date: string;
   max_capacity: number;

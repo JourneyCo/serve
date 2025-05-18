@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS projects (
                                         serve_lead_id TEXT REFERENCES users(id),
                                         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                                        status status NOT NULL DEFAULT 'open'
+                                        status status NOT NULL DEFAULT 'open',
+                                        website TEXT
 );
 
 CREATE TABLE IF NOT EXISTS registrations (
@@ -211,13 +212,13 @@ BEGIN
     serve_day := NOW();
 
 INSERT INTO projects (google_id, title, short_description, description, time, project_date,
-                      max_capacity, location_name, latitude, longitude, serve_lead_id, wheelchair_accessible, location_address
+                      max_capacity, location_name, latitude, longitude, serve_lead_id, wheelchair_accessible, location_address, website
 ) VALUES
       (1, 'Aging Resources Douglas County (Home 1)', 'Elderly Support', 'Project scope to include yard work, landscaping, and gardening at the homes of senior adults. Tasks may include trimming branches, planting bulbs, spreading mulch, raking pine needles, etc. Location will be in Douglas County from 9:00 AM to 12:00 PM. Address will be provided closer to Serve Day. Any age welcome – kids must be accompanied by an adult. Volunteers younger than middle school will not be counted in the volunteer numbers.
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -225,7 +226,7 @@ Address of home to be provided closer to Serve Day'), (2, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '1:30pm - 3:30pm', serve_day, 8, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '1:30pm - 3:30pm', 8, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -233,7 +234,7 @@ Address of home to be provided closer to Serve Day'), (3, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -241,7 +242,7 @@ Address of home to be provided closer to Serve Day'), (4, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -249,7 +250,7 @@ Address of home to be provided closer to Serve Day'), (5, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -257,7 +258,7 @@ Address of home to be provided closer to Serve Day'), (6, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -265,7 +266,7 @@ Address of home to be provided closer to Serve Day'), (7, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -273,7 +274,7 @@ Address of home to be provided closer to Serve Day'), (8, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -281,7 +282,7 @@ Address of home to be provided closer to Serve Day'), (9, 'Aging Resources Dougl
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -289,7 +290,7 @@ Address of home to be provided closer to Serve Day'), (10, 'Aging Resources Doug
 
 **** All adults over the age of 18 will need to fill out an ARDC Volunteer Application.  Copy and paste this website: http://www.agingresourcesdougco.org/service-saturdays.html  ****
 
-For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', '9:00 am - 12:00 pm', serve_day, 7, 'TBD (Douglas County)
+For more information on Aging Resources Douglas County, copy and paste this website:   https://www.agingresourcesdougco.org', 'www.example.com', '9:00 am - 12:00 pm', 7, 'TBD (Douglas County)
 
 Address of home to be provided closer to Serve Day', 39.491482, -104.874878, 'example-user-123', true, 'TBD (Douglas County)
 
@@ -299,7 +300,7 @@ Project will take place at Journey Church (Castle Pines location) from 10:00 AM 
 
 *If you would like to donate, Box of Balloons utilizes banners, tape, curling ribbon, streamers, gifts, gift cards, party favors, tableware, party games, and candles.
 
-                                                       www.boxofballoons.org', '10:00 am - 12:00 pm', serve_day, 20, 'Journey Church
+                                                       www.boxofballoons.org', 'www.example.com', '10:00 am - 12:00 pm', 20, 'Journey Church
                                                        9009 Clydesdale Road
                                                        Castle Rock, CO 80108
 
@@ -313,7 +314,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Denver Rescue Mission is located at 4600 E 48th Ave., Denver, CO 80216. Volunteers must be 14 or older – those aged 14 to 17 must be accompanied by an adult.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '4:45pm-6:30pm', serve_day, 8, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '4:45pm-6:30pm', 8, 'Denver
 
 4600 E 48th Ave.
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -325,7 +326,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Denver Rescue Mission is located at 4600 E 48th Ave., Denver, CO 80216. Volunteers must be 14 or older – those aged 14 to 17 must be accompanied by an adult.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '11:15am-1:00pm', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '11:15am-1:00pm', 2, 'Denver
 
 4600 E 48th Ave.
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -337,7 +338,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Denver Rescue Mission is located at 4600 E 48th Ave., Denver, CO 80216. Volunteers must be 14 or older – those aged 14 to 17 must be accompanied by an adult.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '7:15am-9:00am', serve_day, 6, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '7:15am-9:00am', 6, 'Denver
 
 4600 E 48th Ave.
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -349,7 +350,7 @@ Volunteers will help with dishwashing, following lunch service, from 12:30 PM to
 
                                                        Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '12:30-2:00pm', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '12:30-2:00pm', 2, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -361,7 +362,7 @@ Volunteers will help with dishwashing, following the dinner service, from 5:30 P
 
                                                        Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '5:30pm-7:00pm', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '5:30pm-7:00pm', 2, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -373,7 +374,7 @@ Volunteers will help with dishwashing, following the breakfast service, from 7:3
 
                                                        Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '7:30am-9:00am', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '7:30am-9:00am', 2, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -385,7 +386,7 @@ Volunteers will help with morning meal prep from 10:00 AM to 11:00 AM. Volunteer
 
 Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '10:00am-11:00am', serve_day, 8, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '10:00am-11:00am', 8, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -397,7 +398,7 @@ Volunteers will help with dinner meal prep from 2:30 PM to 3:30 PM. Volunteers m
 
 Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '2:30pm-3:30pm', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '2:30pm-3:30pm', 2, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -409,7 +410,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '4:45-6:30pm', serve_day, 10, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '4:45-6:30pm', 10, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -421,7 +422,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Located at 2222 Lawrence St, Denver, CO 80205.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '11:45-1:15pm', serve_day, 8, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '11:45-1:15pm', 8, 'Denver
 
 2222 Lawrence St
 Denver, CO 80205', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -433,7 +434,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Located at 6090 Smith Road, Denver, CO 80216.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '6:00am-7:15am', serve_day, 3, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '6:00am-7:15am', 3, 'Denver
 
 6090 Smith Road
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -445,7 +446,7 @@ Volunteers will serve through participating in morning kitchen help from 8:00 AM
 
 Located at 6090 Smith Road, Denver, CO 80216.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '8:00am-10:00am', serve_day, 2, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '8:00am-10:00am', 2, 'Denver
 
 6090 Smith Road
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -457,7 +458,7 @@ Volunteers will serve through participating in afternoon kitchen help from 2:00 
 
 Located at 6090 Smith Road, Denver, CO 80216.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '2:00pm-4:00pm', serve_day, 3, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '2:00pm-4:00pm', 3, 'Denver
 
 6090 Smith Road
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -469,7 +470,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Located at 6090 Smith Road, Denver, CO 80216.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '5:00pm-7:00pm', serve_day, 6, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '5:00pm-7:00pm', 6, 'Denver
 
 6090 Smith Road
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -481,7 +482,7 @@ Volunteers will serve the homeless/those in transition through participating in 
 
 Located at 6090 Smith Road, Denver, CO 80216.
 
-For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', '11:00am-1:00pm', serve_day, 6, 'Denver
+For more information on Denver Rescue Mission, copy and paste this website:   https://denverrescuemission.org', 'www.example.com', '11:00am-1:00pm', 6, 'Denver
 
 6090 Smith Road
 Denver, CO 80216', 39.491482, -104.874878, 'example-user-123', true, 'Denver
@@ -493,7 +494,7 @@ Volunteers will assemble Food for Thought bags, pack dry goods boxes for the Mob
 
 Address: 17151 Pine Ln., Parker, CO 80134. Please meet in the lobby, the building on the east end of the parking lot. Volunteering will take place from 10:00 to 11:30 a.m.
 
-www.secorcares.com', '10:00 - 11:30 am', serve_day, 8, 'Parker
+www.secorcares.com', 'www.example.com', '10:00 - 11:30 am', 8, 'Parker
 
 17151 Pine Ln.
 Parker, CO 80134                                             Meet in the lobby,the building on the east end of the parking lot.', 39.491482, -104.874878, 'example-user-123', true, 'Parker
@@ -503,13 +504,11 @@ Parker, CO 80134                                             Meet in the lobby,t
 
 For this project, volunteers will help with a garage sale by organizing, setting up, tearing down, and assisting shoppers. Available in shifts from 7:30 AM to 10:30 AM, 10:30 AM to 1 PM, 1:00 PM to 4:00 PM, and 4:00 to 6:00 PM (need strong people for tear down). Volunteers can be 5+ with a parent, aside from the tear down timeslot.
 
-Located in the Baptized Church parking lot at 880 Third Street, Castle Rock, CO. ', '7:30am-10:30am (10 people)    10:30-1:00 pm (10 people)   1:00-4:00pm (10 people)  4:00-6:00pm (10 strong people for tear down)', serve_day, 40, '880 Third Street
+Located in the Baptized Church parking lot at 880 Third Street, Castle Rock, CO. ', 'www.example.com', '7:30am-10:30am (10 people)    10:30-1:00 pm (10 people)   1:00-4:00pm (10 people)  4:00-6:00pm (10 strong people for tear down)', 40, '880 Third Street
 Castle Rock, Co', 39.491482, -104.874878, 'example-user-123', true, '880 Third Street
 Castle Rock, Co'), (45, 'Bridge of Hope  **2025 waiting to hear back from Veronika', 'Assemble goodie bags for their golf tournament fundraiser', 'Volunteers will assemble goodie bags for the Bridge of Hope golf fundraiser! Located at Journey Church Castle Pines Location from 10:00 AM to 12:00 PM. Any age welcome!
 
-https://greaterdenver.bridgeofhopeinc.org/
-
-', '9-11', serve_day, 10, 'Journey Church
+https://greaterdenver.bridgeofhopeinc.org/', 'www.example.com', '9-11', 10, 'Journey Church
 9009 Clydesdale Road
 Castle Rock, CO 80108
 
@@ -530,7 +529,7 @@ Addresses:
 12959 S Parker Rd, Parker, CO 80134
 10901 S Parker Rd, Parker, CO 80134
 
-https://www.cohelpinghub.org', '1:00pm-4:00pm', serve_day, 30, '4 King Soopers locations:
+https://www.cohelpinghub.org', 'www.example.com', '1:00pm-4:00pm', 30, '4 King Soopers locations:
 17031 Lincoln Ave
 Parker, CO 80134,
 

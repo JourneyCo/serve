@@ -17,6 +17,7 @@ type Project struct {
 	Title                string             `json:"title"`
 	ShortDescription     string             `json:"short_description"`
 	Description          string             `json:"description"`
+	Website              string             `json:"website"`
 	Time                 string             `json:"time"`
 	ProjectDate          time.Time          `json:"project_date"`
 	MaxCapacity          int                `json:"max_capacity"`
@@ -54,7 +55,7 @@ type ProjectAccessory struct {
 // GetAllProjects retrieves all projects from the database
 func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
-                SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.time, p.project_date, 
+                SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
@@ -73,7 +74,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err = rows.Scan(
-			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
+			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 		); err != nil {
@@ -89,7 +90,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 // GetProjectByID retrieves a project by its ID
 func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
-                SELECT p.id, p.title, p.description, p.short_description, p.time, p.project_date, 
+                SELECT p.id, p.title, p.description, p.short_description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.location_name, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
@@ -101,7 +102,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 
 	var p Project
 	err := db.QueryRowContext(ctx, query, id).Scan(
-		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Time, &p.ProjectDate,
+		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Website, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
 		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
@@ -216,9 +217,9 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
-                INSERT INTO projects (google_id, title, short_description, description, time, project_date, max_capacity, 
+                INSERT INTO projects (google_id, title, short_description, description, website, time, project_date, max_capacity, 
                                     location_name, location_address, latitude, longitude, wheelchair_accessible, serve_lead_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id, created_at, updated_at
         `
 
@@ -230,6 +231,7 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Title,
 		project.ShortDescription,
 		project.Description,
+		project.Website,
 		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
@@ -256,10 +258,10 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 	query := `
                 UPDATE projects
-                SET google_id=$13, title = $1, short_description = $2, description = $3, time = $4, project_date = $5, 
-                max_capacity = $6, location_name = $7, location_address = $8, latitude = $9, longitude = $10,
-                wheelchair_accessible = $11, updated_at = CURRENT_TIMESTAMP
-                WHERE id = $12
+                SET google_id=$14, title = $1, short_description = $2, description = $3, website = $4, time = $5, project_date = $6, 
+                max_capacity = $7, location_name = $8, location_address = $9, latitude = $10, longitude = $11,
+                wheelchair_accessible = $12, updated_at = CURRENT_TIMESTAMP
+                WHERE id = $13
                 RETURNING updated_at
         `
 
@@ -271,6 +273,7 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Title,
 		project.ShortDescription,
 		project.Description,
+		project.Website,
 		project.Time,
 		project.ProjectDate,
 		project.MaxCapacity,
