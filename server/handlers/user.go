@@ -59,6 +59,8 @@ func (h *UserHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	if user == nil {
 		user = &models.User{
 			ID: userID,
+			// TODO: check for email address - now that we're down to google and apple, there should
+			// be an email ALWAYS
 		}
 
 		// Create the user in the database
