@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS projects (
                                         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         status status NOT NULL DEFAULT 'open',
-                                        website TEXT
+                                        website TEXT NOT NULL DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS registrations (

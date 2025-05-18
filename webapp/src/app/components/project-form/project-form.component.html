@@ -53,6 +53,19 @@
                   rows="4"
                   required
           ></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Website</mat-label>
+          <input
+                  matInput
+                  formControlName="website"
+                  placeholder="Enter website URL"
+          />
+        </mat-form-field>
+          ></textarea>
           @if (projectForm.get("description")?.hasError("required")) {
           <mat-error> Description is required </mat-error>
           }

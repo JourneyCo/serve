@@ -114,6 +114,7 @@ export class ProjectFormComponent implements OnInit {
         this.project?.title || "",
         [Validators.required, Validators.maxLength(100)],
       ],
+      website: [this.project?.website || ""],
       short_description: [
         this.project?.short_description || "",
         [Validators.required, Validators.maxLength(200)],
@@ -161,6 +162,7 @@ export class ProjectFormComponent implements OnInit {
       id: this.project?.id || 0,
       google_id: this.project?.google_id || 0,
       title: formValues.title,
+      website: formValues.website,
       short_description: formValues.short_description,
       description: formValues.description,
       time: formValues.time,
