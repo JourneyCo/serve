@@ -374,3 +374,40 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 		"INSERT INTO %s (project_id, %s) VALUES %s ON CONFLICT DO NOTHING", tbl, id, strings.Join(valueStrings, ","),
 	), valueArgs
 }
+
+
+
+// DeleteProjectAssociations removes all associated records for a project
+func DeleteProjectAssociations(ctx context.Context, db *sql.DB, projectID int) error {
+	// Start transaction
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	// Define tables to clean
+	tables := []string{
+		"project_tools",
+		"project_ages",
+		"project_categories",
+		"project_supplies",
+		"project_skills",
+	}
+
+	// Delete from each table
+	for _, table := range tables {
+		_, err = tx.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE project_id = $1", table), projectID)
+		if err != nil {
+			tx.Rollback()
+			return fmt.Errorf("failed to delete from %s: %v", table, err)
+		}
+	}
+
+	// Commit transaction
+	if err = tx.Commit(); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
