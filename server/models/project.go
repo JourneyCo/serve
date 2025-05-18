@@ -74,9 +74,9 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err = rows.Scan(
-			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time, &p.ProjectDate,
+			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
 			&p.MaxCapacity, &p.LocationName, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.Website, &p.CurrentReg,
 		); err != nil {
 			return nil, err
 		}
