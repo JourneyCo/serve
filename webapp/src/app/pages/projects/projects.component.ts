@@ -33,10 +33,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   isLoading = true;
 
 
-  // Pagination and Sorting
-  pageIndex: number = 0;
-  pageSize: number = 10;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   // Google Maps properties
@@ -64,7 +60,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
   }
