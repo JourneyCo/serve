@@ -22,3 +22,5 @@ terraform.tfstate*
 webapp/.vscode
 webapp/.env
 .replit
+/csv/*.csv
+
