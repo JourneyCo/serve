@@ -25,7 +25,8 @@ import { MatSort } from '@angular/material/sort';
 export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecked {
   displayedColumns: string[] = [
     "title",
-    "address",
+      "type",
+    "area",
     "time",
     "capacity",
   ];
