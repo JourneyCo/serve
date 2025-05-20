@@ -13,13 +13,9 @@ export const environment = {
     // The AuthHttpInterceptor configuration
     httpInterceptor: {
       allowedList: [
-        // Attach access tokens to any calls to '/api' (exact match)
-        '/api',
-
         // Attach access tokens to any calls that start with '/api/'
-        "/api/v1/*",
-        "*",
-        "http://localhost:8080/api/v1/*",
+        "/api/v1/users/profile",
+        "/api/v1/admin",
 
         // Match anything starting with /api/accounts, but also specify the audience and scope the attached
         // access token must have
