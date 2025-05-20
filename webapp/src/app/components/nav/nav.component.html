@@ -19,13 +19,13 @@
         <span>Serve Day Home</span>
       </a>
 
-      <!-- Authenticated user links -->
-      @if (isAuthenticated$ | async) {
         <a mat-button routerLink="/projects" routerLinkActive="active">
           <mat-icon>view_list</mat-icon>
           <span>Projects</span>
         </a>
 
+      <!-- Authenticated user links -->
+        @if (isAuthenticated$ | async) {
         <a mat-button routerLink="/profile" routerLinkActive="active">
           <mat-icon>account_circle</mat-icon>
           <span>Profile</span>
