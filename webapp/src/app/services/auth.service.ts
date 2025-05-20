@@ -28,7 +28,7 @@ export class AuthService {
   login(): void {
     this.auth0Service.loginWithRedirect({
       appState: {
-        target: "/projects",
+        target: "/",
       },
       authorizationParams: {
         prompt: "login",
