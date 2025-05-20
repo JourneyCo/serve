@@ -181,10 +181,15 @@ export class ProjectDetailComponent implements OnInit {
       this.dialogRef.close(true);
     }
 
+    let phone_number = data.phone
+    if (phone_number.length == 10) {
+      phone_number = this.formatPhone(phone_number);
+    }
+
     const body = {
       guest_count: data.guest_count,
       email: data.email,
-      phone: data.phone,
+      phone: phone_number,
       first_name: data.first_name,
       last_name: data.last_name,
       lead_interest: data.lead_interest,
@@ -276,5 +281,12 @@ export class ProjectDetailComponent implements OnInit {
       ...this.mapOptions,
       center: this.markerPosition,
     };
-    }
+  }
+
+  formatPhone(phone: string): string {
+    // Remove any non-digit characters (optional, for robustness)
+    const digits = phone.replace(/\D/g, '');
+    // Format as 303-841-6058
+    return digits.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+  }
 }

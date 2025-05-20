@@ -55,7 +55,7 @@ type ProjectAccessory struct {
 // GetAllProjects retrieves all projects from the database
 func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
-                SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, p.project_date, 
+                SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
@@ -74,13 +74,15 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	for rows.Next() {
 		var p Project
 		if err = rows.Scan(
-			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Time, &p.ProjectDate,
+			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.Website, &p.CurrentReg,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 		); err != nil {
 			return nil, err
 		}
 
+		// TODO: Remove hardcoding
+		p.ProjectDate = time.Date(2025, 7, 12, 0, 0, 0, 0, time.UTC)
 		projects = append(projects, p)
 	}
 
