@@ -6,7 +6,7 @@ import { HelperService } from '@services';
 import { Project } from '@models';
 import { ProjectService } from '@services';
 import { MaterialModule } from '@material';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 

@@ -64,8 +64,6 @@
           <tr mat-header-row *matHeaderRowDef="registrationsColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: registrationsColumns;"></tr>
         </table>
-
-        <mat-paginator #registrationsPaginator [pageSizeOptions]="[5, 10, 25]"></mat-paginator>
       </div>
     }
   </mat-card-content>

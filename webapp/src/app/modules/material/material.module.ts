@@ -4,7 +4,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import {MatPaginatorModule} from '@angular/material/paginator';
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule} from '@angular/material/table';
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -27,7 +26,6 @@ import {MatTooltipModule} from '@angular/material/tooltip';
     MatFormFieldModule,
     MatCardModule,
     MatIconModule,
-    MatPaginatorModule,
     MatSortModule,
     MatTableModule, MatProgressSpinnerModule, MatSnackBarModule, MatButtonToggleModule,
     MatListModule, MatDividerModule, MatChipsModule, MatBadgeModule, MatProgressBarModule, MatCheckboxModule,

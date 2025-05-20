@@ -4,7 +4,6 @@ import { RouterLink } from "@angular/router";
 import { MatDialog } from "@angular/material/dialog";
 import { MatTabGroup } from "@angular/material/tabs";
 import { MatTableDataSource } from "@angular/material/table";
-import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 import {HelperService, ProjectService} from '@services';
 import {Project, Registration} from '@models';
@@ -42,9 +41,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
   processingAction = false;
 
   // ViewChild references for table sorting and pagination
-  @ViewChild("projectsPaginator") projectsPaginator!: MatPaginator;
   @ViewChild("projectsSort") projectsSort!: MatSort;
-  @ViewChild("usersPaginator") usersPaginator!: MatPaginator;
   @ViewChild("usersSort") usersSort!: MatSort;
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
 
@@ -60,14 +57,10 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.loadRegistrations();
   }
 
-  @ViewChild('registrationsPaginator') registrationsPaginator!: MatPaginator;
-
   ngAfterViewInit(): void {
     // Set up sorting and pagination after view init
     setTimeout(() => {
-      this.projectsDataSource.paginator = this.projectsPaginator;
       this.projectsDataSource.sort = this.projectsSort;
-      this.registrationsDataSource.paginator = this.registrationsPaginator;
     });
   }
 
@@ -104,10 +97,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
   applyProjectFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.projectsDataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.projectsDataSource.paginator) {
-      this.projectsDataSource.paginator.firstPage();
-    }
   }
 
   createProject(): void {
