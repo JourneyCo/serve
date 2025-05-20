@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
@@ -22,7 +22,7 @@ import { MatSort } from '@angular/material/sort';
   templateUrl: "./projects.component.html",
   styleUrls: ["./projects.component.scss"],
 })
-export class ProjectsComponent implements OnInit, AfterViewInit {
+export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecked {
   displayedColumns: string[] = [
     "title",
     "address",
@@ -73,12 +73,12 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
     }
   }
 
-
   loadProjects(): void {
     this.isLoading = true;
     this.projectService.getProjects().subscribe({
       next: (projects) => {
         this.dataSource.data = projects;
+        console.log(projects);
 
         // Create markers for projects with valid coordinates
         const validProjects = projects.filter((p) => p.latitude && p.longitude);
@@ -122,11 +122,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
           })
         }
 
-        const startIndex = this.pageIndex * this.pageSize;
-        const endIndex = startIndex + this.pageSize;
-        this.dataSource.data = Array.from({ length: this.dataSource.data.length }, (_, i) =>
-          this.dataSource.data[i]).slice(startIndex, endIndex);
-
         this.isLoading = false;
       },
       error: (error) => {
@@ -141,10 +136,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   viewProject(project: Project | null): void {
@@ -196,8 +187,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit {
   // }
 
   handlePageEvent(event: PageEvent) {
-    this.pageSize = event.pageSize;
-    this.pageIndex = event.pageIndex;
     this.loadProjects();
   }
 
