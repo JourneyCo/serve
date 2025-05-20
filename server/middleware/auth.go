@@ -91,6 +91,7 @@ func AdminMiddleware(next http.Handler) http.Handler {
 			ctx := r.Context()
 			token := r.Context().Value(jwtmiddleware.ContextKey{})
 			if token == nil {
+				log.Println("token is nil for request")
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}

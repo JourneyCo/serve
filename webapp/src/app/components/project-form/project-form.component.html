@@ -53,6 +53,12 @@
                   rows="4"
                   required
           ></textarea>
+            @if (projectForm.get("description")?.hasError("required")) {
+                <mat-error> Description is required </mat-error>
+            }
+            @if (projectForm.get("description")?.hasError("minlength")) {
+                <mat-error> Description must be at least 10 characters </mat-error>
+            }
         </mat-form-field>
       </div>
 
@@ -64,14 +70,6 @@
                   formControlName="website"
                   placeholder="Enter website URL"
           />
-        </mat-form-field>
-          ></textarea>
-          @if (projectForm.get("description")?.hasError("required")) {
-          <mat-error> Description is required </mat-error>
-          }
-          @if (projectForm.get("description")?.hasError("minlength")) {
-          <mat-error> Description must be at least 10 characters </mat-error>
-          }
         </mat-form-field>
       </div>
 

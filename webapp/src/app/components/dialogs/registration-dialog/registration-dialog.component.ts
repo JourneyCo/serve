@@ -25,7 +25,7 @@ export class RegistrationDialogComponent {
       first_name: [data.user.first_name || ''],
       last_name: [data.user.last_name || ''],
       guest_count: [0, Validators.max(this.data.project.max_capacity-data.project.current_registrations - 1)],
-      phone: [data.user.phone || '', Validators.pattern('^[0-9]{3}-[0-9]{3}-[0-9]{4}$')],
+      phone: [data.user.phone || '', Validators.pattern(/^\d{3}-\d{3}-\d{4}\s*$/)],
       text_permission: [data.user.text_permission || false],
       lead_interest: [data.user.text_permission || false]
     });

@@ -48,6 +48,7 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	projects, err := models.GetAllProjects(ctx, h.DB)
 	if err != nil {
+		log.Println("error getting projects: ", err)
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve projects")
 		return
 	}

@@ -22,12 +22,10 @@ export const routes: Routes = [
   {
     path: 'projects',
     component: ProjectsComponent,
-    canActivate: [AuthGuard]
   },
   {
     path: 'projects/:id',
     component: ProjectDetailComponent,
-    canActivate: [AuthGuard]
   },
   {
     path: 'admin',
