@@ -9,7 +9,7 @@
 
 :host {
   mat-toolbar {
-    background-color: #234e56;
+    background-color: var(--journeyDarkBlue);
     color: white;
     height: 80px;
   }
