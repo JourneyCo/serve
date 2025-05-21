@@ -1,61 +1,64 @@
+
 .home-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
-}
+  padding: 40px 20px;
+  text-align: center;
 
-.serve-card {
-  margin-bottom: 40px;
-  border-radius: 8px;
-}
+  h1 {
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+    color: #333;
+  }
 
-.serve-content {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 40px;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 40px;
+    color: #666;
   }
 }
 
-.serve-text {
-  flex: 1;
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 60px;
+  text-align: left;
 
-  h1 {
-    font-size: 2.5rem;
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.serve-image {
+  img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+  }
+}
+
+.make-difference {
+  h2 {
+    color: #e31837;
+    text-align: left;
     margin-bottom: 20px;
-    color: var(--journeyGray);
   }
 
   p {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: var(--journeyGray);
-    margin-bottom: 30px;
-  }
-}
-
-.serve-image {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  max-width: 400px;
-
-  img {
-    max-width: 100%;
-    height: auto;
+    color: #4a4a4a;
+    margin-bottom: 20px;
   }
 }
 
 .cta-buttons {
-  display: flex;
-  gap: 15px;
+  margin-top: 30px;
 
   button {
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 12px 24px;
+    font-size: 1.1rem;
 
     mat-icon {
       margin-right: 8px;

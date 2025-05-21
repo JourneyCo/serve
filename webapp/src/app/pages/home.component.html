@@ -1,44 +1,42 @@
+
 <div class="home-container">
-  <mat-card class="serve-card">
-    <mat-card-content>
-      <div class="serve-content">
-        <div class="serve-text">
-          <h1>Welcome to Serve Day 2025!</h1>
-          <p>
-            A centralized platform for enrolling and participating in Journey
-            Church's Serve Day. Register for available projects, track your
-            participation, and stay informed about upcoming activities.
-          </p>
+  <h1>Serve Day</h1>
+  <h2>July 13, 2024</h2>
 
-          <div class="cta-buttons">
-            <button
-              *ngIf="!isAuthenticated"
-              mat-raised-button
-              color="primary"
-              (click)="login()"
-            >
-              <mat-icon>login</mat-icon>
-              Sign In to Get Started
-            </button>
-            <button
-              *ngIf="isAuthenticated"
-              mat-raised-button
-              color="primary"
-              [routerLink]="['/projects']"
-            >
-              <mat-icon>view_list</mat-icon>
-              Browse Projects
-            </button>
-          </div>
-        </div>
+  <div class="content-grid">
+    <div class="serve-image">
+      <img src="../../assets/serve-day-logo.png" alt="Serve Day Logo" />
+    </div>
+    
+    <div class="make-difference">
+      <h2>Make a Difference</h2>
+      <p>
+        Serve Day is a one-day outreach event when the people of Journey engage in multiple service projects throughout the south Denver area. The mission of Serve Day is for us, the local church, to love our communities and love our neighbors. We hope people's hearts will be opened to the love of Jesus through practical projects and acts of service.
+      </p>
+      <p>
+        Our hope is that serving others becomes our focus throughout the year. Simple acts of selfless love can open hearts to Jesus, and together we can make a difference.
+      </p>
 
-        <div class="serve-image">
-          <img
-            src="../../assets/Journey-Church-HORIZONTAL.png"
-            alt="Journey Church Illustration"
-          />
-        </div>
+      <div class="cta-buttons">
+        <button
+          *ngIf="!isAuthenticated"
+          mat-raised-button
+          color="warn"
+          (click)="login()"
+        >
+          <mat-icon>login</mat-icon>
+          Sign In to Get Started
+        </button>
+        <button
+          *ngIf="isAuthenticated"
+          mat-raised-button
+          color="warn"
+          [routerLink]="['/projects']"
+        >
+          <mat-icon>view_list</mat-icon>
+          Browse Projects
+        </button>
       </div>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>
