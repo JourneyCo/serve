@@ -2,7 +2,7 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-content">
-      <span class="copyright">© 2024 Journey Serve Day</span>
+      <span class="copyright">© 2025 Journey Serve Day</span>
       
       <div class="auth-buttons">
         @if (isAuthenticated$ | async) {
@@ -14,12 +14,12 @@
           }
           <button mat-button (click)="logout()">
             <mat-icon>logout</mat-icon>
-            <span>Logout</span>
+            <span>Admin Logout</span>
           </button>
         } @else {
           <button mat-button (click)="login()">
             <mat-icon>login</mat-icon>
-            <span>Login</span>
+            <span>Admin Login</span>
           </button>
         }
       </div>
