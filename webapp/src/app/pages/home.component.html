@@ -19,7 +19,6 @@
 
       <div class="cta-buttons">
         <button
-          *ngIf="!isAuthenticated"
           mat-raised-button
           color="warn"
           (click)="login()"
@@ -28,7 +27,6 @@
           Sign In to Get Started
         </button>
         <button
-          *ngIf="isAuthenticated"
           mat-raised-button
           color="warn"
           [routerLink]="['/projects']"
