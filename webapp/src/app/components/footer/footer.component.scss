@@ -1,0 +1,27 @@
+
+.footer {
+  background-color: #f5f5f5;
+  padding: 1rem 0;
+  margin-top: auto;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.copyright {
+  color: #666;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}

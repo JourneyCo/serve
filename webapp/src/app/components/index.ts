@@ -4,4 +4,5 @@ export * from './nav/nav.component';
 export * from './project-form/project-form.component';
 export * from './dialogs/registration-dialog/registration-dialog.component';
 export * from './dialogs/edit-profile-dialog/edit-profile-dialog.component';
-export * from './dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component'
+export * from './dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component';
+export * from './footer/footer.component';
