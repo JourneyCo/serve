@@ -1,0 +1,29 @@
+
+.registration-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.lead-section {
+  margin-top: 1rem;
+}
+
+.lead-description {
+  margin-bottom: 0.5rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.button-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}

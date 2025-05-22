@@ -158,23 +158,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   openRegistrationForm(): void {
-    // Open dialog
-    this.dialogRef = this.dialog.open(RegistrationDialogComponent, {
-      width: "500px",
-      disableClose: false,
-      data: { project: this.project, user: this.currentUser }
-    });
-
-    // Handle dialog closure
-    this.dialogRef.afterClosed().subscribe((data: any) => {
-      // If dialog was dismissed, do nothing
-      if (!data.success) {
-        this.dialogRef = null;
-        return
-      }
-
-      this.registerForProject(data.values)
-    });
+    this.router.navigate(['/projects', this.project?.id, 'register']);
   }
 
   registerForProject(data: any): void {

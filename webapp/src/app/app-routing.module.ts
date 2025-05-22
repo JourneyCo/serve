@@ -28,6 +28,11 @@ export const routes: Routes = [
     component: ProjectDetailComponent,
   },
   {
+    path: 'projects/:id/register',
+    component: RegistrationComponent,
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'admin',
     component: AdminComponent,
     canActivate: [AuthGuard, AdminGuard]
