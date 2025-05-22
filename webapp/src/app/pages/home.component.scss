@@ -58,6 +58,8 @@
 
 .cta-buttons {
   margin-top: 30px;
+  display: flex;
+  gap: 16px;
 
   button {
     padding: 12px 24px;
