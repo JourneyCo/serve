@@ -1,15 +1,16 @@
-import {Component, OnInit, ViewChild, TemplateRef} from "@angular/core";
-import {CommonModule} from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterModule } from "@angular/router";
-import { MatDialog} from '@angular/material/dialog';
-import { GoogleMapsModule } from "@angular/google-maps";
-import { AuthService, ProjectService, HelperService, RegistrationService } from "@services";
-import {Observable, forkJoin, of, Subscription} from 'rxjs';
-import {User, Project, Ages, Categories, Supplies, Tools, Skills} from '@models';
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {MatDialog} from '@angular/material/dialog';
+import {GoogleMapsModule} from '@angular/google-maps';
+import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
+import {Observable, Subscription} from 'rxjs';
+import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
 import {AdminProjectPanelComponent, RegistrationDialogComponent} from '@components';
-import { MaterialModule } from '@material';
+import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
+
 
 @Component({
   selector: "app-project-detail",
@@ -42,6 +43,7 @@ export class ProjectDetailComponent implements OnInit {
   serve_date: Date;
   registrationSubscription: Subscription;
   isAdmin: Observable<boolean>;
+  userSignedIn: Observable<boolean>;
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {
@@ -55,8 +57,6 @@ export class ProjectDetailComponent implements OnInit {
   };
   markerPosition: google.maps.LatLngLiteral | null = null;
 
-  @ViewChild("registrationDialog")
-  registrationDialogTemplate!: TemplateRef<any>;
   @ViewChild("cancellationDialog")
   cancellationDialogTemplate!: TemplateRef<any>;
   dialogRef: any;
@@ -72,13 +72,15 @@ export class ProjectDetailComponent implements OnInit {
     private linkifyService: NgxLinkifyjsService,
   ) {
     this.serve_date = helper.GetServeDate();
-    this.isAdmin = this.authService.isAdmin();
+
   }
 
   ngOnInit(): void {
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
+
+    // Observable to reload data if the user registers
     this.registrationSubscription = this.registrationService.registrationChange$.subscribe(() => {
       this.loadProjectData();
     });
@@ -86,6 +88,8 @@ export class ProjectDetailComponent implements OnInit {
 
   loadProjectData(): void {
     this.isLoading = true;
+    this.isAdmin = this.authService.isAdmin();
+    this.userSignedIn = this.authService.isAuthenticated();
 
     // Get the project ID from the route
     const project_id = this.route.snapshot.paramMap.get("id");
@@ -112,30 +116,23 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadProjectDetails(project_id: number): void {
-    // Create observables for project and user registrations
-    const projectObs = this.projectService.getProject(project_id);
-    const registrationsObs = this.projectService.getUserRegistrations();
-    const projectRegistrationsObs = this.isAdmin
-      ? this.projectService.getProjectRegistrations(project_id)
-      : of([]);
+    this.isLoading = true
+    this.projectService.getProject(project_id).subscribe({
+      next: (data: Project) => {
+        this.project = data;
 
-    // Use forkJoin to get all data at once
-    forkJoin({
-      project: projectObs,
-      userRegs: registrationsObs,
-      projectRegs: projectRegistrationsObs,
-    }).subscribe({
-      next: (result) => {
-        this.project = result.project;
+        // linkify anything in the project description
         const options = {
           target: { url: '_blank' }
         };
         this.project.rich_description = this.linkifyService.linkify(this.project.description, options);
 
-        // Check if user is registered for this project
-        this.isRegistered = result.userRegs?.some(
-          (reg) => reg.project_id === project_id && reg.status === "registered",
-        );
+        // if the user is signed in, then we will check to see if they are already registered
+        // note - you can hit this page without being signed in
+        if (this.userSignedIn) {
+          // Check if user is registered for this project
+          this.associateProjectToUser(project_id);
+        }
 
         // Set up google-map marker if coordinates are available
         this.updateMapMarker();
@@ -148,6 +145,16 @@ export class ProjectDetailComponent implements OnInit {
         this.isLoading = false;
       },
     });
+  }
+
+  associateProjectToUser(project_id: number) {
+    this.projectService.getUserRegistrations().subscribe({
+      next: (data: Registration[]) => {
+        this.isRegistered = data?.some(
+            (reg) => reg.project_id === project_id && reg.status === "registered",
+        );
+      }
+    })
   }
 
   openRegistrationForm(): void {
