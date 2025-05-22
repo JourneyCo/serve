@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@material';
 import { RouterModule, Router } from '@angular/router';
@@ -23,7 +23,7 @@ import {MatToolbar} from '@angular/material/toolbar';
   styleUrls: ['./nav.component.scss']
 })
 
-export class NavComponent implements OnInit {
+export class NavComponent {
   isAuthenticated$: Observable<boolean>;
   user$: Observable<User | null>;
   isAdmin: Observable<boolean>;
