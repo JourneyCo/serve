@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '@services';
+import {AuthService, HelperService} from '@services';
 import {MaterialModule} from '@material';
 
 @Component({
@@ -17,11 +17,16 @@ import {MaterialModule} from '@material';
 })
 export class HomeComponent implements OnInit {
   isAuthenticated = false;
+  serve_day: Date = new Date();
 
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
+    private router: Router,
+        private helperService: HelperService,
+
+  ) {
+      this.serve_day = this.helperService.GetServeDate();
+  }
 
   ngOnInit(): void {
     this.authService.isAuthenticated().subscribe(

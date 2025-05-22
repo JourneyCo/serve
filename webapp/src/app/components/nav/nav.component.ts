@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -20,7 +20,7 @@ import {MatToolbar} from '@angular/material/toolbar';
   styleUrls: ['./nav.component.scss']
 })
 
-export class NavComponent implements OnInit {
+export class NavComponent {
   isAuthenticated$: Observable<boolean>;
   user$: Observable<User | null>;
   isAdmin: Observable<boolean>;
@@ -34,16 +34,5 @@ export class NavComponent implements OnInit {
     this.user$ = this.authService.getCurrentUser();
     this.isAdmin = this.authService.isAdmin();
     this.serve_day = this.helperService.GetServeDate();
-    console.log(this.helperService.GetServeDate())
-  }
-
-  ngOnInit(): void {}
-
-  login(): void {
-    this.authService.login();
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 }
