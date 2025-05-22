@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import {AuthService, HelperService} from '@services';
-import {MaterialModule} from '@material';
+import { MatDialog } from '@angular/material/dialog';
+import { AuthService, HelperService } from '@services';
+import { MaterialModule } from '@material';
+import { FindProjectDialogComponent } from '../components/dialogs/find-project-dialog/find-project-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -22,8 +24,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-        private helperService: HelperService,
-
+    private helperService: HelperService,
+    private dialog: MatDialog
   ) {
       this.serve_day = this.helperService.GetServeDate();
   }
@@ -34,5 +36,18 @@ export class HomeComponent implements OnInit {
         this.isAuthenticated = isAuthenticated;
       }
     );
+  }
+
+  findMyProject(): void {
+    const dialogRef = this.dialog.open(FindProjectDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(email => {
+      if (email) {
+        // TODO: Implement search by email functionality
+        console.log('Searching for project with email:', email);
+      }
+    });
   }
 }

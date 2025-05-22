@@ -1,4 +1,3 @@
-
 <div class="home-container">
   <h1>Serve Day</h1>
   <h2>{{serve_day | date : "MMMM dd, YYYY"}}</h2>
@@ -8,7 +7,7 @@
     <div class="serve-image">
       <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/ServeDay_EmailBanner.png" alt="Serve Day Logo" />
     </div>
-    
+
     <div class="make-difference">
         <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/make-a-difference.jpg" alt="Serve Day Logo" />
       <p>
@@ -27,6 +26,14 @@
           <mat-icon>view_list</mat-icon>
           Browse Projects
         </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="findMyProject()"
+          >
+            <mat-icon>search</mat-icon>
+            Find My Project
+          </button>
       </div>
     </div>
   </div>
