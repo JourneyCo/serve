@@ -1,5 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { RegistrationCompleteDialogComponent } from '../../components/dialogs/registration-complete-dialog/registration-complete-dialog.component';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -33,7 +35,8 @@ export class RegistrationComponent implements OnInit {
     private projectService: ProjectService,
     private userService: UserService,
     private helper: HelperService,
-    private auth0: AuthService
+    private auth0: AuthService,
+    private dialog: MatDialog
   ) {
     this.registrationForm = this.fb.group({
       email: ['', Validators.email],
@@ -70,23 +73,18 @@ export class RegistrationComponent implements OnInit {
 
   onSubmit(): void {
     if (this.registrationForm.valid && this.project) {
-      this.projectService.registerForProject(this.project.id, this.registrationForm.value)
-        .subscribe(() => {
-          this.router.navigate(['/projects', this.project?.id]);
-        });
-
       this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
         next: (user) => {
-          this.router.navigate(['/projects', this.project?.id]);
-          this.helper.showSuccess("You have sucessfully registered!");
+          const dialogRef = this.dialog.open(RegistrationCompleteDialogComponent, {
+            width: '400px',
+            disableClose: true
+          });
         },
         error: (error: any) => {
           console.error("Error registering:", error);
           this.helper.showError("Error registering for project");
         },
       });
-
-
     }
   }
 
