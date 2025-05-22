@@ -23,4 +23,5 @@ webapp/.vscode
 webapp/.env
 .replit
 /csv/*.csv
+attached_assets
 

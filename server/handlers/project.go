@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -39,6 +40,7 @@ func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *service
 	}
 
 	router.HandleFunc("", handler.GetProjects).Methods("GET")
+	router.HandleFunc("/my", handler.GetMyProject).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}", handler.GetProject).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}/register", handler.RegisterForProject).Methods("POST")
 	router.HandleFunc("/{id:[0-9]+}/cancel", handler.CancelRegistration).Methods("POST")
@@ -56,6 +58,34 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, projects)
+}
+
+// GetMyProject returns the project for the authenticated user
+func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	params := r.URL.Query()
+	email := params.Get("email")
+
+	if strings.TrimSpace(email) == "" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "No email supplied with request")
+		return
+	}
+
+	user, err := models.GetUserByEmail(ctx, h.DB, email)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusNotFound, "Failed to find user")
+		return
+	}
+
+	registrations, err := models.GetUserRegistrations(ctx, h.DB, user.ID)
+	if err != nil {
+		log.Println("failed to retrieve user registrations")
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, registrations)
 }
 
 // GetProject returns a specific project by ID
