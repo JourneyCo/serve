@@ -40,7 +40,7 @@
     .user-details {
       margin-top: 20px;
       padding: 16px;
-      background-color: #f8f9fa;
+      background-color: var(--journeyWhite);
       border-radius: 4px;
 
       .detail-item {
@@ -54,7 +54,7 @@
         }
 
         .value {
-          color: #333;
+          color: var(--journeyGray);
         }
       }
 
@@ -81,7 +81,7 @@
     h2 {
       font-size: 1.5rem;
       margin-bottom: 20px;
-      color: #333;
+      color: var(--journeyGray);
       border-bottom: 2px solid var(--journeyBlue);
       padding-bottom: 8px;
     }
@@ -130,7 +130,7 @@
 
           &.guests {
             background-color: var(--journeyWhite);
-            color: #e65100;
+            color: var(--JourneyRed);
           }
         }
 
@@ -140,7 +140,7 @@
         }
 
         .no-area {
-          color: #9e9e9e;
+          color: var(--journeyLightGray);
           font-style: italic;
           font-size: 0.9em;
         }
@@ -152,7 +152,7 @@
           text-transform: uppercase;
 
           &.registered {
-            background-color: #e3f2fd;
+            background-color: var(--journeyWhite);
             color: var(--journeyBlue);
           }
         }

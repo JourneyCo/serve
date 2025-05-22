@@ -22,13 +22,13 @@
       <mat-card-header>
           <mat-card-title>
                 <div>
-                  <button mat-button color="accent" routerLink="/projects">
+                  <button mat-button class="backButton" routerLink="/projects">
                       <mat-icon>arrow_back</mat-icon> Back to Projects
                   </button>
                 </div>
-              <div class="project-title-row mt-2">
+              <h4 class="project-title-row mt-2">
                   {{ project.title }}
-              </div>
+              </h4>
           </mat-card-title>
         <mat-card-subtitle>
           @if (project.serve_lead) {
@@ -67,7 +67,7 @@
 
 
         <div class="project-capacity">
-          <h3>Registration Capacity</h3>
+          <h6>Registration Capacity</h6>
           <div class="capacity-indicator">
             <div class="capacity-bar-container">
               <div
@@ -93,7 +93,7 @@
         </div>
 
         <div class="project-description">
-          <h3>About This Project</h3>
+          <h6>About This Project</h6>
           <div class="full-description">
             <p><span [innerHTML]="project.rich_description ? project.rich_description : project.description"></span></p>
           </div>
@@ -193,7 +193,7 @@
                   }}"
                   target="_blank"
                   mat-raised-button
-                  color="accent"
+                  class="getDirections"
                 >
                   <mat-icon>directions</mat-icon> Get Directions
                 </a>
@@ -220,7 +220,7 @@
       </mat-card-content>
 
       <mat-card-actions align="end">
-        <button mat-button color="accent" routerLink="/projects">
+        <button mat-button class="backButton" routerLink="/projects">
           <mat-icon>arrow_back</mat-icon> Back to Projects
         </button>
 

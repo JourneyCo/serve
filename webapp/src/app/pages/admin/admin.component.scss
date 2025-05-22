@@ -68,7 +68,7 @@
       width: 100%;
 
       .mat-header-row {
-        background-color: #f5f5f5;
+        background-color: var(--journeyWhite);
       }
 
       .mat-column-actions {
@@ -78,7 +78,7 @@
       }
 
       .full-capacity {
-        color: #f44336;
+        color: var(--JourneyRed);
         font-weight: bold;
       }
 
