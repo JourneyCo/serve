@@ -80,15 +80,12 @@
   flex-wrap: wrap;
   gap: 20px;
   padding: 0 20px;
+  width: 100%;
 }
 .flex-container img {
-  width: 100%;
+  flex: 1;
+  min-width: 300px;
   max-width: 400px;
   height: auto;
-}
-
-@media (max-width: 768px) {
-  .flex-container {
-    flex-direction: column;
-  }
+  object-fit: cover;
 }
