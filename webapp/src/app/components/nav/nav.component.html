@@ -24,7 +24,7 @@
           <span>Browse Projects</span>
         </a>
 
-        <a mat-button routerLink="/myproject" routerLinkActive="active" disabled>
+        <a mat-button (click)="findMyProject()" routerLinkActive="active">
             <mat-icon>view_list</mat-icon>
             <span>My Project</span>
         </a>

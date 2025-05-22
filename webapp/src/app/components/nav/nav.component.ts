@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from '@material';
+import { RouterModule, Router } from '@angular/router';
+import { HelperService } from '@services';
+import { MatDialog } from '@angular/material/dialog';
+import { FindProjectDialogComponent } from '../dialogs/find-project-dialog/find-project-dialog.component';
 import { Observable } from 'rxjs';
-import {AuthService, HelperService} from '@services';
+import {AuthService} from '@services';
 import { User } from '@models';
-import {MaterialModule} from '@material';
 import {MatToolbar} from '@angular/material/toolbar';
 
 @Component({
@@ -20,19 +23,34 @@ import {MatToolbar} from '@angular/material/toolbar';
   styleUrls: ['./nav.component.scss']
 })
 
-export class NavComponent {
+export class NavComponent implements OnInit {
   isAuthenticated$: Observable<boolean>;
   user$: Observable<User | null>;
   isAdmin: Observable<boolean>;
   serve_day: Date = new Date();
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              private helperService: HelperService,
-              ) {
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private authService: AuthService,
+    private helperService: HelperService,
+  ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.user$ = this.authService.getCurrentUser();
     this.isAdmin = this.authService.isAdmin();
     this.serve_day = this.helperService.GetServeDate();
+  }
+
+  findMyProject(): void {
+    const dialogRef = this.dialog.open(FindProjectDialogComponent, {
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(email => {
+      if (email) {
+        // TODO: Implement search by email functionality
+        console.log('Searching for project with email:', email);
+      }
+    });
   }
 }
