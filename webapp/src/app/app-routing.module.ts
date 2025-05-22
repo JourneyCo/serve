@@ -10,10 +10,11 @@ import { AdminComponent } from './pages/admin/admin.component';
 // Guards
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
+import {RegistrationComponent} from './pages/registration/registration.component';
+import {CallbackComponent} from './components/callback/callback.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'callback', component: HomeComponent },
   {
     path: 'profile',
     component: ProfileComponent,
@@ -36,6 +37,11 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminComponent,
     canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'callback',
+    component: CallbackComponent,
+    canActivate: [AuthGuard]
   },
   { path: '**', redirectTo: '' }
 ];

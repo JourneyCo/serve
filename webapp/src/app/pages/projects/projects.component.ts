@@ -79,7 +79,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.projectService.getProjects().subscribe({
       next: (projects) => {
         this.dataSource.data = projects;
-        console.log(projects);
 
         // Create markers for projects with valid coordinates
         const validProjects = projects.filter((p) => p.latitude && p.longitude);

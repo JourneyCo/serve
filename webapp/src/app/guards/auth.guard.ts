@@ -10,7 +10,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
     tap(isAuthenticated => {
       if (!isAuthenticated) {
         // Store the attempted URL for redirecting after login
-        localStorage.setItem('authRedirect', state.url);
+        localStorage.setItem('redirectUrl', state.url);
         authService.login();
       }
     })

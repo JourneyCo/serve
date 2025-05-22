@@ -35,8 +35,4 @@ export class HomeComponent implements OnInit {
       }
     );
   }
-
-  login(): void {
-    this.authService.login();
-  }
 }

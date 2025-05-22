@@ -6,7 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MaterialModule } from '@material';
 import { NgxMaskDirective } from 'ngx-mask';
 import { Project, User } from '@models';
-import { ProjectService, UserService } from '@services';
+import {HelperService, ProjectService, UserService} from '@services';
+import {AuthService} from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-registration',
@@ -22,7 +23,7 @@ import { ProjectService, UserService } from '@services';
 })
 export class RegistrationComponent implements OnInit {
   registrationForm: FormGroup;
-  project: Project | null = null;
+  project: Project;
   user: User | null = null;
 
   constructor(
@@ -30,7 +31,9 @@ export class RegistrationComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
-    private userService: UserService
+    private userService: UserService,
+    private helper: HelperService,
+    private auth0: AuthService
   ) {
     this.registrationForm = this.fb.group({
       email: ['', Validators.email],
@@ -45,19 +48,22 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit() {
     const projectId = this.route.snapshot.paramMap.get('id');
+
     if (projectId) {
-      this.projectService.getProject(projectId).subscribe(project => {
+      this.projectService.getProject(Number(projectId)).subscribe(project => {
         this.project = project;
-        this.userService.getCurrentUser().subscribe(user => {
-          this.user = user;
-          this.registrationForm.patchValue({
-            email: user.email || '',
-            first_name: user.first_name || '',
-            last_name: user.last_name || '',
-            phone: user.phone || '',
-            text_permission: user.text_permission || false
+        if (this.auth0.isAuthenticated$) {
+          this.userService.getUserProfile().subscribe(user => {
+            this.user = user;
+            this.registrationForm.patchValue({
+              email: user.email || '',
+              first_name: user.first_name || '',
+              last_name: user.last_name || '',
+              phone: user.phone || '',
+              text_permission: user.text_permission || false
+            });
           });
-        });
+        }
       });
     }
   }
@@ -68,6 +74,19 @@ export class RegistrationComponent implements OnInit {
         .subscribe(() => {
           this.router.navigate(['/projects', this.project?.id]);
         });
+
+      this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
+        next: (user) => {
+          this.router.navigate(['/projects', this.project?.id]);
+          this.helper.showSuccess("You have sucessfully registered!");
+        },
+        error: (error: any) => {
+          console.error("Error registering:", error);
+          this.helper.showError("Error registering for project");
+        },
+      });
+
+
     }
   }
 

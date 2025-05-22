@@ -28,6 +28,10 @@
             <mat-form-field appearance="outline">
               <mat-label>Number of Guests</mat-label>
               <input matInput type="number" formControlName="guest_count" min="0" [max]="project.max_capacity-project.current_registrations-1">
+                <mat-hint>Enter the number of guests you'll bring (0-10)</mat-hint>
+                <mat-error *ngIf="registrationForm.get('guest_count')?.hasError('max')">
+                    # of volunteers is greater than capacity
+                </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
@@ -36,13 +40,14 @@
             </mat-form-field>
 
             <mat-checkbox formControlName="text_permission">
-              Receive text message notifications
+              Receive text message notifications?
             </mat-checkbox>
 
             <div class="lead-section">
               <p class="lead-description">
-                Project leads help coordinate activities and may receive additional
-                instructions before the project starts.
+                  Project leads help coordinate activities and may receive additional
+                  instructions before the project starts. Check the box below if you
+                  are interested.
               </p>
               <mat-checkbox formControlName="lead_interest">
                 Yes, I'd like to be a Project Lead
