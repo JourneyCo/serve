@@ -2,10 +2,12 @@ package handlers
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"serve/middleware"
 	"serve/models"
@@ -98,32 +100,6 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Get user ID from the token
-	userID, err := middleware.GetUserIDFromRequest(r)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
-		return
-	}
-
-	// Get or create user in database
-	user, err := models.GetUserByID(ctx, h.DB, userID)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
-		return
-	}
-
-	// If user doesn't exist, create them
-	if user == nil {
-		user = &models.User{
-			ID: userID,
-		}
-		err = models.CreateUser(ctx, h.DB, user)
-		if err != nil {
-			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
-			return
-		}
-	}
-
 	var reg regRequest
 	// Parse registration request
 	if err = middleware.ParseJSON(r, &reg); err != nil {
@@ -133,19 +109,57 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 	err = nil
 
-	// Update user information
-	user.FirstName = reg.FirstName
-	user.LastName = reg.LastName
-	user.Phone = reg.Phone
-	user.Email = reg.Email
-	user.TextPermission = reg.TextPerm
-	if err = models.UpdateUser(ctx, h.DB, user); err != nil {
-		log.Printf("Failed to update user information: %v\n", err)
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Failed to update user information",
-		)
+	// // Get user ID from the token
+	// userID, err := middleware.GetUserIDFromRequest(r)
+	// if err != nil {
+	// 	middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
+	// 	return
+	// }
+
+	// Get or create user in database
+	user, err := models.GetUserByEmail(ctx, h.DB, reg.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
 		return
 	}
+
+	var id string
+	if user != nil {
+		id = user.ID
+	}
+
+	// If user doesn't exist, create them
+	if user == nil || errors.Is(err, sql.ErrNoRows) {
+		var err error
+		id, err := uuid.NewUUID()
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
+			return
+		}
+		user = &models.User{
+			ID:             id.String(),
+			FirstName:      reg.FirstName,
+			LastName:       reg.LastName,
+			Phone:          reg.Phone,
+			Email:          reg.Email,
+			TextPermission: reg.TextPerm,
+		}
+		err = models.CreateUser(ctx, h.DB, user)
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
+			return
+		}
+	}
+
+	// Update user information
+	//
+	// if err = models.UpdateUser(ctx, h.DB, user); err != nil {
+	// 	log.Printf("Failed to update user information: %v\n", err)
+	// 	middleware.RespondWithError(
+	// 		w, http.StatusInternalServerError, "Failed to update user information",
+	// 	)
+	// 	return
+	// }
 
 	// Validate guest count
 	if reg.GuestCount < 0 {
@@ -155,7 +169,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Register for the project
 	registration, err := models.RegisterForProject(
-		h.DB, userID, projectID, reg.GuestCount, reg.IsLeadInterested,
+		h.DB, id, projectID, reg.GuestCount, reg.IsLeadInterested,
 	)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
@@ -172,7 +186,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get user details for email
-	user, err = models.GetUserByID(ctx, h.DB, userID)
+	user, err = models.GetUserByID(ctx, h.DB, id)
 	if err != nil {
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",

@@ -45,6 +45,30 @@ func GetUserByID(ctx context.Context, db *sql.DB, id string) (*User, error) {
 	return &user, nil
 }
 
+// GetUserByEmail retrieves a user by their Email
+func GetUserByEmail(ctx context.Context, db *sql.DB, email string) (*User, error) {
+	query := `
+		SELECT id, email, first_name, last_name, phone, text_permission, created_at, updated_at
+		FROM users
+		WHERE email = $1
+	`
+
+	var user User
+	err := db.QueryRowContext(ctx, query, email).Scan(
+		&user.ID, &user.Email, &user.FirstName, &user.LastName, &user.Phone, &user.TextPermission,
+		&user.CreatedAt, &user.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil // User not found
+		}
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 // CreateUser creates a new user in the database
 func CreateUser(ctx context.Context, db *sql.DB, user *User) error {
 	query := `

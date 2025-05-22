@@ -31,7 +31,6 @@ export const routes: Routes = [
   {
     path: 'projects/:id/register',
     component: RegistrationComponent,
-    canActivate: [AuthGuard]
   },
   {
     path: 'admin',

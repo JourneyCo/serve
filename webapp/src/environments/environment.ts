@@ -16,41 +16,9 @@ export const environment = {
         // Attach access tokens to any calls that start with '/api/'
         "/api/v1/users/profile",
         "/api/v1/admin",
-
-        // Match anything starting with /api/accounts, but also specify the audience and scope the attached
-        // access token must have
-        // {
-        //   uri: '/api/accounts/*',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'http://my-api/',
-        //       scope: 'read:accounts',
-        //     }
-        //   },
-        // },
-
-        // Matching on HTTP method
-        // {
-        //   uri: '/api/orders',
-        //   httpMethod: 'post',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'http://my-api/',
-        //       scope: 'write:orders',
-        //     }
-        //   },
-        // },
-
-        // Using an absolute URI
-        // {
-        //   uri: 'https://your-domain.auth0.com/api/v2/users',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'https://your-domain.com/api/v2/',
-        //       scope: 'read:users',
-        //     }
-        //   },
-        // },
+        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/register$/.test(uri)},
+        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/cancel$/.test(uri)},
+        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/registrations$/.test(uri)},
       ],
     },
   },
