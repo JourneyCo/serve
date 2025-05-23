@@ -75,7 +75,14 @@ export class ProjectDetailComponent implements OnInit {
 
   }
 
+  disableRegistration = false;
+
   ngOnInit(): void {
+    // Check for query parameter
+    this.route.queryParams.subscribe(params => {
+      this.disableRegistration = params['disableRegistration'] === 'true';
+    });
+    
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();

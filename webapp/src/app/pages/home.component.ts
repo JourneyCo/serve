@@ -49,7 +49,9 @@ export class HomeComponent implements OnInit {
         this.projectService.getMyProject(email).subscribe({
           next: (registration) => {
             if (registration && registration.project_id) {
-              this.router.navigate(['/projects', registration.project_id]);
+              this.router.navigate(['/projects', registration.project_id], {
+                queryParams: { disableRegistration: true }
+              });
             }
           },
           error: (error) => {

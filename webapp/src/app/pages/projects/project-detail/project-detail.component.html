@@ -57,7 +57,7 @@
                           mat-raised-button
                           color="primary"
                           (click)="openRegistrationForm()"
-                          [disabled]="loadingRegistration || isProjectFull()"
+                          [disabled]="loadingRegistration || isProjectFull() || disableRegistration"
                   >
                       <mat-icon>event_available</mat-icon>
                       <span>Register</span>
@@ -118,7 +118,7 @@
             @for (category of project.categories; track category.id) {
             <mat-chip>{{ categories[category.id] }}</mat-chip>
             }
-          </mat-chip-set>
+          mat-chip-set>
         </div>
         }
 
@@ -229,7 +229,7 @@
             mat-raised-button
             color="primary"
             (click)="openRegistrationForm()"
-            [disabled]="loadingRegistration || isProjectFull()"
+            [disabled]="loadingRegistration || isProjectFull() || disableRegistration"
           >
             <mat-icon>event_available</mat-icon>
             <span>Register</span>
