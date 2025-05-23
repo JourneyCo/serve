@@ -67,6 +67,13 @@ export class ProjectService {
     );
   }
 
+  getMyProject(email: string): Observable<Registration> {
+    return this.http.get<Registration>(
+      `${this.apiUrl}/projects/my`,
+      { params: { email } }
+    );
+  }
+
   updateRegistration(id: number, updates: { guest_count: number }): Observable<any> {
     return this.http.put(`${this.apiUrl}/admin/registrations/${id}`, updates);
   }
