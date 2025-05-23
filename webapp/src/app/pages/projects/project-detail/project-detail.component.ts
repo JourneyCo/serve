@@ -205,10 +205,6 @@ export class ProjectDetailComponent implements OnInit {
         this.registrationService.triggerRegistrationChange();
       },
       error: (error: any) => {
-        if (error == 208) {
-          //TODO Pop a dialog instructing the user that they are already signed up for this project
-        }
-
         if (error == 409) {
           //TODO: Pop a dialog telling them they are already signed up for a project; enter their email into the My Project
         }
