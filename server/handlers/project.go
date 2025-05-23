@@ -139,6 +139,32 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 	err = nil
 
+	if strings.TrimSpace(reg.Email) == "" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "No email provided with request")
+		return
+	}
+
+	// check to see if user is already registered with a project
+	existProj, err := models.GetUserRegistrationsByEmail(ctx, h.DB, reg.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
+		return
+	}
+
+	// case - they are attempting to re-register again. Send a 208 and front end will handle.
+	if !errors.Is(err, sql.ErrNoRows) && existProj == projectID {
+		middleware.RespondWithError(w, http.StatusAlreadyReported, "Current user is already signed up for this project")
+		return
+	}
+
+	// case - they are attempting to register for multiple projects. Send a 409 and front end will handle.
+	if !errors.Is(err, sql.ErrNoRows) && existProj != projectID {
+		middleware.RespondWithError(w, http.StatusConflict, "Current user is already signed up for a project")
+		return
+	}
+
+	err = nil
+
 	// // Get user ID from the token
 	// userID, err := middleware.GetUserIDFromRequest(r)
 	// if err != nil {
@@ -153,21 +179,22 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var id string
+	var userID string
 	if user != nil {
-		id = user.ID
+		userID = user.ID
 	}
 
 	// If user doesn't exist, create them
 	if user == nil || errors.Is(err, sql.ErrNoRows) {
-		var err error
-		id, err := uuid.NewUUID()
+		err = nil
+		uid, err := uuid.NewUUID()
 		if err != nil {
 			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
 			return
 		}
+		userID = uid.String()
 		user = &models.User{
-			ID:             id.String(),
+			ID:             userID,
 			FirstName:      reg.FirstName,
 			LastName:       reg.LastName,
 			Phone:          reg.Phone,
@@ -199,7 +226,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Register for the project
 	registration, err := models.RegisterForProject(
-		h.DB, id, projectID, reg.GuestCount, reg.IsLeadInterested,
+		h.DB, userID, projectID, reg.GuestCount, reg.IsLeadInterested,
 	)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
@@ -216,7 +243,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get user details for email
-	user, err = models.GetUserByID(ctx, h.DB, id)
+	user, err = models.GetUserByID(ctx, h.DB, userID)
 	if err != nil {
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
