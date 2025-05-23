@@ -234,6 +234,16 @@
             <mat-icon>event_available</mat-icon>
             <span>Register</span>
           </button>
+        } @else {
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="openEditGuestCountDialog()"
+            [disabled]="loadingRegistration"
+          >
+            <mat-icon>edit</mat-icon>
+            <span>Edit Registration</span>
+          </button>
         }
 
         @if (isRegistered) {

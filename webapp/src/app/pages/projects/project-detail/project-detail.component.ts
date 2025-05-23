@@ -7,7 +7,7 @@ import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
-import {AdminProjectPanelComponent, RegistrationDialogComponent} from '@components';
+import {AdminProjectPanelComponent, RegistrationDialogComponent, EditGuestCountDialogComponent} from '@components';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
@@ -226,6 +226,29 @@ export class ProjectDetailComponent implements OnInit {
       this.dialogRef.close();
     }
     this.cancelRegistration();
+  }
+
+  openEditGuestCountDialog(): void {
+    if (!this.project) return;
+
+    this.projectService.getUserRegistrations().subscribe({
+      next: (registrations) => {
+        const registration = registrations.find(r => r.project_id === this.project?.id);
+        if (registration) {
+          const dialogRef = this.dialog.open(EditGuestCountDialogComponent, {
+            width: '400px',
+            data: { registration }
+          });
+
+          dialogRef.afterClosed().subscribe(guest_count => {
+            if (guest_count !== undefined) {
+              // Reload project to get updated capacity
+              this.loadProjectDetails(this.project!.id);
+            }
+          });
+        }
+      }
+    });
   }
 
   cancelRegistration(): void {
