@@ -271,3 +271,28 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 
 	return registrations, nil
 }
+
+
+
+// GetUserRegistrationsByEmail gets the first active registration for a given email
+func GetUserRegistrationsByEmail(ctx context.Context, db *sql.DB, email string) (int, error) {
+	query := `
+		SELECT r.project_id
+		FROM registrations r
+		JOIN users u ON r.user_id = u.id
+		WHERE u.email = $1
+		AND r.status = 'registered'
+		LIMIT 1
+	`
+
+	var projectID int
+	err := db.QueryRowContext(ctx, query, email).Scan(&projectID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	return projectID, nil
+}
