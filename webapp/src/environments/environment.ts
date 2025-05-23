@@ -14,11 +14,7 @@ export const environment = {
     httpInterceptor: {
       allowedList: [
         // Attach access tokens to any calls that start with '/api/'
-        "/api/v1/users/profile",
         "/api/v1/admin",
-        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/register$/.test(uri)},
-        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/cancel$/.test(uri)},
-        {uriMatcher: (uri: string) => /\/api\/v1\/projects\/\d+\/registrations$/.test(uri)},
       ],
     },
   },

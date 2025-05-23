@@ -63,7 +63,6 @@ func main() {
 
 	// User routes
 	userRouter := api.PathPrefix("/users").Subrouter()
-	userRouter.Use(middleware.AuthMiddleware(cfg))
 	handlers.RegisterUserRoutes(userRouter, db, emailService)
 
 	// Project routes
