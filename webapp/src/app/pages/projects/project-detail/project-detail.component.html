@@ -238,7 +238,8 @@
             mat-raised-button
             class="darkbutton"
             (click)="openEditGuestCountDialog()"
-            [disabled]="loadingRegistration"
+            [disabled]="true || loadingRegistration"
+            disabled
           >
             <mat-icon>edit</mat-icon>
             <span>Edit Registration</span>
@@ -250,7 +251,7 @@
             mat-raised-button
             color="warn"
             (click)="openCancellationDialog()"
-            [disabled]="loadingRegistration"
+            [disabled]="true || loadingRegistration"
           >
             <mat-icon>event_busy</mat-icon>
             @if (!loadingRegistration) {

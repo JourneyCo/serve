@@ -7,7 +7,12 @@ import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
-import {AdminProjectPanelComponent, EditGuestCountDialogComponent, AlreadyRegisteredDialogComponent} from '@components';
+import {
+  AdminProjectPanelComponent,
+  EditGuestCountDialogComponent,
+  AlreadyRegisteredDialogComponent,
+  AlreadyRegisteredElsewhereDialogComponent
+} from '@components';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
