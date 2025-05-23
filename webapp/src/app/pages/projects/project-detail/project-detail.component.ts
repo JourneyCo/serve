@@ -205,12 +205,13 @@ export class ProjectDetailComponent implements OnInit {
         this.registrationService.triggerRegistrationChange();
       },
       error: (error: any) => {
-        if (error == 409) {
-          //TODO: Pop a dialog telling them they are already signed up for a project; enter their email into the My Project
-        }
         this.loadingRegistration = false;
         console.error("Registration error:", error);
-        if (error.status === 208) {
+        if (error.status === 409) {
+          this.dialog.open(AlreadyRegisteredElsewhereDialogComponent, {
+            width: '400px'
+          });
+        } else if (error.status === 208) {
           this.dialog.open(AlreadyRegisteredDialogComponent, {
             width: '400px'
           });
