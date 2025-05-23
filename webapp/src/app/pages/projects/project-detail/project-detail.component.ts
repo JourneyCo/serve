@@ -7,7 +7,7 @@ import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
-import {AdminProjectPanelComponent, EditGuestCountDialogComponent} from '@components';
+import {AdminProjectPanelComponent, EditGuestCountDialogComponent, AlreadyRegisteredDialogComponent} from '@components';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
@@ -214,9 +214,15 @@ export class ProjectDetailComponent implements OnInit {
         }
         this.loadingRegistration = false;
         console.error("Registration error:", error);
-        this.registrationError =
-          error.error?.error || "Failed to register for the project";
-        this.helper.showError(this.registrationError);
+        if (error.status === 208) {
+          this.dialog.open(AlreadyRegisteredDialogComponent, {
+            width: '400px'
+          });
+        } else {
+          this.registrationError =
+            error.error?.error || "Failed to register for the project";
+          this.helper.showError(this.registrationError);
+        }
       },
     });
   }
