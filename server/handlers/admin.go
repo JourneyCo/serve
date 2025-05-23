@@ -3,7 +3,6 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -54,58 +53,6 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods(http.MethodDelete)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.UpdateRegistrationGuestCount).Methods(http.MethodPut)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
-	router.HandleFunc(
-		"/projects/{id:[0-9]+}/associations", handler.DeleteProjectAssociations,
-	).Methods(http.MethodDelete)
-}
-
-// DeleteProjectAssociations deletes all associated records for a project from various tables
-func (h *AdminHandler) DeleteProjectAssociations(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	projectID, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
-		return
-	}
-
-	// Start a transaction
-	tx, err := h.DB.Begin()
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to start transaction")
-		return
-	}
-
-	// Define tables to clean
-	tables := []string{
-		"project_tools",
-		"project_ages",
-		"project_categories",
-		"project_supplies",
-		"project_skills",
-	}
-
-	// Delete from each table
-	for _, table := range tables {
-		_, err = tx.Exec(fmt.Sprintf("DELETE FROM %s WHERE project_id = $1", table), projectID)
-		if err != nil {
-			tx.Rollback()
-			middleware.RespondWithError(
-				w, http.StatusInternalServerError, fmt.Sprintf("Failed to delete from %s", table),
-			)
-			return
-		}
-	}
-
-	// Commit the transaction
-	if err = tx.Commit(); err != nil {
-		tx.Rollback()
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to commit transaction")
-		return
-	}
-
-	middleware.RespondWithJSON(
-		w, http.StatusOK, map[string]string{"message": "Project associations deleted successfully"},
-	)
 }
 
 // GetAllRegistrations returns all registrations across all projects
@@ -289,6 +236,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
+		log.Println("id not included with request")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
 		return
 	}
@@ -296,22 +244,26 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	// Check if project exists
 	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
+		log.Println("could not find project")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
 	}
 
 	if project == nil {
+		log.Println("project not found")
 		middleware.RespondWithError(w, http.StatusNotFound, "Project not found")
 		return
 	}
 
 	var input ProjectInput
 	if err = json.NewDecoder(r.Body).Decode(&input); err != nil {
+		log.Println("Invalid request payload")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	// Validate input
 	if input.Title == "" || input.Description == "" || input.ShortDescription == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+		log.Println("missing required fields")
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
 		)
@@ -320,6 +272,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 
 	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
 	if err != nil {
+		log.Println("could not parse date")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
 		return
 	}
@@ -338,11 +291,17 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Longitude = input.Longitude
 	project.WheelchairAccessible = input.WheelchairAccessible
 
-	// TODO: Need to delete accessories here for an existing project before adding accessories
+	err = models.DeleteProjectAssociations(ctx, h.DB, project.ID)
+	if err != nil {
+		log.Println("internal server error deleting project associations")
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to delete project associations")
+		return
+	}
 
 	project = applyAccessories(input, project)
 
 	if err = models.UpdateProject(ctx, h.DB, project); err != nil {
+		log.Println("internal server error updating project")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project")
 		return
 	}

@@ -71,6 +71,7 @@ func main() {
 
 	// Admin routes
 	adminRouter := api.PathPrefix("/admin").Subrouter()
+	adminRouter.Use(middleware.AuthMiddleware(cfg))
 	adminRouter.Use(middleware.AdminMiddleware)
 	handlers.RegisterAdminRoutes(adminRouter, db)
 

@@ -3,10 +3,9 @@ import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
 import { HelperService } from '@services';
-import { Project } from '@models';
+import {Categories, Project} from '@models';
 import { ProjectService } from '@services';
 import { MaterialModule } from '@material';
-import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
@@ -185,12 +184,9 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   //     };
   //   }
   // }
-
-  handlePageEvent(event: PageEvent) {
-    this.loadProjects();
-  }
-
   trackByFn(index: number, project: Project): number {
     return project.id;
   }
+
+  protected readonly categories = Categories;
 }

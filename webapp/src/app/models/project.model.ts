@@ -1,3 +1,5 @@
+import {Accessory} from './accessories';
+
 export interface Project {
   id: number;
   google_id: number;
@@ -26,7 +28,7 @@ export interface Project {
   tools?: any[];
   supplies?: any[];
   ages?: any[];
-  categories?: any[];
+  categories?: Accessory[];
   skills?: any[];
   created_at: string;
   updated_at: string;

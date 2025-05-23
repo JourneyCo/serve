@@ -14,7 +14,8 @@ export const environment = {
     httpInterceptor: {
       allowedList: [
         // Attach access tokens to any calls that start with '/api/'
-        "/api/v1/admin",
+        "http://localhost:8080/api/admin/*",
+        "https://localhost:8080/api/admin/*",
       ],
     },
   },

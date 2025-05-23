@@ -1,60 +1,21 @@
 export const environment = {
   production: true,
-  serveDay: "07-12-25",
+  serveDay: "2025-07-12",
   apiUrl: "", // Empty to use relative URLs (proxy will handle it in production)
   auth0: {
     domain: "dev-dnuncdnpl8446bmt.us.auth0.com",
     clientId: "BaYqp3c6XO3GQTqIIStocfRmVxxFRhBc",
     authorizationParams: {
-      redirect_uri: window.location.origin + "/callback",
+      redirect_uri: "https://serveday.journeycolorado.com",
       audience: "https://serve.journeyco.com",
     },
-    errorPath: "/projects",
+    errorPath: "/",
     // The AuthHttpInterceptor configuration
     httpInterceptor: {
       allowedList: [
-        // Attach access tokens to any calls to '/api' (exact match)
-        // '/api',
-
-        // Attach access tokens to any calls that start with '/api/'
-        "/api/v1/*",
-        "*",
-        "http://localhost:8080/api/v1/*",
-
-        // Match anything starting with /api/accounts, but also specify the audience and scope the attached
-        // access token must have
-        // {
-        //   uri: '/api/accounts/*',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'http://my-api/',
-        //       scope: 'read:accounts',
-        //     }
-        //   },
-        // },
-
-        // Matching on HTTP method
-        // {
-        //   uri: '/api/orders',
-        //   httpMethod: 'post',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'http://my-api/',
-        //       scope: 'write:orders',
-        //     }
-        //   },
-        // },
-
-        // Using an absolute URI
-        // {
-        //   uri: 'https://your-domain.auth0.com/api/v2/users',
-        //   tokenOptions: {
-        //     authorizationParams: {
-        //       audience: 'https://your-domain.com/api/v2/',
-        //       scope: 'read:users',
-        //     }
-        //   },
-        // },
+        "https://serveday.journeycolorado.com/api/admin/*",
+        "http://serveday.journeycolorado.com/api/admin/*",
+        "/api/admin/*",
       ],
     },
   },
