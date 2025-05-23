@@ -59,7 +59,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations,
-                COALESCE(array_agg(DISTINCT pc.category_id) FILTER (WHERE pc.category_id IS NOT NULL), ARRAY[]::integer[]) as category_ids
+                array_to_string(COALESCE(array_agg(DISTINCT pc.category_id) FILTER (WHERE pc.category_id IS NOT NULL), ARRAY[]::integer[]), ',') as category_ids
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id 
                 LEFT JOIN project_categories pc ON p.id = pc.project_id
@@ -75,19 +75,21 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	var projects []Project
 	for rows.Next() {
 		var p Project
-		var dbCategoryIDs []sql.NullInt64
+		var categoryIDsStr string
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &dbCategoryIDs,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &categoryIDsStr,
 		); err != nil {
 			return nil, err
 		}
 
-		// Convert NullInt64 array to Categories
-		for _, nullID := range dbCategoryIDs {
-			if nullID.Valid {
-				p.Categories = append(p.Categories, ProjectAccessory{ID: int(nullID.Int64)})
+		// Convert comma-separated string to Categories
+		if categoryIDsStr != "" {
+			for _, idStr := range strings.Split(categoryIDsStr, ",") {
+				if id, err := strconv.Atoi(idStr); err == nil {
+					p.Categories = append(p.Categories, ProjectAccessory{ID: id})
+				}
 			}
 		}
 
