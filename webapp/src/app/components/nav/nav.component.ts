@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@material';
 import { RouterModule, Router } from '@angular/router';
-import { HelperService } from '@services';
+import {HelperService, ProjectService} from '@services';
 import { MatDialog } from '@angular/material/dialog';
 import { FindProjectDialogComponent } from '../dialogs/find-project-dialog/find-project-dialog.component';
 import { Observable } from 'rxjs';

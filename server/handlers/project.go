@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -168,7 +169,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// case - they are attempting to register for multiple projects. Send a 409 and front end will handle.
-	if !errors.Is(err, sql.ErrNoRows) && existProj != projectID {
+	if !errors.Is(err, sql.ErrNoRows) && existProj != math.MaxInt {
 		middleware.RespondWithError(w, http.StatusConflict, "Current user is already signed up for a project")
 		return
 	}

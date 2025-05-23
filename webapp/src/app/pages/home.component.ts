@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { AuthService, HelperService } from '@services';
+import {AuthService, HelperService, ProjectService} from '@services';
 import { MaterialModule } from '@material';
 import { FindProjectDialogComponent } from '../components/dialogs/find-project-dialog/find-project-dialog.component';
 

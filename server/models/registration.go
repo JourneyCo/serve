@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"math"
 	"time"
 )
 
@@ -140,20 +141,24 @@ func GetUserRegistration(ctx context.Context, db *sql.DB, userID string) (Regist
 	r := Registration{}
 	query := `
 									SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
-									r.created_at, r.updated_at,
-									p.title, p.description, p.time, p.project_date, p.max_capacity,
-									p.area, p.latitude, p.longitude
+									r.created_at, r.updated_at
 									FROM registrations r
 									JOIN projects p ON r.project_id = p.id
 									WHERE r.user_id = $1
 									ORDER BY p.project_date
 					`
 
+	// ,
+	// p.title, p.description, p.time, p.project_date, p.max_capacity,
+	// 	p.area, p.latitude, p.longitude
+
 	err := db.QueryRowContext(ctx, query, userID).Scan(
 		&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
-		&r.CreatedAt, &r.UpdatedAt, &r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
-		&r.Project.MaxCapacity, &r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
+		&r.CreatedAt, &r.UpdatedAt,
 	)
+	// &r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
+	// 	&r.Project.MaxCapacity, &r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
+	// )
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return r, nil // not found
@@ -270,9 +275,9 @@ func GetUserRegistrationByEmail(ctx context.Context, db *sql.DB, email string) (
 	err := db.QueryRowContext(ctx, query, email).Scan(&projectID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return 0, nil
+			return math.MaxInt, nil // we return maxint here because 0 is a valid project number
 		}
-		return 0, err
+		return math.MaxInt, err
 	}
 
 	return projectID, nil
