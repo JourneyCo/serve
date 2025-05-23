@@ -58,9 +58,11 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
                 SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.wheelchair_accessible, p.created_at, p.updated_at, 
-                COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
+                COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations,
+                array_agg(DISTINCT pc.category_id) FILTER (WHERE pc.category_id IS NOT NULL) as category_ids
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id 
+                LEFT JOIN project_categories pc ON p.id = pc.project_id
                 GROUP BY p.id
         `
 
@@ -73,12 +75,18 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	var projects []Project
 	for rows.Next() {
 		var p Project
+		var categoryIDs []int
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &categoryIDs,
 		); err != nil {
 			return nil, err
+		}
+
+		// Convert category IDs to ProjectAccessory structs
+		for _, id := range categoryIDs {
+			p.Categories = append(p.Categories, ProjectAccessory{ID: id})
 		}
 
 		// TODO: Remove hardcoding
