@@ -75,18 +75,20 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	var projects []Project
 	for rows.Next() {
 		var p Project
-		categoryIDs := make([]int, 0)
+		var dbCategoryIDs []sql.NullInt64
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &categoryIDs,
+			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &dbCategoryIDs,
 		); err != nil {
 			return nil, err
 		}
 
-		// Convert category IDs to ProjectAccessory structs
-		for _, id := range categoryIDs {
-			p.Categories = append(p.Categories, ProjectAccessory{ID: id})
+		// Convert NullInt64 array to Categories
+		for _, nullID := range dbCategoryIDs {
+			if nullID.Valid {
+				p.Categories = append(p.Categories, ProjectAccessory{ID: int(nullID.Int64)})
+			}
 		}
 
 		// TODO: Remove hardcoding
