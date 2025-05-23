@@ -60,7 +60,7 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 	middleware.RespondWithJSON(w, http.StatusOK, projects)
 }
 
-// GetMyProject returns the project for the authenticated user
+// GetMyProject returns the project for a user that has already signed up
 func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -73,19 +73,29 @@ func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := models.GetUserByEmail(ctx, h.DB, email)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusNotFound, "Failed to find user")
-		return
+	if errors.Is(err, sql.ErrNoRows) {
+		log.Println("no registrations found for this email")
+		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+	} else {
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusTeapot, "Failed to find user")
+			return
+		}
 	}
 
-	registrations, err := models.GetUserRegistrations(ctx, h.DB, user.ID)
-	if err != nil {
-		log.Println("failed to retrieve user registrations")
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
-		return
+	registration, err := models.GetUserRegistration(ctx, h.DB, user.ID)
+	if errors.Is(err, sql.ErrNoRows) {
+		log.Println("no registrations found for this email")
+		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+	} else {
+		if err != nil {
+			log.Println("failed to retrieve user registrations")
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
+			return
+		}
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, registrations)
+	middleware.RespondWithJSON(w, http.StatusOK, registration)
 }
 
 // GetProject returns a specific project by ID
@@ -145,7 +155,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// check to see if user is already registered with a project
-	existProj, err := models.GetUserRegistrationsByEmail(ctx, h.DB, reg.Email)
+	existProj, err := models.GetUserRegistrationByEmail(ctx, h.DB, reg.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
 		return

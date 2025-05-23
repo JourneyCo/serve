@@ -135,8 +135,9 @@ func CancelRegistration(db *sql.DB, userID string, projectID int) error {
 	return nil
 }
 
-// GetUserRegistrations gets all registrations for a user
-func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Registration, error) {
+// GetUserRegistration gets the registration for a user
+func GetUserRegistration(ctx context.Context, db *sql.DB, userID string) (Registration, error) {
+	r := Registration{}
 	query := `
 									SELECT r.id, r.user_id, r.project_id, r.status, r.guest_count, r.lead_interest,
 									r.created_at, r.updated_at,
@@ -148,36 +149,19 @@ func GetUserRegistrations(ctx context.Context, db *sql.DB, userID string) ([]Reg
 									ORDER BY p.project_date
 					`
 
-	rows, err := db.QueryContext(ctx, query, userID)
+	err := db.QueryRowContext(ctx, query, userID).Scan(
+		&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
+		&r.CreatedAt, &r.UpdatedAt, &r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
+		&r.Project.MaxCapacity, &r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
+	)
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var registrations []Registration
-	for rows.Next() {
-		var r Registration
-		r.Project = &Project{}
-
-		if err := rows.Scan(
-			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
-			&r.CreatedAt, &r.UpdatedAt,
-			&r.Project.Title, &r.Project.Description, &r.Project.Time,
-			&r.Project.ProjectDate, &r.Project.MaxCapacity,
-			&r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
-		); err != nil {
-			return nil, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return r, nil // not found
 		}
-
-		r.Project.ID = r.ProjectID
-		registrations = append(registrations, r)
+		return r, err
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return registrations, nil
+	return r, nil
 }
 
 // GetProjectRegistrations gets all registrations for a project
@@ -272,17 +256,14 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 	return registrations, nil
 }
 
-
-
-// GetUserRegistrationsByEmail gets the first active registration for a given email
-func GetUserRegistrationsByEmail(ctx context.Context, db *sql.DB, email string) (int, error) {
+// GetUserRegistrationByEmail gets the first active registration for a given email
+func GetUserRegistrationByEmail(ctx context.Context, db *sql.DB, email string) (int, error) {
 	query := `
 		SELECT r.project_id
 		FROM registrations r
 		JOIN users u ON r.user_id = u.id
 		WHERE u.email = $1
 		AND r.status = 'registered'
-		LIMIT 1
 	`
 
 	var projectID int

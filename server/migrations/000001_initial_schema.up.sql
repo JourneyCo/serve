@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS registrations (
                                              lead_interest BOOLEAN NOT NULL DEFAULT FALSE,
                                              created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                              updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-                                             UNIQUE(user_id, project_id),
+                                             UNIQUE(user_id),
                                              FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE RESTRICT,
                                              FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
 );

@@ -99,7 +99,7 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	registrations, err := models.GetUserRegistrations(ctx, h.DB, userID)
+	registrations, err := models.GetUserRegistration(ctx, h.DB, userID)
 	if err != nil {
 		log.Println("failed to retrieve user registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
