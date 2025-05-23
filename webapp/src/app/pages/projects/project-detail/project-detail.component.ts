@@ -7,7 +7,7 @@ import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
-import {AdminProjectPanelComponent, RegistrationDialogComponent, EditGuestCountDialogComponent} from '@components';
+import {AdminProjectPanelComponent, EditGuestCountDialogComponent} from '@components';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
@@ -75,12 +75,12 @@ export class ProjectDetailComponent implements OnInit {
 
   }
 
-  disableRegistration = false;
+  myproject = false;
 
   ngOnInit(): void {
     // Check for query parameter
     this.route.queryParams.subscribe(params => {
-      this.disableRegistration = params['disableRegistration'] === 'true';
+      this.myproject = params['myproject'] === 'true';
     });
     
     // Google Maps API is automatically loaded by the Angular Google Maps module

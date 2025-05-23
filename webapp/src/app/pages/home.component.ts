@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
           next: (registration) => {
             if (registration && registration.project_id) {
               this.router.navigate(['/projects', registration.project_id], {
-                queryParams: { disableRegistration: true }
+                queryParams: { myproject: true }
               });
             }
           },

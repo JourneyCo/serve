@@ -51,13 +51,13 @@
           </div>
         </div>
 
-          @if (!isRegistered) {
+          @if (!myproject) {
               <div class="mt-2">
                   <button
                           mat-raised-button
                           color="primary"
                           (click)="openRegistrationForm()"
-                          [disabled]="loadingRegistration || isProjectFull() || disableRegistration"
+                          [disabled]="loadingRegistration || isProjectFull()"
                   >
                       <mat-icon>event_available</mat-icon>
                       <span>Register</span>
@@ -203,7 +203,7 @@
         }
 
         <div class="registration-status">
-          @if (isRegistered) {
+          @if (myproject) {
             <div class="registered-message">
               <mat-icon color="primary">check_circle</mat-icon>
               <span>You are registered for this project</span>
@@ -224,12 +224,12 @@
           <mat-icon>arrow_back</mat-icon> Back to Projects
         </button>
 
-        @if (!isRegistered) {
+        @if (!myproject) {
           <button
             mat-raised-button
             color="primary"
             (click)="openRegistrationForm()"
-            [disabled]="loadingRegistration || isProjectFull() || disableRegistration"
+            [disabled]="loadingRegistration || isProjectFull()"
           >
             <mat-icon>event_available</mat-icon>
             <span>Register</span>
@@ -246,7 +246,7 @@
           </button>
         }
 
-        @if (isRegistered) {
+        @if (myproject) {
           <button
             mat-raised-button
             color="warn"
