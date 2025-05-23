@@ -25,7 +25,8 @@ export class HomeComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private helperService: HelperService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private projectService: ProjectService
   ) {
       this.serve_day = this.helperService.GetServeDate();
   }
@@ -45,8 +46,16 @@ export class HomeComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(email => {
       if (email) {
-        // TODO: Implement search by email functionality
-        console.log('Searching for project with email:', email);
+        this.projectService.getMyProject(email).subscribe({
+          next: (registration) => {
+            if (registration && registration.project_id) {
+              this.router.navigate(['/projects', registration.project_id]);
+            }
+          },
+          error: (error) => {
+            this.helperService.showError('No project found for this email');
+          }
+        });
       }
     });
   }

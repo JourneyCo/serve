@@ -34,6 +34,7 @@ export class NavComponent {
     private router: Router,
     private authService: AuthService,
     private helperService: HelperService,
+    private projectService: ProjectService,
   ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.user$ = this.authService.getCurrentUser();
@@ -48,8 +49,16 @@ export class NavComponent {
 
     dialogRef.afterClosed().subscribe(email => {
       if (email) {
-        // TODO: Implement search by email functionality
-        console.log('Searching for project with email:', email);
+        this.projectService.getMyProject(email).subscribe({
+          next: (registration) => {
+            if (registration && registration.project_id) {
+              this.router.navigate(['/projects', registration.project_id]);
+            }
+          },
+          error: (error) => {
+            this.helperService.showError('No project found for this email');
+          }
+        });
       }
     });
   }
