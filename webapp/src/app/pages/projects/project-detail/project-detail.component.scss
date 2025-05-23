@@ -265,3 +265,8 @@
 .space {
     flex-grow: 1;
 }
+
+.darkbutton {
+  color: var(--journeyWhite);
+  background-color: var(--journeyDarkBlue);
+}

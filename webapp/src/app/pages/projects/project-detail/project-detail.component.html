@@ -55,7 +55,7 @@
               <div class="mt-2">
                   <button
                           mat-raised-button
-                          color="primary"
+                          class="darkbutton"
                           (click)="openRegistrationForm()"
                           [disabled]="loadingRegistration || isProjectFull()"
                   >
@@ -113,7 +113,6 @@
 
         @if (project.categories && project.categories.length > 0) {
         <div class="project-tools">
-          <h3>Categories</h3>
           <mat-chip-set>
             @for (category of project.categories; track category.id) {
             <mat-chip>{{ categories[category.id] }}</mat-chip>
@@ -227,7 +226,7 @@
         @if (!myproject) {
           <button
             mat-raised-button
-            color="primary"
+            class="darkbutton"
             (click)="openRegistrationForm()"
             [disabled]="loadingRegistration || isProjectFull()"
           >
@@ -237,7 +236,7 @@
         } @else {
           <button
             mat-raised-button
-            color="primary"
+            class="darkbutton"
             (click)="openEditGuestCountDialog()"
             [disabled]="loadingRegistration"
           >
