@@ -20,24 +20,20 @@ type AdminHandler struct {
 
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
-	GoogleID             *int    `json:"google_id"`
-	Title                string  `json:"title"`
-	Description          string  `json:"description"`
-	ShortDescription     string  `json:"short_description"`
-	Time                 string  `json:"time"`
-	ProjectDate          string  `json:"project_date"`
-	MaxCapacity          int     `json:"max_capacity"`
-	WheelchairAccessible bool    `json:"wheelchair_accessible"`
-	ServeLeadID          string  `json:"serve_lead_id"`
-	Tools                []int   `json:"tools,omitempty"`
-	Skills               []int   `json:"skills,omitempty"`
-	Categories           []int   `json:"categories,omitempty"`
-	Ages                 []int   `json:"ages,omitempty"`
-	Supplies             []int   `json:"supplies,omitempty"`
-	Area                 string  `json:"area"`
-	LocationAddress      string  `json:"location_address"`
-	Latitude             float64 `json:"latitude"`
-	Longitude            float64 `json:"longitude"`
+	GoogleID         *int    `json:"google_id"`
+	Title            string  `json:"title"`
+	Description      string  `json:"description"`
+	ShortDescription string  `json:"short_description"`
+	Time             string  `json:"time"`
+	ProjectDate      string  `json:"project_date"`
+	MaxCapacity      int     `json:"max_capacity"`
+	ServeLeadID      string  `json:"serve_lead_id"`
+	Categories       []int   `json:"categories,omitempty"`
+	Ages             []int   `json:"ages,omitempty"`
+	Area             string  `json:"area"`
+	LocationAddress  string  `json:"location_address"`
+	Latitude         float64 `json:"latitude"`
+	Longitude        float64 `json:"longitude"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
@@ -289,7 +285,6 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.LocationAddress = input.LocationAddress
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
-	project.WheelchairAccessible = input.WheelchairAccessible
 
 	err = models.DeleteProjectAssociations(ctx, h.DB, project.ID)
 	if err != nil {
@@ -343,19 +338,8 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func applyAccessories(input ProjectInput, project *models.Project) *models.Project {
-	var tools []models.ProjectAccessory
 	var categories []models.ProjectAccessory
-	var skills []models.ProjectAccessory
-	var supplies []models.ProjectAccessory
 	var ages []models.ProjectAccessory
-
-	for _, val := range input.Tools {
-		a := models.ProjectAccessory{
-			ID: val,
-		}
-		tools = append(tools, a)
-	}
-	project.Tools = tools
 
 	for _, val := range input.Categories {
 		a := models.ProjectAccessory{
@@ -364,22 +348,6 @@ func applyAccessories(input ProjectInput, project *models.Project) *models.Proje
 		categories = append(categories, a)
 	}
 	project.Categories = categories
-
-	for _, val := range input.Skills {
-		a := models.ProjectAccessory{
-			ID: val,
-		}
-		skills = append(skills, a)
-	}
-	project.Skills = skills
-
-	for _, val := range input.Supplies {
-		a := models.ProjectAccessory{
-			ID: val,
-		}
-		supplies = append(supplies, a)
-	}
-	project.Supplies = supplies
 
 	for _, val := range input.Ages {
 		a := models.ProjectAccessory{

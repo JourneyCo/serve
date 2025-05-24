@@ -15,28 +15,24 @@ var serveDay = time.Date(2025, 7, 12, 0, 0, 0, 0, time.UTC)
 var serveDayPostgresStyle = serveDay.Format("2006-01-02 15:04:05-07:00") // "2025-07-12 00:00:00+00:00"
 
 type Project struct {
-	GoogleID             int       `json:"google_id"`
-	Title                string    `json:"title"` // Project
-	ShortDescription     string    `json:"short_description"`
-	Description          string    `json:"description"` // About this project
-	Website              string    `json:"website"`
-	Time                 string    `json:"time"`
-	ProjectDate          time.Time `json:"project_date"`
-	MaxCapacity          int       `json:"max_capacity"` // Volunteers
-	CurrentReg           int       `json:"current_registrations"`
-	Area                 string    `json:"area"`
-	LocationAddress      string    `json:"location_address"` // Address
-	Latitude             float64   `json:"latitude"`
-	Longitude            float64   `json:"longitude"`
-	WheelchairAccessible bool      `json:"wheelchair_accessible"`
-	ServeLeadID          string    `json:"serve_lead_id"`
-	Tools                []string  `json:"tools,omitempty"`
-	Supplies             []string  `json:"supplies,omitempty"`
-	Categories           []string  `json:"categories,omitempty"` // Type
-	Ages                 []string  `json:"ages,omitempty"`
-	Skills               []string  `json:"skills,omitempty"`
-	CreatedAt            time.Time `json:"created_at"`
-	UpdatedAt            time.Time `json:"updated_at"`
+	GoogleID         int       `json:"google_id"`
+	Title            string    `json:"title"` // Project
+	ShortDescription string    `json:"short_description"`
+	Description      string    `json:"description"` // About this project
+	Website          string    `json:"website"`
+	Time             string    `json:"time"`
+	ProjectDate      time.Time `json:"project_date"`
+	MaxCapacity      int       `json:"max_capacity"` // Volunteers
+	CurrentReg       int       `json:"current_registrations"`
+	Area             string    `json:"area"`
+	LocationAddress  string    `json:"location_address"` // Address
+	Latitude         float64   `json:"latitude"`
+	Longitude        float64   `json:"longitude"`
+	ServeLeadID      string    `json:"serve_lead_id"`
+	Categories       []string  `json:"categories,omitempty"` // Type
+	Ages             []string  `json:"ages,omitempty"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 func main() {
@@ -103,7 +99,7 @@ func main() {
 	}
 
 	sqlStmt := `INSERT INTO projects (google_id, title, short_description, description, time, project_date,
-		max_capacity, area, latitude, longitude, serve_lead_id, wheelchair_accessible, location_address
+		max_capacity, area, latitude, longitude, serve_lead_id, location_address
 	) VALUES `
 
 	for _, val := range projects {
@@ -111,7 +107,7 @@ func main() {
 			"(%d, '%s', '%s', '%s', '%s', '%s', %d, '%s', %f, %f, '%s', %t, '%s'), ", val.GoogleID, val.Title,
 			"", val.Description,
 			val.Time, serveDayPostgresStyle, val.MaxCapacity, val.Area, 39.491482, -104.874878,
-			"example-user-123", true, val.LocationAddress,
+			"example-user-123", val.LocationAddress,
 		)
 		sqlStmt += vals
 	}

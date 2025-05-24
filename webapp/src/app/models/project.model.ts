@@ -16,7 +16,6 @@ export interface Project {
   location_address: string | null;
   latitude: number | null;
   longitude: number | null;
-  wheelchair_accessible: boolean;
   serve_lead_id: string | null;
   serve_lead?: {
     id: string;
@@ -25,11 +24,8 @@ export interface Project {
     email: string;
     phone: string;
   };
-  tools?: any[];
-  supplies?: any[];
   ages?: any[];
   categories?: Accessory[];
-  skills?: any[];
   created_at: string;
   updated_at: string;
 }

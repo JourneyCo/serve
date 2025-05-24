@@ -6,7 +6,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
-import {Ages, Categories, Project, Registration, Skills, Supplies, Tools, User} from '@models';
+import {Ages, Categories, Project, Registration, User} from '@models';
 import {
   AdminProjectPanelComponent,
   EditGuestCountDialogComponent,
@@ -40,11 +40,8 @@ export class ProjectDetailComponent implements OnInit {
   isLoading = true;
   loadingRegistration = false;
   registrationError = "";
-  tools = Tools
-  supplies = Supplies
   categories = Categories
   ages = Ages
-  skills = Skills
   serve_date: Date;
   registrationSubscription: Subscription;
   isAdmin: Observable<boolean>;

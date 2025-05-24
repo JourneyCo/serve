@@ -120,24 +120,6 @@
       </div>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tools</mat-label>
-        <mat-select formControlName="tools" multiple>
-          @for (key of toolKeys; track key) {
-          <mat-option [value]="+key">{{ toolList[+key] }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Skills</mat-label>
-        <mat-select formControlName="skills" multiple>
-          @for (key of skillKeys; track key) {
-          <mat-option [value]="+key">{{ skillList[+key] }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
         <mat-label>Categories</mat-label>
         <mat-select formControlName="categories" multiple>
           @for (key of categoryKeys; track key) {
@@ -155,18 +137,6 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Supplies</mat-label>
-        <mat-select formControlName="supplies" multiple>
-          @for (key of supplyKeys; track key) {
-          <mat-option [value]="+key">{{ supplyList[+key] }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-        <mat-label>Wheelchair Accessible?</mat-label>
-        <mat-checkbox formControlName="wheelchair_accessible" class="ms-2">
-        </mat-checkbox>
 
       <!-- Location Information Section -->
       <div class="section-label">

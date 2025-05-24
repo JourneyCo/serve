@@ -13,37 +13,30 @@ import (
 
 // Project represents a project in the system
 type Project struct {
-	ID                   int                `json:"id"`
-	GoogleID             *int               `json:"google_id"`
-	Title                string             `json:"title"`
-	ShortDescription     string             `json:"short_description"`
-	Description          string             `json:"description"`
-	Website              string             `json:"website"`
-	Time                 string             `json:"time"`
-	ProjectDate          time.Time          `json:"project_date"`
-	MaxCapacity          int                `json:"max_capacity"`
-	CurrentReg           int                `json:"current_registrations"`
-	Area                 string             `json:"area"`
-	LocationAddress      string             `json:"location_address"`
-	Latitude             float64            `json:"latitude"`
-	Longitude            float64            `json:"longitude"`
-	WheelchairAccessible bool               `json:"wheelchair_accessible"`
-	ServeLeadID          string             `json:"serve_lead_id"`
-	ServeLead            *User              `json:"serve_lead,omitempty"`
-	Tools                []ProjectAccessory `json:"tools,omitempty"`
-	Supplies             []ProjectAccessory `json:"supplies,omitempty"`
-	Categories           []ProjectAccessory `json:"categories,omitempty"`
-	Ages                 []ProjectAccessory `json:"ages,omitempty"`
-	Skills               []ProjectAccessory `json:"skills,omitempty"`
-	CreatedAt            time.Time          `json:"created_at"`
-	UpdatedAt            time.Time          `json:"updated_at"`
+	ID               int                `json:"id"`
+	GoogleID         *int               `json:"google_id"`
+	Title            string             `json:"title"`
+	ShortDescription string             `json:"short_description"`
+	Description      string             `json:"description"`
+	Website          string             `json:"website"`
+	Time             string             `json:"time"`
+	ProjectDate      time.Time          `json:"project_date"`
+	MaxCapacity      int                `json:"max_capacity"`
+	CurrentReg       int                `json:"current_registrations"`
+	Area             string             `json:"area"`
+	LocationAddress  string             `json:"location_address"`
+	Latitude         float64            `json:"latitude"`
+	Longitude        float64            `json:"longitude"`
+	ServeLeadID      string             `json:"serve_lead_id"`
+	ServeLead        *User              `json:"serve_lead,omitempty"`
+	Categories       []ProjectAccessory `json:"categories,omitempty"`
+	Ages             []ProjectAccessory `json:"ages,omitempty"`
+	CreatedAt        time.Time          `json:"created_at"`
+	UpdatedAt        time.Time          `json:"updated_at"`
 }
 
 const (
-	AccTools      = "tools"
 	AccCategories = "categories"
-	AccSupplies   = "supplies"
-	AccSkills     = "skills"
 	AccAges       = "ages"
 )
 
@@ -58,7 +51,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
                 SELECT p.id, p.google_id, p.title, p.short_description, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
-                p.wheelchair_accessible, p.created_at, p.updated_at, 
+                p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations,
                 array_to_string(COALESCE(array_agg(DISTINCT pc.category_id) FILTER (WHERE pc.category_id IS NOT NULL), ARRAY[]::integer[]), ',') as category_ids
                 FROM projects p
@@ -80,7 +73,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.ShortDescription, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &categoryIDsStr,
+			&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg, &categoryIDsStr,
 		); err != nil {
 			return nil, err
 		}
@@ -107,7 +100,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.short_description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
-                p.wheelchair_accessible, p.created_at, p.updated_at, 
+                p.created_at, p.updated_at, 
                 COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
@@ -119,7 +112,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.ShortDescription, &p.Website, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
-		&p.WheelchairAccessible, &p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
+		&p.CreatedAt, &p.UpdatedAt, &p.CurrentReg,
 	)
 
 	if err != nil {
@@ -127,46 +120,6 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 			return nil, nil // Project not found
 		}
 		return nil, err
-	}
-
-	// Get tools for this project
-	toolsQuery := `
-		SELECT t.id, t.name FROM tools t
-		JOIN project_tools pt ON t.id = pt.tool_id
-		WHERE pt.project_id = $1
-	`
-	toolRows, err := db.QueryContext(ctx, toolsQuery, id)
-	if err != nil {
-		return nil, err
-	}
-	defer toolRows.Close()
-
-	for toolRows.Next() {
-		var tool ProjectAccessory
-		if err := toolRows.Scan(&tool.ID, &tool.Name); err != nil {
-			return nil, err
-		}
-		p.Tools = append(p.Tools, tool)
-	}
-
-	// Get supplies for this project
-	suppliesQuery := `
-		SELECT s.id, s.name FROM supplies s
-		JOIN project_supplies ps ON s.id = ps.supply_id
-		WHERE ps.project_id = $1
-	`
-	supplyRows, err := db.QueryContext(ctx, suppliesQuery, id)
-	if err != nil {
-		return nil, err
-	}
-	defer supplyRows.Close()
-
-	for supplyRows.Next() {
-		var supply ProjectAccessory
-		if err := supplyRows.Scan(&supply.ID, &supply.Name); err != nil {
-			return nil, err
-		}
-		p.Supplies = append(p.Supplies, supply)
 	}
 
 	// Get categories for this project
@@ -209,22 +162,6 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 		p.Ages = append(p.Ages, age)
 	}
 
-	// Get skills for this project
-	skillsQuery := `SELECT s.id, s.name FROM skills s JOIN project_skills ps ON s.id = ps.skill_id WHERE ps.project_id = $1`
-	skillsRows, err := db.QueryContext(ctx, skillsQuery, id)
-	if err != nil {
-		return nil, err
-	}
-	defer skillsRows.Close()
-
-	for skillsRows.Next() {
-		var skill ProjectAccessory
-		if err = skillsRows.Scan(&skill.ID, &skill.Name); err != nil {
-			return nil, err
-		}
-		p.Skills = append(p.Skills, skill)
-	}
-
 	return &p, nil
 }
 
@@ -233,8 +170,8 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (google_id, title, short_description, description, website, time, project_date, max_capacity, 
-                                    area, location_address, latitude, longitude, wheelchair_accessible, serve_lead_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                                    area, location_address, latitude, longitude, serve_lead_id)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                 RETURNING id, created_at, updated_at
         `
 
@@ -254,7 +191,6 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,
-		project.WheelchairAccessible,
 		project.ServeLeadID,
 	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
 	if err != nil {
@@ -275,8 +211,8 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
                 UPDATE projects
                 SET google_id=$14, title = $1, short_description = $2, description = $3, website = $4, time = $5, project_date = $6, 
                 max_capacity = $7, area = $8, location_address = $9, latitude = $10, longitude = $11,
-                wheelchair_accessible = $12, updated_at = CURRENT_TIMESTAMP
-                WHERE id = $13
+                updated_at = CURRENT_TIMESTAMP
+                WHERE id = $12
                 RETURNING updated_at
         `
 
@@ -296,7 +232,6 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.LocationAddress,
 		project.Latitude,
 		project.Longitude,
-		project.WheelchairAccessible,
 		project.ID,
 		project.GoogleID,
 	).Scan(&project.UpdatedAt)
@@ -313,17 +248,8 @@ func insertAccessories(db *sql.DB, p *Project) error {
 	accs := []string{}
 	var stmt string
 	var valueArgs []any
-	if len(p.Tools) > 0 {
-		accs = append(accs, "tools")
-	}
-	if len(p.Supplies) > 0 {
-		accs = append(accs, "supplies")
-	}
 	if len(p.Categories) > 0 {
 		accs = append(accs, "categories")
-	}
-	if len(p.Skills) > 0 {
-		accs = append(accs, "skills")
 	}
 	if len(p.Ages) > 0 {
 		accs = append(accs, "ages")
@@ -351,13 +277,6 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 	var tbl string
 	var id string
 	switch a {
-	case AccTools:
-		for i, tool := range p.Tools {
-			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
-			valueArgs = append(valueArgs, p.ID, tool.ID)
-		}
-		tbl = "project_tools"
-		id = "tool_id"
 	case AccAges:
 		for i, age := range p.Ages {
 			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
@@ -365,13 +284,6 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 		}
 		tbl = "project_ages"
 		id = "ages_id"
-	case AccSkills:
-		for i, skill := range p.Skills {
-			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
-			valueArgs = append(valueArgs, p.ID, skill.ID)
-		}
-		tbl = "project_skills"
-		id = "skill_id"
 	case AccCategories:
 		for i, cat := range p.Categories {
 			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
@@ -379,13 +291,6 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 		}
 		tbl = "project_categories"
 		id = "category_id"
-	case AccSupplies:
-		for i, sup := range p.Supplies {
-			valueStrings = append(valueStrings, fmt.Sprintf("($%d, $%d)", i*2+1, i*2+2))
-			valueArgs = append(valueArgs, p.ID, sup.ID)
-		}
-		tbl = "project_supplies"
-		id = "supply_id"
 	}
 
 	return fmt.Sprintf(
@@ -403,11 +308,8 @@ func DeleteProjectAssociations(ctx context.Context, db *sql.DB, projectID int) e
 
 	// Define tables to clean
 	tables := []string{
-		"project_tools",
 		"project_ages",
 		"project_categories",
-		"project_supplies",
-		"project_skills",
 	}
 
 	// Delete from each table

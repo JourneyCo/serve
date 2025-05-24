@@ -13,7 +13,7 @@ import {
 } from "@angular/material/dialog";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
 import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
-import { Project, Tools, Skills, Categories, Ages, Supplies } from "@models";
+import { Project, Categories, Ages } from "@models";
 import { MatSelectModule } from "@angular/material/select";
 import {MaterialModule} from '@material';
 
@@ -45,16 +45,10 @@ export class ProjectFormComponent implements OnInit {
   dialogTitle: string;
   minDate: Date;
   users: any[] = [];
-  toolList = Tools;
-  toolKeys = Object.keys(Tools);
-  skillList = Skills;
-  skillKeys = Object.keys(Skills);
   categoryList = Categories;
   categoryKeys = Object.keys(Categories);
   ageList = Ages;
   ageKeys = Object.keys(Ages);
-  supplyList = Supplies;
-  supplyKeys = Object.keys(Supplies);
 
   get sortedUsers() {
     return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
@@ -139,13 +133,9 @@ export class ProjectFormComponent implements OnInit {
         this.project?.longitude || null,
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
       ],
-      wheelchair_accessible: [this.project?.wheelchair_accessible || false],
       serve_lead_id: [this.project?.serve_lead_id || ""],
-      tools: [this.project?.tools?.map((t) => t.id) || []],
-      supplies: [this.project?.supplies?.map((s) => s.id) || []],
       ages: [this.project?.ages?.map((a) => a.id) || []],
       categories: [this.project?.categories?.map((c) => c.id) || []],
-      skills: [this.project?.skills?.map((s) => s.id) || []],
     });
   }
 
@@ -171,13 +161,9 @@ export class ProjectFormComponent implements OnInit {
       area: formValues.area || null,
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
-      wheelchair_accessible: formValues.wheelchair_accessible,
       serve_lead_id: formValues.serve_lead_id,
-      tools: formValues.tools,
-      supplies: formValues.supplies,
       ages: formValues.ages,
       categories: formValues.categories,
-      skills: formValues.skills,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.project?.created_at || new Date().toISOString(),
