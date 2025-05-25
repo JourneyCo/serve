@@ -36,7 +36,7 @@
       <!-- List View -->
       @if (!isLoading && (viewGroup.value === 'list' || !mapsLoaded)) {
         <div class="table-container">
-          <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+          <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2 my-mat-table">
           <!-- Title Column -->
           <ng-container matColumnDef="title">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Project</th>
@@ -55,8 +55,8 @@
               <th mat-header-cell *matHeaderCellDef>Type</th>
               <td mat-cell *matCellDef="let project">
                 <mat-chip-set>
-                  @for (category of project.categories; track category.id) {
-                      <mat-chip>{{ categories[category.id] }}</mat-chip>
+                  @for (type of project.types; track type.id) {
+                      <mat-chip>{{ types[type.id] }}</mat-chip>
                   }
                 </mat-chip-set>
               </td>
@@ -130,7 +130,6 @@
             <map-info-window>
               <a href="javascript:void(0);" (click)="viewProject(selectedProject);" >
                 <div>{{selectedProject?.title}}</div>
-                <div class="mt-2">{{selectedProject?.short_description}}</div>
                 <div class="mt-2">{{selectedProject?.time}}</div>
                 <div class="mt-2">{{selectedProject?.location_address}}</div>
               </a>

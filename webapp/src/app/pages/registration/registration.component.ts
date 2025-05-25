@@ -74,15 +74,21 @@ export class RegistrationComponent implements OnInit {
   onSubmit(): void {
     if (this.registrationForm.valid && this.project) {
       this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
-        next: (user) => {
-          const dialogRef = this.dialog.open(RegistrationCompleteDialogComponent, {
-            width: '400px',
-            disableClose: true
-          });
+        next: (response) => {
+          if (response.status === 208) {
+            // TODO: Route to the already registered dialog
+          } else if (response.status === 201 || response.status === 200) {
+            this.dialog.open(RegistrationCompleteDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
+          }
         },
         error: (error: any) => {
-          console.error("Error registering:", error);
-          this.helper.showError("Error registering for project");
+
+          //TODO: Handle 409 error and throw already registered elsewhere dialog
+          console.error('Error registering:', error);
+          this.helper.showError('Error registering for project');
         },
       });
     }

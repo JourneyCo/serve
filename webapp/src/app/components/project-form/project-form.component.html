@@ -22,26 +22,6 @@
         </mat-form-field>
       </div>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Short Description</mat-label>
-          <textarea
-                  matInput
-                  formControlName="short_description"
-                  placeholder="Enter a brief summary"
-                  rows="2"
-                  required
-          ></textarea>
-          @if (projectForm.get("short_description")?.hasError("required")) {
-          <mat-error> Short description is required </mat-error>
-          }
-          @if (projectForm.get("short_description")?.hasError("maxlength")) {
-          <mat-error>
-            Short description cannot exceed 200 characters
-          </mat-error>
-          }
-        </mat-form-field>
-      </div>
 
       <div class="form-row">
         <mat-form-field appearance="outline">
@@ -120,10 +100,10 @@
       </div>
 
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Categories</mat-label>
-        <mat-select formControlName="categories" multiple>
-          @for (key of categoryKeys; track key) {
-          <mat-option [value]="+key">{{ categoryList[+key] }}</mat-option>
+        <mat-label>Types</mat-label>
+        <mat-select formControlName="types" multiple>
+          @for (key of typeKeys; track key) {
+          <mat-option [value]="+key">{{ typeList[+key] }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -131,9 +111,9 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Ages</mat-label>
         <mat-select formControlName="ages" multiple>
-          @for (key of ageKeys; track key) {
-          <mat-option [value]="+key">{{ ageList[+key] }}</mat-option>
-          }
+            <mat-option *ngFor="let age of ageList" [value]="age">
+                {{ age }}
+            </mat-option>
         </mat-select>
       </mat-form-field>
 

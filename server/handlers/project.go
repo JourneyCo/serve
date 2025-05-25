@@ -278,22 +278,25 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 // CancelRegistration cancels a user's registration for a project
 func (h *ProjectHandler) CancelRegistration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
 		return
 	}
+	params := r.URL.Query()
+	email := params.Get("email")
 
 	// Get user ID from the token
-	userID, err := middleware.GetUserIDFromRequest(r)
+	user, err := models.GetUserByEmail(ctx, h.DB, email)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
 		return
 	}
 
 	// Cancel the registration
-	err = models.CancelRegistration(h.DB, userID, projectID)
+	err = models.CancelRegistration(ctx, h.DB, user.ID, projectID)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return

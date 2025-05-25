@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common";
 import { RouterModule, Router } from "@angular/router";
 import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
 import { HelperService } from '@services';
-import {Categories, Project} from '@models';
+import {Types, Project} from '@models';
 import { ProjectService } from '@services';
 import { MaterialModule } from '@material';
 import { MatTableDataSource } from '@angular/material/table';
@@ -188,5 +188,5 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
     return project.id;
   }
 
-  protected readonly categories = Categories;
+  protected readonly types = Types;
 }

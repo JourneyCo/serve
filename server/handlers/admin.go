@@ -20,20 +20,19 @@ type AdminHandler struct {
 
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
-	GoogleID         *int    `json:"google_id"`
-	Title            string  `json:"title"`
-	Description      string  `json:"description"`
-	ShortDescription string  `json:"short_description"`
-	Time             string  `json:"time"`
-	ProjectDate      string  `json:"project_date"`
-	MaxCapacity      int     `json:"max_capacity"`
-	ServeLeadID      string  `json:"serve_lead_id"`
-	Categories       []int   `json:"categories,omitempty"`
-	Ages             []int   `json:"ages,omitempty"`
-	Area             string  `json:"area"`
-	LocationAddress  string  `json:"location_address"`
-	Latitude         float64 `json:"latitude"`
-	Longitude        float64 `json:"longitude"`
+	GoogleID        *int    `json:"google_id"`
+	Title           string  `json:"title"`
+	Description     string  `json:"description"`
+	Time            string  `json:"time"`
+	ProjectDate     string  `json:"project_date"`
+	MaxCapacity     int     `json:"max_capacity"`
+	ServeLeadID     string  `json:"serve_lead_id"`
+	Types           []int   `json:"types,omitempty"`
+	Ages            string  `json:"ages,omitempty"`
+	Area            string  `json:"area"`
+	LocationAddress string  `json:"location_address"`
+	Latitude        float64 `json:"latitude"`
+	Longitude       float64 `json:"longitude"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
@@ -203,17 +202,17 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	// Create project
 	project := &models.Project{
-		Title:            input.Title,
-		ShortDescription: input.ShortDescription,
-		Description:      input.Description,
-		Time:             input.Time,
-		ProjectDate:      projectDate,
-		MaxCapacity:      input.MaxCapacity,
-		Area:             input.Area,
-		LocationAddress:  input.LocationAddress,
-		Latitude:         input.Latitude,
-		Longitude:        input.Longitude,
-		ServeLeadID:      input.ServeLeadID,
+		Title:           input.Title,
+		Description:     input.Description,
+		Time:            input.Time,
+		ProjectDate:     projectDate,
+		MaxCapacity:     input.MaxCapacity,
+		Area:            input.Area,
+		LocationAddress: input.LocationAddress,
+		Latitude:        input.Latitude,
+		Longitude:       input.Longitude,
+		ServeLeadID:     input.ServeLeadID,
+		Ages:            input.Ages,
 	}
 
 	project = applyAccessories(input, project)
@@ -258,7 +257,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Validate input
-	if input.Title == "" || input.Description == "" || input.ShortDescription == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+	if input.Title == "" || input.Description == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
 		log.Println("missing required fields")
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
@@ -277,7 +276,6 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.GoogleID = input.GoogleID
 	project.Title = input.Title
 	project.Description = input.Description
-	project.ShortDescription = input.ShortDescription
 	project.Time = input.Time
 	project.ProjectDate = projectDate
 	project.MaxCapacity = input.MaxCapacity
@@ -285,15 +283,7 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.LocationAddress = input.LocationAddress
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
-
-	err = models.DeleteProjectAssociations(ctx, h.DB, project.ID)
-	if err != nil {
-		log.Println("internal server error deleting project associations")
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to delete project associations")
-		return
-	}
-
-	project = applyAccessories(input, project)
+	project.Ages = input.Ages
 
 	if err = models.UpdateProject(ctx, h.DB, project); err != nil {
 		log.Println("internal server error updating project")
@@ -338,24 +328,15 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func applyAccessories(input ProjectInput, project *models.Project) *models.Project {
-	var categories []models.ProjectAccessory
-	var ages []models.ProjectAccessory
+	var types []models.ProjectAccessory
 
-	for _, val := range input.Categories {
+	for _, val := range input.Types {
 		a := models.ProjectAccessory{
 			ID: val,
 		}
-		categories = append(categories, a)
+		types = append(types, a)
 	}
-	project.Categories = categories
-
-	for _, val := range input.Ages {
-		a := models.ProjectAccessory{
-			ID: val,
-		}
-		ages = append(ages, a)
-	}
-	project.Ages = ages
+	project.Types = types
 
 	return project
 }

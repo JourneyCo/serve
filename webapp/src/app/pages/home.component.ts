@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated = false;
   serve_day: Date = new Date();
 
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -50,8 +51,10 @@ export class HomeComponent implements OnInit {
           next: (registration) => {
             if (registration && registration.project_id) {
               this.router.navigate(['/projects', registration.project_id], {
-                queryParams: { myproject: true }
+                state: { myproject: true, email: email}
               });
+            } else {
+              this.helperService.showError('No project found for this email');
             }
           },
           error: (error) => {

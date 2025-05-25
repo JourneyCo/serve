@@ -1,6 +1,6 @@
 
 .registration-container {
-  max-width: 600px;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 0 1rem;
 }
@@ -17,7 +17,7 @@
 }
 
 .lead-description {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
   color: var(--journeyDarkBlue);
 }
 
@@ -26,4 +26,28 @@
   justify-content: flex-end;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.no-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.shrink-space .mat-form-field-wrapper {
+  margin-bottom: -50px; /* Adjust value as needed */
+}
+
+.shrink-space-checkbox {
+  margin-top: -25; /* Remove extra space above checkbox */
+}
+
+::ng-deep mat-checkbox {
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+}
+
+.phone-container {
+  display: flex;
+  column-gap: 0;
+  flex-direction: column;
 }

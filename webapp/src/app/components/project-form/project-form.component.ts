@@ -13,7 +13,7 @@ import {
 } from "@angular/material/dialog";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
 import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
-import { Project, Categories, Ages } from "@models";
+import { Project, Types, Ages } from "@models";
 import { MatSelectModule } from "@angular/material/select";
 import {MaterialModule} from '@material';
 
@@ -45,10 +45,9 @@ export class ProjectFormComponent implements OnInit {
   dialogTitle: string;
   minDate: Date;
   users: any[] = [];
-  categoryList = Categories;
-  categoryKeys = Object.keys(Categories);
+  typeList = Types;
+  typeKeys = Object.keys(Types);
   ageList = Ages;
-  ageKeys = Object.keys(Ages);
 
   get sortedUsers() {
     return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
@@ -109,10 +108,6 @@ export class ProjectFormComponent implements OnInit {
         [Validators.required, Validators.maxLength(100)],
       ],
       website: [this.project?.website || ""],
-      short_description: [
-        this.project?.short_description || "",
-        [Validators.required, Validators.maxLength(200)],
-      ],
       description: [
         this.project?.description || "",
         [Validators.required, Validators.minLength(10)],
@@ -134,8 +129,8 @@ export class ProjectFormComponent implements OnInit {
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
       ],
       serve_lead_id: [this.project?.serve_lead_id || ""],
-      ages: [this.project?.ages?.map((a) => a.id) || []],
-      categories: [this.project?.categories?.map((c) => c.id) || []],
+      ages: [this.project?.ages || "", Validators.required],
+      types: [this.project?.types?.map((c) => c.id) || []],
     });
   }
 
@@ -153,7 +148,6 @@ export class ProjectFormComponent implements OnInit {
       google_id: this.project?.google_id || 0,
       title: formValues.title,
       website: formValues.website,
-      short_description: formValues.short_description,
       description: formValues.description,
       time: formValues.time,
       max_capacity: formValues.max_capacity,
@@ -163,7 +157,7 @@ export class ProjectFormComponent implements OnInit {
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       serve_lead_id: formValues.serve_lead_id,
       ages: formValues.ages,
-      categories: formValues.categories,
+      types: formValues.types,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.project?.created_at || new Date().toISOString(),

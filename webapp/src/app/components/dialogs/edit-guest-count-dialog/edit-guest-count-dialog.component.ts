@@ -3,7 +3,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { MaterialModule } from '@material';
-import { Registration } from '@models';
+import {Project, Registration} from '@models';
 import {CommonModule} from '@angular/common';
 
 @Component({
@@ -18,9 +18,10 @@ export class EditGuestCountDialogComponent {
 
   constructor(
     private dialogRef: MatDialogRef<EditGuestCountDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { registration: Registration },
+    @Inject(MAT_DIALOG_DATA) public data: { registration: Registration, project: Project },
     private fb: FormBuilder
   ) {
+    console.log(data.project)
     this.form = this.fb.group({
       guest_count: [data.registration.guest_count, [Validators.required, Validators.min(0)]]
     });

@@ -51,10 +51,13 @@ export class NavComponent {
       if (email) {
         this.projectService.getMyProject(email).subscribe({
           next: (registration) => {
+            console.log(registration)
             if (registration && registration.project_id) {
-              this.router.navigate(['/projects', registration.project_id], { 
-                queryParams: { myproject: true }
+              this.router.navigate(['/projects', registration.project_id], {
+                state: { myproject: true, email: email}
               });
+            } else {
+              this.helperService.showError('No project found for this email');
             }
           },
           error: (error) => {

@@ -75,10 +75,6 @@ func main() {
 	adminRouter.Use(middleware.AdminMiddleware)
 	handlers.RegisterAdminRoutes(adminRouter, db)
 
-	// Auth routes - Not in use? Moved to dump temporarily. Can probably be removed later
-	// authRouter := r.PathPrefix("/auth").Subrouter()
-	// handlers.RegisterAuthRoutes(authRouter, cfg)
-
 	// Geocoding routes
 	geocodingHandler := &handlers.GeocodingHandler{
 		MapsService: mapsService,

@@ -42,13 +42,21 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class="project-dates">
-          <div class="date-field">
+        <div class="project-details">
+          <div>
             <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
           </div>
-          <div class="date-field">
+          <div>
             <strong>Time:</strong> {{ project.time }}
           </div>
+            <div>
+                <strong>Ages:</strong> {{ project.ages }}
+            </div>
+            @if (project.website) {
+            <div>
+                <strong>Website:  </strong><span [innerHTML]="project.website"></span>
+            </div>
+            }
         </div>
 
           @if (!myproject) {
@@ -99,22 +107,11 @@
           </div>
         </div>
 
-        @if (project.categories && project.categories.length > 0) {
+        @if (project.types && project.types.length > 0) {
         <div class="project-tools">
           <mat-chip-set>
-            @for (category of project.categories; track category.id) {
-            <mat-chip>{{ categories[category.id] }}</mat-chip>
-            }
-          </mat-chip-set>
-        </div>
-        }
-
-        @if (project.ages && project.ages.length > 0) {
-        <div class="project-tools">
-          <h3>Ages Needed</h3>
-          <mat-chip-set>
-            @for (age of project.ages; track age.id) {
-            <mat-chip>{{ ages[age.id] }}</mat-chip>
+            @for (type of project.types; track type.id) {
+            <mat-chip>{{ types[type.id] }}</mat-chip>
             }
           </mat-chip-set>
         </div>
@@ -193,7 +190,7 @@
             mat-raised-button
             class="darkbutton"
             (click)="openEditGuestCountDialog()"
-            [disabled]="true || loadingRegistration"
+            [disabled]="loadingRegistration"
             disabled
           >
             <mat-icon>edit</mat-icon>
@@ -206,7 +203,7 @@
             mat-raised-button
             color="warn"
             (click)="openCancellationDialog()"
-            [disabled]="true || loadingRegistration"
+            [disabled]="loadingRegistration"
           >
             <mat-icon>event_busy</mat-icon>
             @if (!loadingRegistration) {

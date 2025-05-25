@@ -6,12 +6,10 @@ import {MatDialog} from '@angular/material/dialog';
 import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
-import {Ages, Categories, Project, Registration, User} from '@models';
+import {Ages, Types, Project, Registration, User} from '@models';
 import {
   AdminProjectPanelComponent,
-  EditGuestCountDialogComponent,
-  AlreadyRegisteredDialogComponent,
-  AlreadyRegisteredElsewhereDialogComponent
+  EditGuestCountDialogComponent
 } from '@components';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
@@ -40,12 +38,12 @@ export class ProjectDetailComponent implements OnInit {
   isLoading = true;
   loadingRegistration = false;
   registrationError = "";
-  categories = Categories
+  types = Types
   ages = Ages
   serve_date: Date;
   registrationSubscription: Subscription;
   isAdmin: Observable<boolean>;
-  userSignedIn: Observable<boolean>;
+  userSignedIn = false;
 
   // Google Maps properties
   mapOptions: google.maps.MapOptions = {
@@ -62,6 +60,9 @@ export class ProjectDetailComponent implements OnInit {
   @ViewChild("cancellationDialog")
   cancellationDialogTemplate!: TemplateRef<any>;
   dialogRef: any;
+  userEmail: string;
+  myproject = false;
+  projectID: number
 
   constructor(
     private route: ActivatedRoute,
@@ -74,17 +75,11 @@ export class ProjectDetailComponent implements OnInit {
     private linkifyService: NgxLinkifyjsService,
   ) {
     this.serve_date = helper.GetServeDate();
-
+    this.myproject = this.router.getCurrentNavigation()?.extras.state?.['myproject'];
+    this.userEmail = this.router.getCurrentNavigation()?.extras.state?.['email'];
   }
 
-  myproject = false;
-
   ngOnInit(): void {
-    // Check for query parameter
-    this.route.queryParams.subscribe(params => {
-      this.myproject = params['myproject'] === 'true';
-    });
-    
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
@@ -98,7 +93,9 @@ export class ProjectDetailComponent implements OnInit {
   loadProjectData(): void {
     this.isLoading = true;
     this.isAdmin = this.authService.isAdmin();
-    this.userSignedIn = this.authService.isAuthenticated();
+    this.authService.isAuthenticated().subscribe(data => {
+       this.userSignedIn = data;
+    });
 
     // Get the project ID from the route
     const project_id = this.route.snapshot.paramMap.get("id");
@@ -107,11 +104,15 @@ export class ProjectDetailComponent implements OnInit {
       this.router.navigate(["/projects"]);
       return;
     }
+    this.projectID = Number(project_id);
 
     // Get current user and check if admin
     this.authService.getCurrentUser().subscribe({
       next: (user) => {
         this.currentUser = user;
+        if (user) {
+          this.userEmail = user?.email
+        }
 
         // Load project data
         this.loadProjectDetails(+project_id);
@@ -135,6 +136,9 @@ export class ProjectDetailComponent implements OnInit {
           target: { url: '_blank' }
         };
         this.project.rich_description = this.linkifyService.linkify(this.project.description, options);
+        if (this.project.website != null) {
+          this.project.website = this.linkifyService.linkify(this.project.website, options);
+        }
 
         // if the user is signed in, then we will check to see if they are already registered
         // note - you can hit this page without being signed in
@@ -157,75 +161,23 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   associateProjectToUser(project_id: number) {
-    this.projectService.getUserRegistrations().subscribe({
-      next: (data: Registration[]) => {
-        this.isRegistered = data?.some(
-            (reg) => reg.project_id === project_id && reg.status === "registered",
-        );
+    if ((!this.userEmail || this.userEmail == "") && this.currentUser && this.currentUser.email) {
+        this.userEmail = this.currentUser?.email
+      } else {
+      console.log("no user email exists")
+      return
+    }
+    this.projectService.getUserRegistrations(this.userEmail).subscribe({
+      next: (data: Registration) => {
+        this.isRegistered = data.status === "registered";
       }
     })
   }
 
   openRegistrationForm(): void {
-    this.router.navigate(['/projects', this.project?.id, 'register']);
+    this.router.navigate(['/projects', this.project?.id, 'register'], {
+      state: { myproject: true, email: this.userEmail}});
   }
-
-  registerForProject(data: any): void {
-    if (!this.project) return;
-
-    this.loadingRegistration = true;
-    this.registrationError = "";
-
-    // Close dialog if open
-    if (this.dialogRef) {
-      this.dialogRef.close(true);
-    }
-
-    let phone_number = data.phone
-    if (phone_number.length == 10) {
-      phone_number = this.formatPhone(phone_number);
-    }
-
-    const body = {
-      guest_count: data.guest_count,
-      email: data.email,
-      phone: phone_number,
-      first_name: data.first_name,
-      last_name: data.last_name,
-      lead_interest: data.lead_interest,
-      text_permission: data.text_permission,
-    };
-
-    this.projectService.registerForProject(this.project.id, body).subscribe({
-      next: () => {
-        this.loadingRegistration = false;
-        this.isRegistered = true;
-        this.helper.showSuccess("Successfully registered for the project");
-
-        // Reload project to get updated capacity
-        this.loadProjectDetails(this.project!.id);
-        this.registrationService.triggerRegistrationChange();
-      },
-      error: (error: any) => {
-        this.loadingRegistration = false;
-        console.error("Registration error:", error);
-        if (error.status === 409) {
-          this.dialog.open(AlreadyRegisteredElsewhereDialogComponent, {
-            width: '400px'
-          });
-        } else if (error.status === 208) {
-          this.dialog.open(AlreadyRegisteredDialogComponent, {
-            width: '400px'
-          });
-        } else {
-          this.registrationError =
-            error.error?.error || "Failed to register for the project";
-          this.helper.showError(this.registrationError);
-        }
-      },
-    });
-  }
-
   openCancellationDialog(): void {
     this.dialogRef = this.dialog.open(this.cancellationDialogTemplate, {
       width: "400px",
@@ -243,20 +195,30 @@ export class ProjectDetailComponent implements OnInit {
   openEditGuestCountDialog(): void {
     if (!this.project) return;
 
-    this.projectService.getUserRegistrations().subscribe({
-      next: (registrations) => {
-        const registration = registrations.find(r => r.project_id === this.project?.id);
+    this.projectService.getUserRegistrations(this.userEmail).subscribe({
+      next: (registration) => {
         if (registration) {
           const dialogRef = this.dialog.open(EditGuestCountDialogComponent, {
             width: '400px',
-            data: { registration }
+            data: {
+              registration: registration,
+              project: this.project
+            }
           });
 
           dialogRef.afterClosed().subscribe(guest_count => {
             if (guest_count !== undefined) {
-              // Reload project to get updated capacity
-              this.loadProjectDetails(this.project!.id);
-            }
+              this.projectService.updateUserRegistration(registration.id, { guest_count: guest_count }).subscribe({
+                next: (data) => {
+                  this.helper.showSuccess("Guest count successfully updated");
+                  // Reload project to get updated capacity
+                  this.loadProjectDetails(this.project!.id);
+                },
+                error: (error: any) => {
+                  console.error("Error updating guest count:", error);
+                  this.helper.showError("Error updating guest count");
+                },
+              })}
           });
         }
       }
@@ -265,13 +227,20 @@ export class ProjectDetailComponent implements OnInit {
 
   cancelRegistration(): void {
     if (!this.project) return;
+    if ((!this.userEmail || this.userEmail == "") && this.currentUser && this.currentUser.email) {
+      this.userEmail = this.currentUser?.email
+    }
+    if (!this.userEmail || this.userEmail == "") {
+      return
+    }
 
     this.loadingRegistration = true;
 
-    this.projectService.cancelRegistration(this.project.id).subscribe({
+    this.projectService.cancelRegistration(this.project.id, this.userEmail).subscribe({
       next: () => {
         this.loadingRegistration = false;
         this.isRegistered = false;
+        this.myproject = false;
         this.helper.showSuccess("Registration cancelled successfully");
 
         // Reload project to get updated capacity
@@ -314,12 +283,5 @@ export class ProjectDetailComponent implements OnInit {
       ...this.mapOptions,
       center: this.markerPosition,
     };
-  }
-
-  formatPhone(phone: string): string {
-    // Remove any non-digit characters (optional, for robustness)
-    const digits = phone.replace(/\D/g, '');
-    // Format as 303-841-6058
-    return digits.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
   }
 }

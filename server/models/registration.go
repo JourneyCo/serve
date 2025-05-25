@@ -113,13 +113,13 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 }
 
 // CancelRegistration deletes a registration
-func CancelRegistration(db *sql.DB, userID string, projectID int) error {
+func CancelRegistration(ctx context.Context, db *sql.DB, userID string, projectID int) error {
 	query := `
 								DELETE FROM registrations 
 								WHERE user_id = $1 AND project_id = $2 AND status = 'registered'
 				`
 
-	result, err := db.Exec(query, userID, projectID)
+	result, err := db.ExecContext(ctx, query, userID, projectID)
 	if err != nil {
 		return err
 	}
@@ -148,17 +148,10 @@ func GetUserRegistration(ctx context.Context, db *sql.DB, userID string) (Regist
 									ORDER BY p.project_date
 					`
 
-	// ,
-	// p.title, p.description, p.time, p.project_date, p.max_capacity,
-	// 	p.area, p.latitude, p.longitude
-
 	err := db.QueryRowContext(ctx, query, userID).Scan(
 		&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 		&r.CreatedAt, &r.UpdatedAt,
 	)
-	// &r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
-	// 	&r.Project.MaxCapacity, &r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
-	// )
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return r, nil // not found

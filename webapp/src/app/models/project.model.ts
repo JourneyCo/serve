@@ -4,7 +4,6 @@ export interface Project {
   id: number;
   google_id: number;
   title: string;
-  short_description: string;
   description: string;
   rich_description?: string;
   website?: string;
@@ -24,8 +23,8 @@ export interface Project {
     email: string;
     phone: string;
   };
-  ages?: any[];
-  categories?: Accessory[];
+  ages?: string;
+  types?: Accessory[];
   created_at: string;
   updated_at: string;
 }

@@ -1,12 +1,12 @@
-import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { RouterModule } from "@angular/router";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
-import {UserService, ProjectService, AuthService, HelperService} from '@services';
-import { User, Registration } from "@models";
-import { Observable } from "rxjs";
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {AuthService, HelperService, ProjectService, UserService} from '@services';
+import {Registration, User} from '@models';
+import {Observable} from 'rxjs';
 import {EditProfileDialogComponent} from '@components';
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog} from '@angular/material/dialog';
 import {MaterialModule} from '@material';
 import {MatTableDataSource} from '@angular/material/table';
 
@@ -102,9 +102,13 @@ export class ProfileComponent implements OnInit {
   }
 
   private loadUserRegistrations(): void {
-    this.projectService.getUserRegistrations().subscribe({
-      next: (registrations) => {
-        this.registrationsDataSource.data = registrations;
+    if (!this.user) {
+      console.log("no user currently loaded")
+      return
+    }
+    this.projectService.getUserRegistrations(this.user?.email).subscribe({
+      next: (registration) => {
+        this.registrationsDataSource.data = [registration,];
       },
       error: (err) => {
         console.error("Error loading registrations:", err);
@@ -121,8 +125,12 @@ export class ProfileComponent implements OnInit {
   }
 
   cancelRegistration(project_id: number): void {
+    if (!this.user?.email) {
+      console.log("no user present")
+      return
+    }
     this.registrationLoading = true;
-    this.projectService.cancelRegistration(project_id).subscribe({
+    this.projectService.cancelRegistration(project_id, this.user?.email).subscribe({
       next: () => {
         this.loadUserRegistrations();
         this.registrationLoading = false;

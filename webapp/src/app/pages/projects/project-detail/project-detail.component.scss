@@ -45,13 +45,11 @@
     margin-bottom: 24px;
   }
 
-  .project-dates {
-    display: flex;
+  .project-details {
     margin: 16px 0;
 
-    .date-field {
-      margin-right: 24px;
-      padding: 8px 0;
+    div {
+      padding: 4px 0;
 
       strong {
         color: var(--journeyBlue);
@@ -95,7 +93,7 @@
       align-items: center;
 
       .capacity-bar-container {
-        width: 0px;
+        width: 0;
         height: 12px;
         background-color: var(--journeyWhite);
         border-radius: 6px;
