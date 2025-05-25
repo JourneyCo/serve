@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RegistrationCompleteDialogComponent } from '../../components/dialogs/registration-complete-dialog/registration-complete-dialog.component';
 import { AlreadyRegisteredDialogComponent } from '../../components/dialogs/already-registered-dialog/already-registered-dialog.component';
+import { AlreadyRegisteredElsewhereDialogComponent } from '../../components/dialogs/already-registered-elsewhere-dialog/already-registered-elsewhere-dialog.component';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -89,10 +90,15 @@ export class RegistrationComponent implements OnInit {
           }
         },
         error: (error: any) => {
-
-          //TODO: Handle 409 error and throw already registered elsewhere dialog
-          console.error('Error registering:', error);
-          this.helper.showError('Error registering for project');
+          if (error.status === 409) {
+            this.dialog.open(AlreadyRegisteredElsewhereDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
+          } else {
+            console.error('Error registering:', error);
+            this.helper.showError('Error registering for project');
+          }
         },
       });
     }
