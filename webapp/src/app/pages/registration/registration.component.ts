@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { RegistrationCompleteDialogComponent } from '../../components/dialogs/registration-complete-dialog/registration-complete-dialog.component';
+import { AlreadyRegisteredDialogComponent } from '../../components/dialogs/already-registered-dialog/already-registered-dialog.component';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -76,7 +77,10 @@ export class RegistrationComponent implements OnInit {
       this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
         next: (response) => {
           if (response.status === 208) {
-            // TODO: Route to the already registered dialog
+            this.dialog.open(AlreadyRegisteredDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
           } else if (response.status === 201 || response.status === 200) {
             this.dialog.open(RegistrationCompleteDialogComponent, {
               width: '400px',
