@@ -80,6 +80,11 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
+    this.authService.isAuthenticated().subscribe(data => {
+      this.userSignedIn = data;
+    });
+
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
@@ -92,10 +97,6 @@ export class ProjectDetailComponent implements OnInit {
 
   loadProjectData(): void {
     this.isLoading = true;
-    this.isAdmin = this.authService.isAdmin();
-    this.authService.isAuthenticated().subscribe(data => {
-       this.userSignedIn = data;
-    });
 
     // Get the project ID from the route
     const project_id = this.route.snapshot.paramMap.get("id");

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { EditGuestCountDialogComponent } from '../dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component';
 import {HelperService, ProjectService} from '@services';
-import {Registration} from '@models';
+import {Project, Registration} from '@models';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {MatIcon} from '@angular/material/icon';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
@@ -17,7 +17,7 @@ import {MaterialModule} from '@material';
   styleUrl: './admin-project-panel.component.scss'
 })
 export class AdminProjectPanelComponent implements OnInit {
-  @Input() project_id: number;
+  @Input() project: Project;
   registrationsColumns = ["userName", "email", "phone", "guestCount", "lead_interest", "actions"];
   registrations: Registration[] = [];
   registrationsDataSource = new MatTableDataSource<Registration>();
@@ -33,9 +33,9 @@ export class AdminProjectPanelComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadRegistrations(this.project_id);
+    this.loadRegistrations(this.project.id);
     this.registrationSubscription = this.registrationChange.registrationChange$.subscribe(() => {
-      this.loadRegistrations(this.project_id);
+      this.loadRegistrations(this.project.id);
     });
   }
 
@@ -63,7 +63,7 @@ export class AdminProjectPanelComponent implements OnInit {
     this.processingAction = true;
     this.projectService.deleteRegistration(registration.id).subscribe({
       next: () => {
-        this.loadRegistrations(this.project_id);
+        this.loadRegistrations(this.project.id);
         this.helper.showSuccess('Registration deleted successfully');
         this.processingAction = false;
         this.registrationChange.triggerRegistrationChange();
@@ -79,7 +79,7 @@ export class AdminProjectPanelComponent implements OnInit {
   editGuestCount(registration: Registration): void {
     const dialogRef = this.dialog.open(EditGuestCountDialogComponent, {
       width: '300px',
-      data: { registration }
+      data: { registration: registration, project: this.project }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -87,7 +87,7 @@ export class AdminProjectPanelComponent implements OnInit {
         this.processingAction = true;
         this.projectService.updateRegistration(registration.id, { guest_count: result }).subscribe({
           next: () => {
-            this.loadRegistrations(this.project_id);
+            this.loadRegistrations(this.project.id);
             this.helper.showSuccess('Guest count updated successfully');
             this.processingAction = false;
             this.registrationChange.triggerRegistrationChange();

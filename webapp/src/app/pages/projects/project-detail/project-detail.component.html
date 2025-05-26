@@ -236,7 +236,7 @@
     <!-- Admin Panel - Only visible to admins -->
     @if (isAdmin | async) {
       @if (project) {
-      <app-admin-project-panel [project_id]="project.id"></app-admin-project-panel>
+      <app-admin-project-panel [project]="project"></app-admin-project-panel>
       }
     }
   }
