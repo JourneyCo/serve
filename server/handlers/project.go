@@ -42,6 +42,7 @@ func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *service
 
 	router.HandleFunc("", handler.GetProjects).Methods("GET")
 	router.HandleFunc("/my", handler.GetMyProject).Methods("GET")
+	router.HandleFunc("/types", handler.GetTypes).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}", handler.GetProject).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}/register", handler.RegisterForProject).Methods("POST")
 	router.HandleFunc("/{id:[0-9]+}/cancel", handler.CancelRegistration).Methods("POST")
@@ -303,6 +304,19 @@ func (h *ProjectHandler) CancelRegistration(w http.ResponseWriter, r *http.Reque
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Registration cancelled successfully"})
+}
+
+// GetTypes returns all types from the types table
+func (h *ProjectHandler) GetTypes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	types, err := models.GetAllTypes(ctx, h.DB)
+	if err != nil {
+		log.Println("error getting types: ", err)
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve types")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, types)
 }
 
 // GetProjectRegistrations returns all registrations for a project (admin only)
