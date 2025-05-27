@@ -44,6 +44,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   mapsLoaded = false;
   @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
   selectedProject: Project | null;
+  types: Record<number, string> = {};
 
   constructor(
     private projectService: ProjectService,
@@ -52,10 +53,24 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   ) { }
 
   ngOnInit(): void {
-    // Google Maps API is automatically loaded by the Angular Google Maps module
-    this.mapsLoaded = true;
+    this.loadTypes();
     this.loadProjects();
+  }
 
+  loadTypes(): void {
+    this.projectService.getTypes().subscribe({
+      next: (typesData) => {
+        // Convert array to Record<number, string> format
+        this.types = {};
+        typesData.forEach(type => {
+          this.types[type.id] = type.name;
+        });
+      },
+      error: (error: any) => {
+        console.error("Error loading types:", error);
+        this.helper.showError("Error loading project types");
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -188,5 +203,5 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
     return project.id;
   }
 
-  protected readonly types = Types;
+  protected readonly types;
 }

@@ -6,7 +6,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {GoogleMapsModule} from '@angular/google-maps';
 import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
 import {Observable, Subscription} from 'rxjs';
-import {Ages, Types, Project, Registration, User} from '@models';
+import {Ages, Project, Registration, User} from '@models';
 import {
   AdminProjectPanelComponent,
   EditGuestCountDialogComponent
@@ -38,7 +38,7 @@ export class ProjectDetailComponent implements OnInit {
   isLoading = true;
   loadingRegistration = false;
   registrationError = "";
-  types = Types
+  types: Record<number, string> = {};
   ages = Ages
   serve_date: Date;
   registrationSubscription: Subscription;
@@ -85,6 +85,9 @@ export class ProjectDetailComponent implements OnInit {
       this.userSignedIn = data;
     });
 
+    // Load types data first
+    this.loadTypes();
+
     // Google Maps API is automatically loaded by the Angular Google Maps module
     // Just load the project data directly
     this.loadProjectData();
@@ -92,6 +95,22 @@ export class ProjectDetailComponent implements OnInit {
     // Observable to reload data if the user registers
     this.registrationSubscription = this.registrationService.registrationChange$.subscribe(() => {
       this.loadProjectData();
+    });
+  }
+
+  loadTypes(): void {
+    this.projectService.getTypes().subscribe({
+      next: (typesData) => {
+        // Convert array to Record<number, string> format
+        this.types = {};
+        typesData.forEach(type => {
+          this.types[type.id] = type.name;
+        });
+      },
+      error: (error: any) => {
+        console.error("Error loading types:", error);
+        this.helper.showError("Error loading project types");
+      }
     });
   }
 
