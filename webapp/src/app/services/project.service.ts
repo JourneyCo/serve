@@ -75,6 +75,10 @@ export class ProjectService {
     );
   }
 
+  getTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/projects/types`);
+  }
+
   updateRegistration(id: number, updates: { guest_count: number }): Observable<any> {
     return this.http.put(`${this.apiUrl}/admin/registrations/${id}`, updates);
   }
