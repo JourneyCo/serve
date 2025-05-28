@@ -13,6 +13,7 @@ import (
 	gorhandler "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"golang.org/x/time/rate"
 	"serve/config"
 	"serve/database"
 	"serve/handlers"
@@ -55,8 +56,15 @@ func main() {
 	// Create a new router
 	r := mux.NewRouter()
 
+	// Initialize rate limiter (100 requests per minute per IP)
+	rateLimiter := middleware.NewIPRateLimiter(rate.Every(time.Minute/100), 100)
+	
+	// Start cleanup routine for rate limiter
+	go rateLimiter.CleanupOldEntries()
+
 	// Set up middleware
 	r.Use(middleware.LoggerMiddleware)
+	r.Use(middleware.RateLimitMiddleware(rateLimiter))
 
 	// API routes (with auth)
 	api := r.PathPrefix("/api").Subrouter()
