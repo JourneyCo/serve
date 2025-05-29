@@ -8,3 +8,4 @@ export * from './dialogs/edit-guest-count-dialog/edit-guest-count-dialog.compone
 export * from './footer/footer.component';
 export * from './dialogs/already-registered-dialog/already-registered-dialog.component'
 export * from './dialogs/already-registered-elsewhere-dialog/already-registered-elsewhere-dialog.component'
+export * from './dialogs/registration-complete-dialog/registration-complete-dialog.component'

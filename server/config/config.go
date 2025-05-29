@@ -44,6 +44,11 @@ type Config struct {
 
 	// Google Maps API config
 	GoogleMapsAPIKey string
+
+	// Recaptcha config
+	RecaptchaProject string
+	RecaptchaKey     string
+	RecaptchaAction  string
 }
 
 // Load loads configuration from environment variables
@@ -85,6 +90,11 @@ func Load() (*Config, error) {
 
 		// Google Maps API config
 		GoogleMapsAPIKey: getEnv("GOOGLE_MAPS_API_KEY", ""),
+
+		// Google Maps API config
+		RecaptchaKey:     getEnv("RECAPTCHA_KEY", ""),
+		RecaptchaProject: getEnv("RECAPTCHA_PROJECT", ""),
+		RecaptchaAction:  getEnv("RECAPTCHA_ACTION", ""),
 	}
 
 	// In production mode, validate required configuration

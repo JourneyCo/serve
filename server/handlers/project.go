@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"serve/config"
 	"serve/middleware"
 	"serve/models"
 	"serve/services"
@@ -20,6 +21,7 @@ import (
 type ProjectHandler struct {
 	DB           *sql.DB
 	EmailService *services.EmailService
+	Config       *config.Config
 }
 
 // regRequest defines the JSON request for registration
@@ -31,13 +33,15 @@ type regRequest struct {
 	Phone            string `json:"phone"`
 	Email            string `json:"email"`
 	TextPerm         bool   `json:"text_permission"`
+	Recaptcha        string `json:"recaptcha"`
 }
 
 // RegisterProjectRoutes registers the routes for project handlers
-func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *services.EmailService) {
+func RegisterProjectRoutes(router *mux.Router, db *sql.DB, cfg *config.Config, emailService *services.EmailService) {
 	handler := &ProjectHandler{
 		DB:           db,
 		EmailService: emailService,
+		Config:       cfg,
 	}
 
 	router.HandleFunc("", handler.GetProjects).Methods("GET")
@@ -176,6 +180,11 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = nil
+
+	// if err := services.CreateAssessment(h.Config, reg.Recaptcha); err != nil {
+	// 	middleware.RespondWithError(w, http.StatusBadRequest, "Recaptcha validation failed")
+	// 	return
+	// }
 
 	// // Get user ID from the token
 	// userID, err := middleware.GetUserIDFromRequest(r)

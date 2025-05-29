@@ -20,6 +20,7 @@ type Registration struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 	User         *User     `json:"user,omitempty"`
 	Project      *Project  `json:"project,omitempty"`
+	Recaptcha    string    `json:"recaptcha"`
 }
 
 // RegisterForProject registers a user for a project

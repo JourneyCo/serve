@@ -58,7 +58,7 @@ func main() {
 
 	// Initialize rate limiter (100 requests per minute per IP)
 	rateLimiter := middleware.NewIPRateLimiter(rate.Every(time.Minute/100), 100)
-	
+
 	// Start cleanup routine for rate limiter
 	go rateLimiter.CleanupOldEntries()
 
@@ -75,7 +75,7 @@ func main() {
 
 	// Project routes
 	projectRouter := api.PathPrefix("/projects").Subrouter()
-	handlers.RegisterProjectRoutes(projectRouter, db, emailService)
+	handlers.RegisterProjectRoutes(projectRouter, db, cfg, emailService)
 
 	// Admin routes
 	adminRouter := api.PathPrefix("/admin").Subrouter()
