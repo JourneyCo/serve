@@ -78,25 +78,20 @@
           <h6>Registration Capacity</h6>
           <div class="capacity-indicator">
             <div class="capacity-bar-container">
-              <div
-                class="capacity-bar"
-                [ngClass]="{
-                  available: getCapacityPercentage() < 50,
-                  filling:
-                    getCapacityPercentage() >= 50 &&
-                    getCapacityPercentage() < 80,
-                  'almost-full':
-                    getCapacityPercentage() >= 80 &&
-                    getCapacityPercentage() < 100,
-                  full: getCapacityPercentage() >= 100,
-                }"
-                [style.width.%]="getCapacityPercentage()"
-              ></div>
+              <div class="capacity-bar"
+                   [ngClass]="getCapacityStatusClass(project)"
+                   [style.width.%]="getCapacityPercentage()"></div>
             </div>
-            <span class="capacity-text">
-              {{ project.current_registrations }} /
-              {{ project.max_capacity }} spots filled
-            </span>
+            <div class="capacity-details">
+              <span class="capacity-text">
+                <strong>{{project.current_registrations}}</strong> / {{project.max_capacity}}
+              </span>
+              <span class="capacity-status" [ngClass]="getCapacityStatusClass(project)">
+                <ng-container *ngIf="project.current_registrations >= project.max_capacity">
+                  Full
+                </ng-container>
+              </span>
+            </div>
           </div>
         </div>
 

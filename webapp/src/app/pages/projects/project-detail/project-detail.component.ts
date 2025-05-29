@@ -286,6 +286,16 @@ export class ProjectDetailComponent implements OnInit {
     return (this.project.current_registrations / this.project.max_capacity) * 100;
   }
 
+  getCapacityStatusClass(project: Project): string {
+    if (!project) return '';
+    const percentage = (project.current_registrations / project.max_capacity) * 100;
+    
+    if (percentage >= 100) return 'full';
+    if (percentage >= 80) return 'almost-full';
+    if (percentage >= 50) return 'filling';
+    return 'available';
+  }
+
   updateMapMarker(): void {
     if (!this.project || !this.project.latitude || !this.project.longitude) {
       this.markerPosition = null;
