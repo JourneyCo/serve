@@ -9,9 +9,11 @@ import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
 import {NgxLinkifyjsModule} from 'ngx-linkifyjs-v2';
 import {provideEnvironmentNgxMask} from 'ngx-mask';
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha-2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: RECAPTCHA_V3_SITE_KEY, useValue: 'fakevalue' },
     provideRouter(routes),
     provideAnimations(),
     provideAuth0({...env.auth0}),
@@ -20,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       GoogleMapsModule,
       NgbModule,
         NgxLinkifyjsModule.forRoot(),
+        RecaptchaV3Module
     ),
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
   ]
