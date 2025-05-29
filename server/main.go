@@ -44,6 +44,7 @@ func main() {
 	// Initialize email and text services
 	emailService := services.NewEmailService(cfg)
 	textService := services.NewTextService(cfg)
+	// textService.SendTestText()
 
 	// Initialize maps service
 	mapsService := services.NewMapsService()
@@ -75,7 +76,7 @@ func main() {
 
 	// Project routes
 	projectRouter := api.PathPrefix("/projects").Subrouter()
-	handlers.RegisterProjectRoutes(projectRouter, db, cfg, emailService)
+	handlers.RegisterProjectRoutes(projectRouter, db, cfg, emailService, textService)
 
 	// Admin routes
 	adminRouter := api.PathPrefix("/admin").Subrouter()

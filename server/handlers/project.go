@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -22,6 +23,7 @@ type ProjectHandler struct {
 	DB           *sql.DB
 	EmailService *services.EmailService
 	Config       *config.Config
+	TextService  *services.TextService
 }
 
 // regRequest defines the JSON request for registration
@@ -37,11 +39,15 @@ type regRequest struct {
 }
 
 // RegisterProjectRoutes registers the routes for project handlers
-func RegisterProjectRoutes(router *mux.Router, db *sql.DB, cfg *config.Config, emailService *services.EmailService) {
+func RegisterProjectRoutes(
+	router *mux.Router, db *sql.DB, cfg *config.Config, emailService *services.EmailService,
+	textService *services.TextService,
+) {
 	handler := &ProjectHandler{
 		DB:           db,
 		EmailService: emailService,
 		Config:       cfg,
+		TextService:  textService,
 	}
 
 	router.HandleFunc("", handler.GetProjects).Methods("GET")
@@ -229,16 +235,6 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	// Update user information
-	//
-	// if err = models.UpdateUser(ctx, h.DB, user); err != nil {
-	// 	log.Printf("Failed to update user information: %v\n", err)
-	// 	middleware.RespondWithError(
-	// 		w, http.StatusInternalServerError, "Failed to update user information",
-	// 	)
-	// 	return
-	// }
-
 	// Validate guest count
 	if reg.GuestCount < 0 {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Guest count cannot be negative")
@@ -263,24 +259,28 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	// Get user details for email
-	user, err = models.GetUserByID(ctx, h.DB, userID)
-	if err != nil {
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
-		)
-		return
-	}
-
 	// Send confirmation email
 	if user != nil && project != nil {
+		var wg sync.WaitGroup
+		wg.Add(2)
 		go func() {
+			defer wg.Done()
 			err = h.EmailService.SendRegistrationConfirmation(user, project)
 			if err != nil {
 				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
 				log.Println(err)
 			}
 		}()
+		go func() {
+			defer wg.Done()
+			err = h.TextService.SendRegistrationConfirmation(user, project)
+			if err != nil {
+				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
+				log.Println(err)
+			}
+		}()
+
+		wg.Wait() // wait for email and text to both send
 	}
 
 	middleware.RespondWithJSON(w, http.StatusCreated, registration)

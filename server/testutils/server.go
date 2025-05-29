@@ -48,11 +48,12 @@ func NewTestServer() *TestServer {
 
 	// Initialize services
 	emailService := services.NewEmailService(cfg)
+	textService := services.NewTextService(cfg)
 
 	// Register routes
 	api := router.PathPrefix("/api").Subrouter()
 	projectRouter := api.PathPrefix("/projects").Subrouter()
-	handlers.RegisterProjectRoutes(projectRouter, db, emailService)
+	handlers.RegisterProjectRoutes(projectRouter, db, cfg, emailService, textService)
 
 	// Create test server
 	ts := httptest.NewServer(router)
