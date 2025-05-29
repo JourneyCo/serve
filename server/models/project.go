@@ -51,11 +51,15 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.created_at, p.updated_at, p.ages,
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations,
-                array_to_string(COALESCE(array_agg(DISTINCT pc.type_id) FILTER (WHERE pc.type_id IS NOT NULL), ARRAY[]::integer[]), ',') as type_ids
+                COALESCE(pt.type_ids, '') as type_ids
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id 
-                LEFT JOIN project_types pc ON p.id = pc.project_id
-                GROUP BY p.id
+                LEFT JOIN (
+                    SELECT project_id, array_to_string(array_agg(type_id), ',') as type_ids
+                    FROM project_types
+                    GROUP BY project_id
+                ) pt ON p.id = pt.project_id
+                GROUP BY p.id, pt.type_ids
         `
 
 	rows, err := db.QueryContext(ctx, query)
