@@ -46,7 +46,7 @@ func NewEmailService(cfg *config.Config) *EmailService {
 
 // SendRegistrationConfirmation sends a confirmation email when a user registers for a project
 func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
-	subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
+	subject := fmt.Sprintf("Serve Day Project Confirmation")
 
 	// Format dates
 	projectDateFormatted := project.ProjectDate.Format("Monday, January 2, 2006")

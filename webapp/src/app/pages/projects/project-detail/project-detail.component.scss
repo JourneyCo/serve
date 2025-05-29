@@ -99,21 +99,22 @@
         border-radius: 6px;
         overflow: hidden;
         margin-right: 16px;
+        border: 1px, solid, var(--journeyGray);
 
         .capacity-bar {
           height: 100%;
           border-radius: 6px;
 
           &.available {
-            background-color: #4caf50;
+            background-color: var(----journeyGray);
           }
 
           &.filling {
-            background-color: var(--journeyBlue);
+            background-color: var(--journeyGray);
           }
 
           &.almost-full {
-            background-color: #ff9800;
+            background-color: var(--journeyGray);
             /* Keeping orange for better warning visualization */
           }
 
@@ -215,13 +216,13 @@
 
       mat-icon {
         margin-right: 8px;
-        background-color: var(--journeyGray);
+        background-color: var(--journeyDarkBlue);
         color: var(--journeyWhite);
       }
     }
 
     .registered-message {
-      background-color: var(--journeyLightGray);
+      background-color: var(--journeyDarkBlue);
       color: var(--journeyWhite);
     }
 
