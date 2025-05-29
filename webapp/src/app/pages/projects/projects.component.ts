@@ -52,6 +52,7 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   ) { }
 
   ngOnInit(): void {
+    this.mapsLoaded = true;
     this.loadTypes();
     this.loadProjects();
   }
