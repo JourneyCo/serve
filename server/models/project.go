@@ -50,7 +50,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
                 SELECT p.id, p.google_id, p.title, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
                 p.created_at, p.updated_at, p.ages,
-                COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations,
+                COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations,
                 array_to_string(COALESCE(array_agg(DISTINCT pc.type_id) FILTER (WHERE pc.type_id IS NOT NULL), ARRAY[]::integer[]), ',') as type_ids
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id 
@@ -99,7 +99,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
                 SELECT p.id, p.title, p.description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
                 p.created_at, p.updated_at, p.ages,
-                COALESCE(SUM(CASE WHEN r.status = 'registered' THEN r.guest_count + 1 ELSE 0 END), 0) as current_registrations
+                COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
                 WHERE p.id = $1
