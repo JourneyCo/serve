@@ -215,12 +215,14 @@
 
       mat-icon {
         margin-right: 8px;
+        background-color: var(--journeyGray);
+        color: var(--journeyWhite);
       }
     }
 
     .registered-message {
-      background-color: rgba(76, 175, 80, 0.1);
-      color: #388e3c;
+      background-color: var(--journeyLightGray);
+      color: var(--journeyWhite);
     }
 
     .error-message {
