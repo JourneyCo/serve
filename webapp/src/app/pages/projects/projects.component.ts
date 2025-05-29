@@ -119,12 +119,29 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
 
           // Create markers
           this.markers = [];
+          const markerMap = new Map<string, number>();
+          const OFFSET = 0.00005; // Adjust this value as needed
+
           validProjects.forEach((project) => {
+            const key = `${project.latitude},${project.longitude}`;
+            let offsetIndex = 0;
+            if (markerMap.has(key)) {
+              offsetIndex = markerMap.get(key)! + 1;
+              markerMap.set(key, offsetIndex);
+            } else {
+              markerMap.set(key, 0);
+            }
+            // Offset calculation: spread markers in a spiral for better visibility
+            const angle = offsetIndex * 45; // degrees, change for different patterns
+            const radian = (angle * Math.PI) / 180;
+            const latOffset = Math.cos(radian) * OFFSET * offsetIndex;
+            const lngOffset = Math.sin(radian) * OFFSET * offsetIndex;
+
             // @ts-ignore
             const mark: MapAdvancedMarker = {
               position: {
-                lat: project.latitude || 0,
-                lng: project.longitude || 0,
+                lat: (project.latitude || 0) + latOffset,
+                lng: (project.longitude || 0) + lngOffset,
               },
               title: project.title,
             }
