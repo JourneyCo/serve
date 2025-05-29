@@ -56,8 +56,8 @@ func main() {
 	// Create a new router
 	r := mux.NewRouter()
 
-	// Initialize rate limiter (100 requests per minute per IP)
-	rateLimiter := middleware.NewIPRateLimiter(rate.Every(time.Minute/100), 100)
+	// Initialize rate limiter (60 requests per minute per IP)
+	rateLimiter := middleware.NewIPRateLimiter(rate.Every(time.Minute/60), 60)
 
 	// Start cleanup routine for rate limiter
 	go rateLimiter.CleanupOldEntries()
