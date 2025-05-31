@@ -2,11 +2,17 @@ package handlers
 
 import (
 	"database/sql"
+	"errors"
 	"log"
+	"math"
 	"net/http"
 	"strconv"
+	"strings"
+	"sync"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"serve/config"
 	"serve/middleware"
 	"serve/models"
 	"serve/services"
@@ -16,6 +22,8 @@ import (
 type ProjectHandler struct {
 	DB           *sql.DB
 	EmailService *services.EmailService
+	Config       *config.Config
+	TextService  *services.TextService
 }
 
 // regRequest defines the JSON request for registration
@@ -26,16 +34,25 @@ type regRequest struct {
 	LastName         string `json:"last_name"`
 	Phone            string `json:"phone"`
 	Email            string `json:"email"`
+	TextPerm         bool   `json:"text_permission"`
+	Recaptcha        string `json:"recaptcha"`
 }
 
 // RegisterProjectRoutes registers the routes for project handlers
-func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *services.EmailService) {
+func RegisterProjectRoutes(
+	router *mux.Router, db *sql.DB, cfg *config.Config, emailService *services.EmailService,
+	textService *services.TextService,
+) {
 	handler := &ProjectHandler{
 		DB:           db,
 		EmailService: emailService,
+		Config:       cfg,
+		TextService:  textService,
 	}
 
 	router.HandleFunc("", handler.GetProjects).Methods("GET")
+	router.HandleFunc("/my", handler.GetMyProject).Methods("GET")
+	router.HandleFunc("/types", handler.GetTypes).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}", handler.GetProject).Methods("GET")
 	router.HandleFunc("/{id:[0-9]+}/register", handler.RegisterForProject).Methods("POST")
 	router.HandleFunc("/{id:[0-9]+}/cancel", handler.CancelRegistration).Methods("POST")
@@ -44,8 +61,10 @@ func RegisterProjectRoutes(router *mux.Router, db *sql.DB, emailService *service
 
 // GetProjects returns all projects
 func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
-	projects, err := models.GetAllProjects(h.DB)
+	ctx := r.Context()
+	projects, err := models.GetAllProjects(ctx, h.DB)
 	if err != nil {
+		log.Println("error getting projects: ", err)
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve projects")
 		return
 	}
@@ -53,8 +72,47 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 	middleware.RespondWithJSON(w, http.StatusOK, projects)
 }
 
+// GetMyProject returns the project for a user that has already signed up
+func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	params := r.URL.Query()
+	email := params.Get("email")
+
+	if strings.TrimSpace(email) == "" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "No email supplied with request")
+		return
+	}
+
+	user, err := models.GetUserByEmail(ctx, h.DB, email)
+	if errors.Is(err, sql.ErrNoRows) {
+		log.Println("no registrations found for this email")
+		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+	} else {
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusTeapot, "Failed to find user")
+			return
+		}
+	}
+
+	registration, err := models.GetUserRegistration(ctx, h.DB, user.ID)
+	if errors.Is(err, sql.ErrNoRows) {
+		log.Println("no registrations found for this email")
+		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+	} else {
+		if err != nil {
+			log.Println("failed to retrieve user registrations")
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")
+			return
+		}
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, registration)
+}
+
 // GetProject returns a specific project by ID
 func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -62,7 +120,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	project, err := models.GetProjectByID(h.DB, id)
+	project, err := models.GetProjectByID(ctx, h.DB, id)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
 		return
@@ -73,11 +131,11 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get lead user details if lead user ID exists
-	if project.LeadUserID != "" {
-		leadUser, err := models.GetUserByID(h.DB, project.LeadUserID)
-		if err == nil && leadUser != nil {
-			project.LeadUser = leadUser
+	// Get serve lead details if serve lead ID exists
+	if project.ServeLeadID != "" {
+		serveLead, err := models.GetUserByID(ctx, h.DB, project.ServeLeadID)
+		if err == nil && serveLead != nil {
+			project.ServeLead = serveLead
 		}
 	}
 
@@ -86,37 +144,12 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 
 // RegisterForProject registers a user for a project
 func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
 		return
-	}
-
-	// Get user ID from the token
-	userID, err := middleware.GetUserIDFromRequest(r)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
-		return
-	}
-
-	// Get or create user in database
-	user, err := models.GetUserByID(h.DB, userID)
-	if err != nil {
-		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
-		return
-	}
-
-	// If user doesn't exist, create them
-	if user == nil {
-		user = &models.User{
-			ID: userID,
-		}
-		err = models.CreateUser(h.DB, user)
-		if err != nil {
-			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
-			return
-		}
 	}
 
 	var reg regRequest
@@ -128,17 +161,78 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 	err = nil
 
-	// Update user information
-	user.FirstName = reg.FirstName
-	user.LastName = reg.LastName
-	user.Phone = reg.Phone
-	user.Email = reg.Email
-	if err = models.UpdateUser(h.DB, user); err != nil {
-		log.Printf("Failed to update user information: %v\n", err)
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Failed to update user information",
-		)
+	if strings.TrimSpace(reg.Email) == "" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "No email provided with request")
 		return
+	}
+
+	// check to see if user is already registered with a project
+	existProj, err := models.GetUserRegistrationByEmail(ctx, h.DB, reg.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
+		return
+	}
+
+	// case - they are attempting to re-register again. Send a 208 and front end will handle.
+	if !errors.Is(err, sql.ErrNoRows) && existProj == projectID {
+		middleware.RespondWithError(w, http.StatusAlreadyReported, "Current user is already signed up for this project")
+		return
+	}
+
+	// case - they are attempting to register for multiple projects. Send a 409 and front end will handle.
+	if !errors.Is(err, sql.ErrNoRows) && existProj != math.MaxInt {
+		middleware.RespondWithError(w, http.StatusConflict, "Current user is already signed up for a project")
+		return
+	}
+
+	err = nil
+
+	// if err := services.CreateAssessment(h.Config, reg.Recaptcha); err != nil {
+	// 	middleware.RespondWithError(w, http.StatusBadRequest, "Recaptcha validation failed")
+	// 	return
+	// }
+
+	// // Get user ID from the token
+	// userID, err := middleware.GetUserIDFromRequest(r)
+	// if err != nil {
+	// 	middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
+	// 	return
+	// }
+
+	// Get or create user in database
+	user, err := models.GetUserByEmail(ctx, h.DB, reg.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
+		return
+	}
+
+	var userID string
+	if user != nil {
+		userID = user.ID
+	}
+
+	// If user doesn't exist, create them
+	if user == nil || errors.Is(err, sql.ErrNoRows) {
+		err = nil
+		uid, err := uuid.NewUUID()
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to check user status")
+			return
+		}
+		userID = uid.String()
+		user = &models.User{
+			ID:             userID,
+			FirstName:      reg.FirstName,
+			LastName:       reg.LastName,
+			Phone:          reg.Phone,
+			Email:          reg.Email,
+			TextPermission: reg.TextPerm,
+		}
+		err = models.CreateUser(ctx, h.DB, user)
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
+			return
+		}
 	}
 
 	// Validate guest count
@@ -157,16 +251,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Get project details for email
-	project, err := models.GetProjectByID(h.DB, projectID)
-	if err != nil {
-		middleware.RespondWithError(
-			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
-		)
-		return
-	}
-
-	// Get user details for email
-	user, err = models.GetUserByID(h.DB, userID)
+	project, err := models.GetProjectByID(ctx, h.DB, projectID)
 	if err != nil {
 		middleware.RespondWithError(
 			w, http.StatusInternalServerError, "Registration successful but failed to send confirmation email",
@@ -176,13 +261,26 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Send confirmation email
 	if user != nil && project != nil {
+		var wg sync.WaitGroup
+		wg.Add(2)
 		go func() {
-			err := h.EmailService.SendRegistrationConfirmation(user, project)
+			defer wg.Done()
+			err = h.EmailService.SendRegistrationConfirmation(user, project)
 			if err != nil {
 				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
 				log.Println(err)
 			}
 		}()
+		go func() {
+			defer wg.Done()
+			err = h.TextService.SendRegistrationConfirmation(user, project)
+			if err != nil {
+				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
+				log.Println(err)
+			}
+		}()
+
+		wg.Wait() // wait for email and text to both send
 	}
 
 	middleware.RespondWithJSON(w, http.StatusCreated, registration)
@@ -190,22 +288,25 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 // CancelRegistration cancels a user's registration for a project
 func (h *ProjectHandler) CancelRegistration(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
 		return
 	}
+	params := r.URL.Query()
+	email := params.Get("email")
 
 	// Get user ID from the token
-	userID, err := middleware.GetUserIDFromRequest(r)
+	user, err := models.GetUserByEmail(ctx, h.DB, email)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
 		return
 	}
 
 	// Cancel the registration
-	err = models.CancelRegistration(h.DB, userID, projectID)
+	err = models.CancelRegistration(ctx, h.DB, user.ID, projectID)
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, err.Error())
 		return
@@ -214,8 +315,22 @@ func (h *ProjectHandler) CancelRegistration(w http.ResponseWriter, r *http.Reque
 	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Registration cancelled successfully"})
 }
 
+// GetTypes returns all types from the types table
+func (h *ProjectHandler) GetTypes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	types, err := models.GetAllTypes(ctx, h.DB)
+	if err != nil {
+		log.Println("error getting types: ", err)
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve types")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, types)
+}
+
 // GetProjectRegistrations returns all registrations for a project (admin only)
 func (h *ProjectHandler) GetProjectRegistrations(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	vars := mux.Vars(r)
 	projectID, err := strconv.Atoi(vars["id"])
 	if err != nil {
@@ -223,7 +338,7 @@ func (h *ProjectHandler) GetProjectRegistrations(w http.ResponseWriter, r *http.
 		return
 	}
 
-	registrations, err := models.GetProjectRegistrations(h.DB, projectID)
+	registrations, err := models.GetProjectRegistrations(ctx, h.DB, projectID)
 	if err != nil {
 		log.Println("failed to get project registrations")
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve registrations")

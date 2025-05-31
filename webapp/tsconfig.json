@@ -9,7 +9,9 @@
     "noImplicitOverride": true,
     "paths": {
       "@services": ["src/app/services"],
-      "@models": ["src/app/models"]
+      "@models": ["src/app/models"],
+      "@components": ["src/app/components"],
+      "@material": ["src/app/modules/material/material.module"]
     },
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,

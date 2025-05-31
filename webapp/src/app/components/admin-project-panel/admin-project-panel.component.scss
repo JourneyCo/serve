@@ -1,0 +1,17 @@
+.admin-panel {
+  margin-top: 2rem;
+  margin-bottom: 24px;
+
+  .registrations-table-container {
+    margin-top: 1rem;
+    overflow-x: auto;
+  }
+
+
+  .no-registrations {
+    padding: 20px;
+    text-align: center;
+    color: var(--journeyGray);
+    font-style: italic;
+  }
+}

@@ -1,0 +1,48 @@
+<div class="home-container">
+  <h1>Serve Day</h1>
+  <h2>{{serve_day | date : "MMMM dd, YYYY"}}</h2>
+    <mat-divider></mat-divider>
+
+  <div class="content-grid">
+    <div class="serve-image">
+      <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/ServeDay_EmailBanner.png" alt="Serve Day Logo" />
+    </div>
+
+    <div class="make-difference">
+        <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/make-a-difference.jpg" alt="Serve Day Logo" />
+      <p>
+        Serve Day is a one-day outreach event when the people of Journey engage in multiple service projects throughout the south Denver area. The mission of Serve Day is for us, the local church, to love our communities and love our neighbors. We hope people's hearts will be opened to the love of Jesus through practical projects and acts of service.
+      </p>
+      <p>
+        Our hope is that serving others becomes our focus throughout the year. Simple acts of selfless love can open hearts to Jesus, and together we can make a difference.
+      </p>
+
+      <div class="cta-buttons">
+        <button
+          mat-raised-button
+          color="warn"
+          [routerLink]="['/projects']"
+        >
+          <mat-icon>view_list</mat-icon>
+          Browse Projects
+        </button>
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="findMyProject()"
+          >
+            <mat-icon>search</mat-icon>
+            Find My Project
+          </button>
+      </div>
+    </div>
+  </div>
+    <div class="flex-container">
+        <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/ServeDayWeb1.jpg" alt="Image 1">
+        <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/ServeDayWeb2.jpg" alt="Image 2">
+        <img src="https://d1m3qt96epnyy9.cloudfront.net/assets/ServeDayWeb3.jpg" alt="Image 3">
+    </div>
+
+
+
+</div>

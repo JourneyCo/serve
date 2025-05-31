@@ -1,0 +1,28 @@
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <span class="copyright">© 2025 Journey Serve Day</span>
+      
+      <div class="auth-buttons">
+        @if (isAuthenticated$ | async) {
+          @if (isAdmin | async) {
+            <a mat-button routerLink="/admin">
+              <mat-icon>admin_panel_settings</mat-icon>
+              <span>Admin</span>
+            </a>
+          }
+          <button mat-button (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Admin Logout</span>
+          </button>
+        } @else {
+          <button mat-button (click)="login()">
+            <mat-icon>login</mat-icon>
+            <span>Admin Login</span>
+          </button>
+        }
+      </div>
+    </div>
+  </div>
+</footer>

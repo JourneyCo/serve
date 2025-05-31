@@ -1,28 +1,29 @@
-import { ApplicationConfig, importProvidersFrom, InjectionToken } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideAuth0 } from '@auth0/auth0-angular';
+import {authHttpInterceptorFn, provideAuth0} from '@auth0/auth0-angular';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { routes } from './app-routing.module';
 import { environment as env } from '../environments/environment';
-export const GOOGLE_MAPS_API_KEY = new InjectionToken<string>('google-maps-api-key');
-import { authInterceptor } from '@services';
+import {NgxLinkifyjsModule} from 'ngx-linkifyjs-v2';
+import {provideEnvironmentNgxMask} from 'ngx-mask';
+import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha-2';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: RECAPTCHA_V3_SITE_KEY, useValue: 'fakevalue' },
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     provideAuth0({...env.auth0}),
+    provideEnvironmentNgxMask(),
     importProvidersFrom(
       GoogleMapsModule,
-      NgbModule
+      NgbModule,
+        NgxLinkifyjsModule.forRoot(),
+        RecaptchaV3Module
     ),
-    {
-      provide: GOOGLE_MAPS_API_KEY,
-      useValue: env.googleMapsApiKey
-    }
+    provideHttpClient(withInterceptors([authHttpInterceptorFn])),
   ]
 };

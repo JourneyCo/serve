@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import {CommonModule, DatePipe} from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from '@material';
+import { RouterModule, Router } from '@angular/router';
+import {HelperService, ProjectService} from '@services';
+import { MatDialog } from '@angular/material/dialog';
+import { FindProjectDialogComponent } from '../dialogs/find-project-dialog/find-project-dialog.component';
 import { Observable } from 'rxjs';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDividerModule } from '@angular/material/divider';
-import { AuthService } from '@services';
+import {AuthService} from '@services';
 import { User } from '@models';
-import {environment} from "../../../environments/environment";
+import {MatToolbar} from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-nav',
@@ -17,45 +16,55 @@ import {environment} from "../../../environments/environment";
   imports: [
     CommonModule,
     RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatDividerModule,
-      DatePipe,
+    MaterialModule,
+    MatToolbar
   ],
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss']
 })
-export class NavComponent implements OnInit {
+
+export class NavComponent {
   isAuthenticated$: Observable<boolean>;
   user$: Observable<User | null>;
   isAdmin: Observable<boolean>;
   serve_day: Date = new Date();
 
-  constructor(private authService: AuthService,
-              private router: Router,
-              ) {
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private authService: AuthService,
+    private helperService: HelperService,
+    private projectService: ProjectService,
+  ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.user$ = this.authService.getCurrentUser();
     this.isAdmin = this.authService.isAdmin();
-    this.getServeDay();
+    this.serve_day = this.helperService.GetServeDate();
   }
 
-  ngOnInit(): void {}
+  findMyProject(): void {
+    const dialogRef = this.dialog.open(FindProjectDialogComponent, {
+      width: '400px'
+    });
 
-  login(): void {
-    this.authService.login();
-  }
-
-  logout(): void {
-    this.authService.logout();
-  }
-
-  getServeDay() : void {
-    const serve = environment.serveDay;
-    const split = serve.split("-");
-    this.serve_day.setMonth(Number(split[0]) - 1);
-    this.serve_day.setDate(Number(split[1]));
+    dialogRef.afterClosed().subscribe(email => {
+      if (email) {
+        this.projectService.getMyProject(email).subscribe({
+          next: (registration) => {
+            console.log(registration)
+            if (registration && registration.project_id) {
+              this.router.navigate(['/projects', registration.project_id], {
+                state: { myproject: true, email: email}
+              });
+            } else {
+              this.helperService.showError('No project found for this email');
+            }
+          },
+          error: (error) => {
+            this.helperService.showError('No project found for this email');
+          }
+        });
+      }
+    });
   }
 }

@@ -25,7 +25,7 @@ export class GoogleMapComponent implements OnInit, OnDestroy {
   zoom = 12;
 
   options: google.maps.MapOptions = {
-    mapId: '18c474b41c1ac65a',
+    mapId: '%NG_APP_GOOGLE_KEY%',
   };
   display: google.maps.LatLngLiteral = {lat: 39.491482, lng: -104.874878};
 

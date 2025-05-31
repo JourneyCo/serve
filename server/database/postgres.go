@@ -5,16 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os/exec"
+
+	"serve/config"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file" // File for migrations use
 	_ "github.com/lib/pq"                                // PostgresSQL driver
-	"serve/config"
 )
 
 // InitDB initializes the database connection
 func InitDB(cfg *config.Config) (*sql.DB, error) {
+
+	if cfg.DevMode && !isDockerRunning() {
+		log.Fatal("Docker is not running; unable to initiate app")
+	}
 	// Open database connection
 	db, err := sql.Open("postgres", cfg.GetDBConnString())
 	if err != nil {
@@ -45,4 +51,12 @@ func InitDB(cfg *config.Config) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func isDockerRunning() bool {
+	_, err := exec.Command("docker", "info").Output()
+	if err != nil {
+		return false
+	}
+	return true
 }

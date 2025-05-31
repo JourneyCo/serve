@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { Project } from "../models/project.model";
-import { Registration } from "../models/registration.model";
+import { Project, Registration } from '@models';
 
 @Injectable({
   providedIn: "root",
@@ -22,11 +21,12 @@ export class ProjectService {
     return this.http.get<Project>(`${this.apiUrl}/projects/${id}`);
   }
 
-  registerForProject(project_id: number, body: any): Observable<Registration> {
+  registerForProject(project_id: number, body: any): Observable<HttpResponse<Registration>> {
     const httpOptions = {
       headers: new HttpHeaders({
         "Content-Type": "application/json",
       }),
+      observe: 'response' as const
     };
     return this.http.post<Registration>(
       `${this.apiUrl}/projects/${project_id}/register`,
@@ -35,15 +35,15 @@ export class ProjectService {
     );
   }
 
-  cancelRegistration(project_id: number): Observable<any> {
+  cancelRegistration(project_id: number, email: string): Observable<any> {
     return this.http.post<any>(
-      `${this.apiUrl}/projects/${project_id}/cancel`,
-      {},
+      `${this.apiUrl}/projects/${project_id}/cancel`, {},
+        { params: { email } },
     );
   }
 
-  getUserRegistrations(): Observable<Registration[]> {
-    return this.http.get<Registration[]>(`${this.apiUrl}/users/registrations`);
+  getUserRegistrations(email: string): Observable<Registration> {
+    return this.http.get<Registration>(`${this.apiUrl}/users/registrations`, { params: { email } });
   }
 
   // Admin API endpoints
@@ -66,5 +66,32 @@ export class ProjectService {
     return this.http.get<Registration[]>(
       `${this.apiUrl}/projects/${project_id}/registrations`,
     );
+  }
+
+  getMyProject(email: string): Observable<Registration> {
+    return this.http.get<Registration>(
+      `${this.apiUrl}/projects/my`,
+      { params: { email } }
+    );
+  }
+
+  getTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/projects/types`);
+  }
+
+  updateRegistration(id: number, updates: { guest_count: number }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/registrations/${id}`, updates);
+  }
+
+  updateUserRegistration(id: number, updates: { guest_count: number }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/registrations/${id}`, updates);
+  }
+
+  deleteRegistration(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/admin/registrations/${id}`);
+  }
+
+  getAllRegistrations(): Observable<Registration[]> {
+    return this.http.get<Registration[]>(`${this.apiUrl}/admin/registrations`);
   }
 }

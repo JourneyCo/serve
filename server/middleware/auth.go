@@ -38,7 +38,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 
 	issuer, err := url.Parse(issuerURL)
 	if err != nil {
-		log.Fatalf("Failed to parse the issuer URL: %v", err)
+		log.Printf("Failed to parse the issuer URL: %v", err)
 	}
 
 	provider := jwks.NewCachingProvider(issuer, 5*60)
@@ -56,7 +56,7 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 		validator.WithAllowedClockSkew(30),
 	)
 	if err != nil {
-		log.Fatalf("Failed to set up JWT validator: %v", err)
+		log.Printf("Failed to set up JWT validator: %v", err)
 	}
 
 	middleware := jwtmiddleware.New(
@@ -88,8 +88,10 @@ func AuthMiddleware(cfg *config.Config) func(http.Handler) http.Handler {
 func AdminMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
 			token := r.Context().Value(jwtmiddleware.ContextKey{})
 			if token == nil {
+				log.Println("token is nil for request")
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -108,13 +110,16 @@ func AdminMiddleware(next http.Handler) http.Handler {
 
 			// Check if user has admin role
 			isAdmin := slices.Contains(customClaims.Permissions, adminProjects)
+			if isAdmin {
+				ctx = context.WithValue(ctx, "isAdmin", true)
+			}
 
 			if !isAdmin {
 				http.Error(w, "Forbidden: admin role required", http.StatusForbidden)
 				return
 			}
 
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		},
 	)
 }

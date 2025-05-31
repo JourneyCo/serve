@@ -16,7 +16,7 @@ import (
 
 const (
 	clearstreamTextURL  = "https://api.getclearstream.com/v1/texts"
-	clearstreamTextFrom = "97000"
+	clearstreamTextFrom = "94000"
 )
 
 // TextService handles text operations
@@ -32,6 +32,14 @@ type ClearStreamRequest struct {
 	TextBody   string                `json:"text_body"`
 	List       []models.Registration `json:"-"`
 	APIKey     string                `json:"-"`
+	PhoneList  []string              `json:"-"`
+
+	// DefaultHeader is a flag to use the system's default header for journey
+	DefaultHeader bool `json:"use_default_header"`
+
+	// OverRideOptOut is used to override a subscribers wish to opt out of
+	// texts. This should never be set to true per Journey's wishes.
+	OverRideOptOut bool `json:"override_optouts"`
 }
 
 type ClearStreamResponse struct {
@@ -55,27 +63,29 @@ func NewTextService(cfg *config.Config) *TextService {
 	}
 }
 
-// TODO: Do we want to send a confirmation text as well?
+// SendRegistrationConfirmation sends a confirmation text when a user registers for a project
+func (s *TextService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
+	subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
 
-// // SendRegistrationConfirmation sends a confirmation text when a user registers for a project
-// func (s *TextService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
-// 	subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
-//
-// 	// Format dates
-// 	projectDateFormatted := project.ProjectDate.Format("Monday, January 2, 2006")
-//
-// 	// Create text data
-// 	req := ClearStreamRequest{
-// 		From:       clearstreamTextFrom,
-// 		TextHeader: "Journey Serve Day",
-// 		TextBody:   subject,
-// 		List:       ,
-// 		APIKey:     s.APIKey,
-// 	}
-//
-// 	// Send the text
-// 	return s.sendText(user.Phone, subject, registrationTemplate, data)
-// }
+	// Format dates
+	// projectDateFormatted := project.ProjectDate.Format("Monday, January 2, 2006")
+
+	r := models.Registration{
+		User: user,
+	}
+
+	// Create text data
+	req := ClearStreamRequest{
+		From:       clearstreamTextFrom,
+		TextHeader: "Journey Serve Day",
+		TextBody:   subject,
+		List:       []models.Registration{r},
+		APIKey:     s.APIKey,
+	}
+
+	// Send the text
+	return req.sendText()
+}
 
 // SendReminderText sends a reminder text for an upcoming project
 func (s *TextService) SendReminderText(list []models.Registration, daysLeft int) error {
@@ -116,6 +126,26 @@ func (s *TextService) SendReminderText(list []models.Registration, daysLeft int)
 	return req.sendText()
 }
 
+func (s *TextService) SendTestText() error {
+	req := ClearStreamRequest{
+		From:       clearstreamTextFrom,
+		TextHeader: "Journey Serve Day",
+		TextBody:   "Journey Serve",
+		List: []models.Registration{
+			{
+				ID: 1,
+				User: &models.User{
+					Phone: "+13039477791",
+				},
+			},
+		},
+		APIKey: s.APIKey,
+	}
+
+	return req.sendText()
+
+}
+
 // sendText is a helper function to send texts
 func (c *ClearStreamRequest) sendText() error {
 	var sendList []string
@@ -129,10 +159,12 @@ func (c *ClearStreamRequest) sendText() error {
 	}
 
 	csr := ClearStreamRequest{
-		To:         sendList,
-		From:       c.From,
-		TextHeader: c.TextHeader,
-		TextBody:   c.TextBody,
+		To:            sendList,
+		From:          c.From,
+		TextHeader:    "Journey Serve Day",
+		TextBody:      c.TextBody,
+		DefaultHeader: true,
+		APIKey:        c.APIKey,
 	}
 
 	b, err := json.Marshal(csr)
@@ -162,12 +194,14 @@ func (c *ClearStreamRequest) sendText() error {
 	if err != nil {
 		return fmt.Errorf("failed to read body: %w", err)
 	}
+	log.Println("text sent")
 
 	var csResp ClearStreamResponse
-	if err := json.Unmarshal(body, &csResp); err != nil {
+	if err = json.Unmarshal(body, &csResp); err != nil {
 		return fmt.Errorf("failed to unmarshal body: %w", err)
 	}
 
+	log.Printf("%v", csResp)
 	log.Printf("texts skipped: %v", csResp.Data.Skipped)
 	return nil
 }

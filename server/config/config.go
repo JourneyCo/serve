@@ -8,6 +8,7 @@ import (
 
 // Config holds all configuration for the application
 type Config struct {
+	DevMode bool
 	// Date
 	ServeDay string
 
@@ -15,12 +16,13 @@ type Config struct {
 	ServerPort string
 
 	// Database config
-	DBHost     string
-	DBPort     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBURL      string
+	DBHost              string
+	DBPort              string
+	DBUser              string
+	DBPassword          string
+	DBName              string
+	DBConnectionOptions string
+	DBURL               string
 
 	// Auth0 config
 	Auth0Domain       string
@@ -42,14 +44,17 @@ type Config struct {
 
 	// Google Maps API config
 	GoogleMapsAPIKey string
+
+	// Recaptcha config
+	RecaptchaProject string
+	RecaptchaKey     string
+	RecaptchaAction  string
 }
 
 // Load loads configuration from environment variables
 func Load() (*Config, error) {
-	// Check for development mode
-	devMode := getEnv("DEV_MODE", "true") == "true"
-
 	config := &Config{
+		DevMode: getEnv("DEV_MODE", "true") == "true",
 		// Serve Day Date
 		ServeDay: getEnv("SERVE_DAY", "07-12-25"),
 
@@ -57,12 +62,13 @@ func Load() (*Config, error) {
 		ServerPort: getEnv("PORT", "8080"),
 
 		// Database config
-		DBHost:     getEnv("PGHOST", "localhost"),
-		DBPort:     getEnv("PGPORT", "5432"),
-		DBUser:     getEnv("PGUSER", "postgres"),
-		DBPassword: getEnv("PGPASSWORD", "postgres"),
-		DBName:     getEnv("PGDATABASE", "serve"),
-		DBURL:      getEnv("DATABASE_URL", ""),
+		DBHost:              getEnv("PGHOST", "localhost"),
+		DBPort:              getEnv("PGPORT", "5432"),
+		DBUser:              getEnv("PGUSER", "postgres"),
+		DBPassword:          getEnv("PGPASSWORD", "postgres"),
+		DBName:              getEnv("PGDATABASE", "serve"),
+		DBConnectionOptions: getEnv("DBCONN_OPTS", ""),
+		DBURL:               getEnv("DATABASE_URL", ""),
 
 		// Auth0 config - in dev mode use placeholders
 		Auth0Domain:       getEnv("AUTH0_DOMAIN", "dev-placeholder.auth0.com"),
@@ -84,10 +90,15 @@ func Load() (*Config, error) {
 
 		// Google Maps API config
 		GoogleMapsAPIKey: getEnv("GOOGLE_MAPS_API_KEY", ""),
+
+		// Google Maps API config
+		RecaptchaKey:     getEnv("RECAPTCHA_KEY", ""),
+		RecaptchaProject: getEnv("RECAPTCHA_PROJECT", ""),
+		RecaptchaAction:  getEnv("RECAPTCHA_ACTION", ""),
 	}
 
 	// In production mode, validate required configuration
-	if !devMode {
+	if !config.DevMode {
 		var missingVars []string
 
 		// For Auth0
@@ -105,14 +116,14 @@ func Load() (*Config, error) {
 		}
 
 		// For Email
-		if getEnv("SMTP_HOST", "") == "" {
-			missingVars = append(missingVars, "SMTP_HOST")
+		if getEnv("MAIL_HOST", "") == "" {
+			missingVars = append(missingVars, "MAIL_HOST")
 		}
-		if getEnv("SMTP_USERNAME", "") == "" {
-			missingVars = append(missingVars, "SMTP_USERNAME")
+		if getEnv("MAIL_USER", "") == "" {
+			missingVars = append(missingVars, "MAIL_USER")
 		}
-		if getEnv("SMTP_PASSWORD", "") == "" {
-			missingVars = append(missingVars, "SMTP_PASSWORD")
+		if getEnv("MAIL_PASS", "") == "" {
+			missingVars = append(missingVars, "MAIL_PASS")
 		}
 
 		// For Google Maps API
@@ -134,9 +145,10 @@ func (c *Config) GetDBConnString() string {
 	if c.DBURL != "" {
 		return c.DBURL
 	}
+
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName,
+		"host=%s port=%s user=%s password=%s dbname=%s %s",
+		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName, c.DBConnectionOptions,
 	)
 }
 
