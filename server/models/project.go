@@ -303,7 +303,7 @@ func createSQLStatement(p *Project, a string) (string, []interface{}) {
 // GetAllTypes retrieves all types from the types table
 func GetAllTypes(ctx context.Context, db *sql.DB) ([]ProjectAccessory, error) {
 	query := `SELECT id, type FROM types ORDER BY id`
-	
+
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
