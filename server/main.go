@@ -44,7 +44,6 @@ func main() {
 	// Initialize email and text services
 	emailService := services.NewEmailService(cfg)
 	textService := services.NewTextService(cfg)
-	// textService.SendTestText()
 
 	// Initialize maps service
 	mapsService := services.NewMapsService()

@@ -17,6 +17,7 @@ import (
 const (
 	clearstreamTextURL  = "https://api.getclearstream.com/v1/texts"
 	clearstreamTextFrom = "94000"
+	stopMessage         = " Text STOP to optout"
 )
 
 // TextService handles text operations
@@ -53,6 +54,15 @@ type ClearStreamResponse struct {
 		From     string    `json:"from"`
 		Media    []any     `json:"media"`
 	} `json:"data"`
+	Error struct {
+		Message  string `json:"message"`
+		HTTPCode int    `json:"http_code"`
+		Fields   struct {
+			To       []string `json:"to"`
+			TextBody []string `json:"text_body"`
+			Text     []string `json:"text"`
+		} `json:"fields"`
+	} `json:"error"`
 }
 
 // NewTextService creates a new text service
@@ -84,7 +94,10 @@ func (s *TextService) SendRegistrationConfirmation(user *models.User, project *m
 	}
 
 	// Send the text
-	return req.sendText()
+	if user.TextPermission {
+		return req.sendText()
+	}
+	return nil
 }
 
 // SendReminderText sends a reminder text for an upcoming project
@@ -143,7 +156,6 @@ func (s *TextService) SendTestText() error {
 	}
 
 	return req.sendText()
-
 }
 
 // sendText is a helper function to send texts
@@ -159,12 +171,11 @@ func (c *ClearStreamRequest) sendText() error {
 	}
 
 	csr := ClearStreamRequest{
-		To:            sendList,
-		From:          c.From,
-		TextHeader:    "Journey Serve Day",
-		TextBody:      c.TextBody,
-		DefaultHeader: true,
-		APIKey:        c.APIKey,
+		To:         sendList,
+		From:       c.From,
+		TextHeader: "Journey Serve Day",
+		TextBody:   c.TextBody + stopMessage,
+		APIKey:     c.APIKey,
 	}
 
 	b, err := json.Marshal(csr)
@@ -179,11 +190,12 @@ func (c *ClearStreamRequest) sendText() error {
 	}
 	client := &http.Client{Transport: tr}
 
-	req, err := http.NewRequest(http.MethodPost, clearstreamTextURL, bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPost, clearstreamTextURL, bytes.NewBuffer(b))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Add("X-API-KEY", c.APIKey)
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to post text request: %w", err)
@@ -198,10 +210,17 @@ func (c *ClearStreamRequest) sendText() error {
 
 	var csResp ClearStreamResponse
 	if err = json.Unmarshal(body, &csResp); err != nil {
+		if csResp.Error.HTTPCode != 0 {
+			fmt.Printf("Text Details : \n%+v\n", csResp)
+			return fmt.Errorf("text not sent: %s", csResp.Error.Message)
+		}
 		return fmt.Errorf("failed to unmarshal body: %w", err)
 	}
-
-	log.Printf("%v", csResp)
-	log.Printf("texts skipped: %v", csResp.Data.Skipped)
+	if len(csResp.Data.Skipped) > 0 {
+		log.Printf("texts skipped: %v", csResp.Data.Skipped)
+	}
+	for _, text := range sendList {
+		log.Println("text sent successfully to: ", text)
+	}
 	return nil
 }

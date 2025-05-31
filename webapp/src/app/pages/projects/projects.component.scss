@@ -1,0 +1,17 @@
+.material-icons.md-20 {
+  font-size: 20px;
+  color: var(--journeyBlue);
+  margin-left: 0.5rem;
+}
+
+.project-title {
+  width: max-content;
+}
+
+:root .mat-chip-set {
+  padding: 2px 6px !important;   /* Reduce horizontal and vertical padding */
+  font-size: 0.5px !important;    /* Decrease font size */
+  height: 20px !important;       /* Lower the chip height */
+  margin: 2px 2px !important;    /* Tighter spacing between chips */
+  color: red !important;
+}
