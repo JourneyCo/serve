@@ -1,7 +1,7 @@
 
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import { AuthService } from '@services';
 import { MaterialModule } from '@material';
 import { Observable } from 'rxjs';
@@ -21,7 +21,10 @@ export class FooterComponent {
   isAuthenticated$: Observable<boolean>;
   isAdmin: Observable<boolean>;
 
-  constructor(private authService: AuthService) {
+  constructor(
+      private authService: AuthService,
+      public router: Router
+  ) {
     this.isAuthenticated$ = this.authService.isAuthenticated();
     this.isAdmin = this.authService.isAdmin();
   }
