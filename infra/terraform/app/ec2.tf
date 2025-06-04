@@ -19,8 +19,8 @@ resource "aws_vpc_security_group_egress_rule" "egress" {
 resource "aws_instance" "serve_app" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  associate_public_ip_address = false
-  subnet_id                   = data.aws_subnets.private.ids[0]
+  associate_public_ip_address = true
+  subnet_id                   = data.aws_subnets.public.ids[0]
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.serve_vm.id]
   root_block_device {

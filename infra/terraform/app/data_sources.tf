@@ -1,7 +1,7 @@
 data "aws_availability_zones" "available" {}
 
 data "aws_acm_certificate" "serve" {
-  domain   = "serve.${var.domain}"
+  domain   = "serveday.${var.domain}"
   statuses = ["ISSUED"]
 }
 
