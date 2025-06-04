@@ -25,7 +25,7 @@
 .header-with-instructions {
   display: flex;
   align-items: flex-start;
-  gap: 40px;
+  gap: 60px;
 }
 
 .header-left {
@@ -45,7 +45,6 @@
 .instructions-section {
   flex: 0 0 400px;
   align-self: flex-start;
-  margin-left: 10px;
 
   h4 {
     margin: 0 0 10px 0;
