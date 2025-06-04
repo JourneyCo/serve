@@ -24,8 +24,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
-import { ProjectService, GoogleMapsApiService, UserService } from "@services";
-import { Project, Tools, Skills, Categories, Ages, Supplies } from "@models";
+import { ProjectService, GoogleMapsService, UserService } from "@services";
+import { Project, Ages } from "@models";
 import { MatSelectModule } from "@angular/material/select";
 import {environment} from "../../../../environments/environment";
 
@@ -69,27 +69,14 @@ export class ProjectFormComponent implements OnInit {
   get sortedUsers() {
     return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
   }
-  toolList = Tools;
-  toolKeys = Object.keys(Tools);
-  tool_list: any;
-  skillList = Skills;
-  skillKeys = Object.keys(Skills);
-  skill_list: any;
-  categoryList = Categories;
-  categoryKeys = Object.keys(Categories);
-  category_list: any;
   ageList = Ages;
   ageKeys = Object.keys(Ages);
-  age_list: any;
-  supplyList = Supplies;
-  supplyKeys = Object.keys(Supplies);
-  supply_list: any;
   serve_day: string = environment.serveDay
 
   constructor(
       private fb: FormBuilder,
       private projectService: ProjectService,
-      private mapsService: GoogleMapsApiService,
+      private mapsService: GoogleMapsService,
       private userService: UserService,
       private dialogRef: MatDialogRef<ProjectFormComponent>,
       private snackBar: MatSnackBar,
@@ -123,10 +110,6 @@ export class ProjectFormComponent implements OnInit {
         project?.title || "",
         [Validators.required, Validators.maxLength(100)],
       ],
-      short_description: [
-        project?.short_description || "",
-        [Validators.required, Validators.maxLength(200)],
-      ],
       description: [
         project?.description || "",
         [Validators.required, Validators.minLength(10)],
@@ -137,7 +120,6 @@ export class ProjectFormComponent implements OnInit {
         project?.max_capacity || 10,
         [Validators.required, Validators.min(1), Validators.max(1000)],
       ],
-      location_name: [project?.location_name || ""],
       latitude: [
         project?.latitude || null,
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
@@ -146,13 +128,7 @@ export class ProjectFormComponent implements OnInit {
         project?.longitude || null,
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
       ],
-      wheelchair_accessible: [project?.wheelchair_accessible || false],
-      lead_user_id: [project?.lead_user_id || ""],
-      tools: [project?.tools?.map((t) => t.id) || []],
-      supplies: [project?.supplies?.map((s) => s.id) || []],
-      ages: [project?.ages?.map((a) => a.id) || []],
-      categories: [project?.categories?.map((c) => c.id) || []],
-      skills: [project?.skills?.map((s) => s.id) || []],
+      categories: [project?.types?.map((c) => c.id) || []],
     });
   }
 
@@ -168,25 +144,21 @@ export class ProjectFormComponent implements OnInit {
     const project: Project = {
       id: this.data.project?.id || 0,
       title: formValues.title,
-      short_description: formValues.short_description,
       description: formValues.description,
       time: formValues.time,
       max_capacity: formValues.max_capacity,
       current_registrations: this.data.project?.current_registrations || 0,
-      location_name: formValues.location_name || null,
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
-      wheelchair_accessible: formValues.wheelchair_accessible,
-      lead_user_id: formValues.lead_user_id,
-      tools: formValues.tools,
-      supplies: formValues.supplies,
       ages: formValues.ages,
-      categories: formValues.categories,
-      skills: formValues.skills,
+      types: formValues.categories,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.data.project?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      area: null,
+      serve_lead_id: null,
+      google_id: 0
     };
 
     console.log(project);

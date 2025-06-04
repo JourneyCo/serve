@@ -1,5 +1,5 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import {provideRouter, withRouterConfig} from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import {authHttpInterceptorFn, provideAuth0} from '@auth0/auth0-angular';
@@ -15,7 +15,7 @@ import {CookieService} from 'ngx-cookie-service';
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: 'fakevalue' },
-    provideRouter(routes),
+    provideRouter(routes, withRouterConfig( {onSameUrlNavigation: 'reload'})),
     provideAnimations(),
     provideAuth0({...env.auth0}),
     provideEnvironmentNgxMask(),

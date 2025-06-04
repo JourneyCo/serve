@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {GoogleMapsModule} from '@angular/google-maps';
-import {AuthService, HelperService, ProjectService, RegistrationService} from '@services';
+import {AuthService, HelperService, ProjectService, RegistrationService, ServeCookie} from '@services';
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Project, Registration, User} from '@models';
 import {
@@ -14,6 +14,7 @@ import {
 import { CancellationSuccessDialogComponent } from '../../../components/dialogs/cancellation-success-dialog/cancellation-success-dialog.component';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
+import {CookieService} from 'ngx-cookie-service';
 
 
 @Component({
@@ -74,6 +75,8 @@ export class ProjectDetailComponent implements OnInit {
     private helper: HelperService,
     private registrationService: RegistrationService,
     private linkifyService: NgxLinkifyjsService,
+    private cookieService: CookieService,
+    private serveCookie: ServeCookie
   ) {
     this.serve_date = helper.GetServeDate();
     this.myproject = this.router.getCurrentNavigation()?.extras.state?.['myproject'];
@@ -120,6 +123,10 @@ export class ProjectDetailComponent implements OnInit {
 
     // Get the project ID from the route
     const project_id = this.route.snapshot.paramMap.get("id");
+    if (this.cookieService.get("servedayproject") == project_id) {
+      this.myproject = true;
+    }
+
     if (!project_id || isNaN(+project_id)) {
       this.helper.showError("Invalid project ID");
       this.router.navigate(["/projects"]);
@@ -253,6 +260,9 @@ export class ProjectDetailComponent implements OnInit {
       this.userEmail = this.currentUser?.email
     }
     if (!this.userEmail || this.userEmail == "") {
+      this.userEmail = this.cookieService.get("servedayemail")
+    }
+    if (!this.userEmail || this.userEmail == "") {
       return
     }
 
@@ -260,6 +270,8 @@ export class ProjectDetailComponent implements OnInit {
 
     this.projectService.cancelRegistration(this.project.id, this.userEmail).subscribe({
       next: () => {
+        // @ts-ignore
+        this.serveCookie.DeleteProject(this.project.id)
         this.loadingRegistration = false;
         this.isRegistered = false;
         this.myproject = false;

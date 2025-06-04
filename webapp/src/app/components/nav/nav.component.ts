@@ -53,8 +53,10 @@ export class NavComponent {
           next: (registration) => {
             console.log(registration)
             if (registration && registration.project_id) {
-              this.router.navigate(['/projects', registration.project_id], {
-                state: { myproject: true, email: email}
+              this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigate(['/projects', registration.project_id], {
+                  state: { myproject: true, email: email, reload: Date.now()}
+                });
               });
             } else {
               this.helperService.showError('No project found for this email');
@@ -66,5 +68,9 @@ export class NavComponent {
         });
       }
     });
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 }

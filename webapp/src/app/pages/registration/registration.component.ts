@@ -12,7 +12,7 @@ import { Project, User } from '@models';
 import {HelperService, ProjectService, UserService} from '@services';
 import {AuthService} from '@auth0/auth0-angular';
 import {RecaptchaModule, ReCaptchaV3Service} from 'ng-recaptcha-2';
-import { CookieService } from 'ngx-cookie-service';
+import {ServeCookie} from '@services';
 
 
 @Component({
@@ -44,7 +44,7 @@ export class RegistrationComponent implements OnInit {
     private helper: HelperService,
     private auth0: AuthService,
     private dialog: MatDialog,
-    private cookieService: CookieService,
+    private serveCookie: ServeCookie,
   ) {
     this.registrationForm = this.fb.group({
       email: ['', Validators.email],
@@ -88,16 +88,8 @@ export class RegistrationComponent implements OnInit {
       this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
         next: (response) => {
           this.loading = false;
-          this.cookieService.set("servedayemail", this.registrationForm.value.email, {
-            expires: 180,
-            secure: true,
-            path: '/',
-          });
-          this.cookieService.set("servedayproject", String(this.project.id), {
-            expires: 180,
-            secure: true,
-            path: '/',
-          });
+          this.serveCookie.SetEmail(this.registrationForm.value.email);
+          this.serveCookie.SetProject(this.project.id)
           if (response.status === 208) {
             this.dialog.open(AlreadyRegisteredDialogComponent, {
               width: '400px',

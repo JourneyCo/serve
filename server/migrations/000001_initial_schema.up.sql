@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS projects (
                                         updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
                                         status status NOT NULL DEFAULT 'open',
                                         website TEXT NOT NULL DEFAULT '',
-                                        ages TEXT NOT NULL DEFAULT 'All Ages'
+                                        ages TEXT NOT NULL DEFAULT 'All Ages',
+                                        leads JSONB DEFAULT '{}'::jsonb
 );
 
 CREATE TABLE IF NOT EXISTS registrations (
