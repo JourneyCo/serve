@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var TotalProjectsOnSheet = 53
+var TotalProjectsOnSheet = 56
 var serveDay = time.Date(2025, 7, 12, 0, 0, 0, 0, time.UTC)
 var serveDayPostgresStyle = serveDay.Format("2006-01-02 15:04:05-07:00") // "2025-07-12 00:00:00+00:00"
 
