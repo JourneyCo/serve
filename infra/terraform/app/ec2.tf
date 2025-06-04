@@ -49,6 +49,9 @@ resource "aws_instance" "serve_app" {
     clearstream_api_key   = var.clearstream_api_key,
     clearstream_text_from = var.clearstream_text_from,
     google_key            = var.google_key
+    recaptcha_project     = var.recaptcha_project
+    recaptcha_key         = var.recaptcha_key
+    recaptcha_action      = var.recaptcha_action
   })
   tags = {
     Name = "serve-app"
