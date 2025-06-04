@@ -22,31 +22,40 @@
   margin: 0 auto;
 }
 
-.header-controls {
+.header-with-instructions {
   display: flex;
-  gap: 30px;
-  margin-bottom: 20px;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 30px;
+}
+
+.header-left {
+  flex: 1;
 }
 
 .filter-container {
-  flex: 1;
-  min-width: 300px;
+  margin-bottom: 20px;
+
+  mat-form-field {
+    width: 100%;
+    max-width: 400px;
+  }
 }
 
 .instructions-section {
-  align-self: flex-start;
-  
+  flex: 1;
+  max-width: 350px;
+
   h4 {
     margin: 0 0 10px 0;
     font-size: 1.1rem;
     color: var(--journeyBlue);
   }
-  
+
   ul {
     margin: 0;
     padding-left: 20px;
-    
+
     li {
       margin-bottom: 5px;
       font-size: 0.9rem;
@@ -56,12 +65,12 @@
 }
 
 @media (max-width: 968px) {
-  .header-controls {
+  .header-with-instructions {
     flex-direction: column;
     gap: 15px;
   }
-  
-  .filter-container {
-    min-width: unset;
+
+  .instructions-section {
+    max-width: none;
   }
 }
