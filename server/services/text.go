@@ -97,6 +97,7 @@ func (s *TextService) SendRegistrationConfirmation(user *models.User, project *m
 	if user.TextPermission {
 		return req.sendText()
 	}
+	log.Println("user refused text perms; registration txt process cancelled")
 	return nil
 }
 

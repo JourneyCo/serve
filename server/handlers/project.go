@@ -237,6 +237,18 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
+	// if any details about the user have changed, update them
+	if user.TextPermission != reg.TextPerm || user.Phone != reg.Phone || user.LeadInterest != reg.IsLeadInterested {
+		user.TextPermission = reg.TextPerm
+		user.Phone = reg.Phone
+		user.LeadInterest = reg.IsLeadInterested
+		err = models.UpdateUser(ctx, h.DB, user)
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to create user")
+			return
+		}
+	}
+
 	// Validate guest count
 	if reg.GuestCount < 0 {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Guest count cannot be negative")
@@ -262,7 +274,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 	}
 
 	// Send confirmation email
-	if user != nil && project != nil {
+	if project != nil {
 		var wg sync.WaitGroup
 		wg.Add(2)
 		go func() {
