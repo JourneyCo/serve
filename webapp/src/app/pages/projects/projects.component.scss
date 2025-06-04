@@ -25,11 +25,12 @@
 .header-with-instructions {
   display: flex;
   align-items: flex-start;
-  gap: 30px;
+  gap: 40px;
 }
 
 .header-left {
-  flex: 2;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .filter-container {
@@ -42,8 +43,7 @@
 }
 
 .instructions-section {
-  flex: 1;
-  max-width: 350px;
+  flex: 0 0 400px;
   align-self: flex-start;
 
   h4 {
