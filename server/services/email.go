@@ -2,16 +2,17 @@ package services
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
+	"net/http"
 	"net/smtp"
 	"path"
 	"path/filepath"
-	"strconv"
 	"time"
 
-	"github.com/go-gomail/gomail"
 	"serve/config"
 	"serve/models"
 )
@@ -131,43 +132,58 @@ func (s *EmailService) sendEmail(to, subject, templateStr string, data interface
 	}
 
 	// Execute template
-	var body bytes.Buffer
-	if err = t.Execute(&body, data); err != nil {
+	var htmlBody bytes.Buffer
+	if err = t.Execute(&htmlBody, data); err != nil {
 		return fmt.Errorf("failed to execute email template: %w", err)
 	}
 
-	// Create a new message
-	message := gomail.NewMessage()
-
-	// Set email headers
-	message.SetHeader("From", s.Config.MailFrom)
-	message.SetHeader("To", to)
-	message.SetHeader("Subject", subject)
-
-	// Set the plain-text version of the email
-	message.SetBody(
-		"text/plain",
-		"This is a Test Email\n\nHello!\nThis is a test email with plain-text formatting.\nThanks,\nMailtrap",
-	)
-
-	// Set the HTML version of the email
-	message.AddAlternative("text/html", body.String())
-	port, err := strconv.Atoi(s.Config.MailPort)
+	payload := map[string]interface{}{
+		"from":    map[string]string{"email": s.Config.MailFrom},
+		"to":      []map[string]string{{"email": to}},
+		"subject": subject,
+		"text":    "You are confirmed for Serve Day",
+		"html":    htmlBody.String(),
+		"reply_to": map[string]string{
+			"email": "scarrington@gmail.com",
+			"name":  "Scott Carrington",
+		},
+	}
+	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
-		log.Println("error parsing mail port: ", err)
-		return err
+		return fmt.Errorf("failed to marshal email template: %w", err)
 	}
 
-	// Set up the SMTP dialer
-	dialer := gomail.NewDialer(s.Config.MailHost, port, s.Config.MailUser, s.Config.MailPass)
+	// Replace with your Mailtrap API token
+	token := s.Config.MailKey
+	// Mailtrap API endpoint
+	apiURL := s.Config.MailHost
 
-	// Send the email
-	if err = dialer.DialAndSend(message); err != nil {
-		fmt.Println("Error:", err)
-		return err
-	} else {
-		fmt.Println("HTML Email sent successfully with a plain-text alternative!")
+	// Create HTTP request
+	req, err := http.NewRequest(http.MethodPost, "https://"+apiURL, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return fmt.Errorf("failed to create email request: %w", err)
 	}
+
+	// Set headers
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	// Send request
+	client := http.Client{Timeout: 5 * time.Second}
+	res, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send email via provider: %w", err)
+	}
+	defer res.Body.Close()
+
+	// Read and print response
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("error reading response body: %w", err)
+	}
+	fmt.Println(string(body))
+
 	log.Printf("Email sent to %s: %s", to, subject)
 	return nil
+
 }

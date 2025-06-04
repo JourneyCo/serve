@@ -88,6 +88,7 @@ func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
 	if errors.Is(err, sql.ErrNoRows) {
 		log.Println("no registrations found for this email")
 		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+		return
 	} else {
 		if err != nil {
 			middleware.RespondWithError(w, http.StatusTeapot, "Failed to find user")
@@ -99,6 +100,7 @@ func (h *ProjectHandler) GetMyProject(w http.ResponseWriter, r *http.Request) {
 	if errors.Is(err, sql.ErrNoRows) {
 		log.Println("no registrations found for this email")
 		middleware.RespondWithError(w, http.StatusContinue, "Failed to retrieve registrations")
+		return
 	} else {
 		if err != nil {
 			log.Println("failed to retrieve user registrations")

@@ -79,10 +79,9 @@ func Load() (*Config, error) {
 		// Email config - in dev mode use placeholders
 		MailHost: getEnv("MAIL_HOST", "smtp.example.com"),
 		MailKey:  getEnv("MAIL_KEY", "apikey"),
-		MailFrom: getEnv("MAIL_FROM", "from@example.com"),
-		MailPort: getEnv("MAIL_PORT", "587"),
-		MailUser: getEnv("MAIL_USER", "user"),
-		MailPass: getEnv("MAIL_PASS", "password"),
+		MailFrom: getEnv("MAIL_FROM", "admin@serveday.journeycolorado.com"),
+		MailPort: getEnv("MAIL_REPLYTO_EMAIL", "scarrington@gmail.com"),
+		MailUser: getEnv("MAIL_REPLYTO_NAME", "Scott Carrington"),
 
 		// Text config
 		ClearStreamAPIKey: getEnv("CS_API_KEY", "apikey"),
