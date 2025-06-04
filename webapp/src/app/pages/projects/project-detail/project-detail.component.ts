@@ -11,6 +11,7 @@ import {
   AdminProjectPanelComponent,
   EditGuestCountDialogComponent
 } from '@components';
+import { CancellationSuccessDialogComponent } from '../../../components/dialogs/cancellation-success-dialog/cancellation-success-dialog.component';
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 
@@ -262,7 +263,12 @@ export class ProjectDetailComponent implements OnInit {
         this.loadingRegistration = false;
         this.isRegistered = false;
         this.myproject = false;
-        this.helper.showSuccess("Registration cancelled successfully");
+        
+        // Show success dialog
+        this.dialog.open(CancellationSuccessDialogComponent, {
+          width: '400px',
+          disableClose: false
+        });
 
         // Reload project to get updated capacity
         this.loadProjectDetails(this.project!.id);
