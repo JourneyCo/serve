@@ -100,3 +100,15 @@
   object-fit: cover;
 }
 
+.shirt-paragraph {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.shirt-icon {
+  width: 24px;
+  height: 24px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
