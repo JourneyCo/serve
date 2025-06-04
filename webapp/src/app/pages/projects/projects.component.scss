@@ -24,13 +24,12 @@
 
 .header-with-instructions {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   gap: 30px;
 }
 
 .header-left {
-  flex: 1;
+  flex: 2;
 }
 
 .filter-container {
