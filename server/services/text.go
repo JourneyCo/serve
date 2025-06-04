@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -74,7 +75,14 @@ func NewTextService(cfg *config.Config) *TextService {
 }
 
 // SendRegistrationConfirmation sends a confirmation text when a user registers for a project
-func (s *TextService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
+func (s *TextService) SendRegistrationConfirmation(user *models.User, project *models.Project) {
+	if !user.TextPermission {
+		log.Println("user refused text perms; registration txt process cancelled")
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 24*time.Hour)
+	defer cancel()
 	subject := fmt.Sprintf("Registration Confirmation: %s", project.Title)
 
 	// Format dates
@@ -93,12 +101,23 @@ func (s *TextService) SendRegistrationConfirmation(user *models.User, project *m
 		APIKey:     s.APIKey,
 	}
 
-	// Send the text
-	if user.TextPermission {
-		return req.sendText()
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	for attempt := 1; ; attempt++ {
+		select {
+		case <-ctx.Done():
+			log.Printf("Text failed after 24 hours: %v", req)
+			return
+		case <-ticker.C:
+			err := req.sendText()
+			if err == nil {
+				log.Printf("Text succeeded on attempt %d to %s", attempt, user.Phone)
+				return
+			}
+			log.Printf("Text Attempt %d failed: %v", attempt, err)
+		}
 	}
-	log.Println("user refused text perms; registration txt process cancelled")
-	return nil
 }
 
 // SendReminderText sends a reminder text for an upcoming project

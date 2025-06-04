@@ -2,6 +2,7 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -30,6 +31,11 @@ type EmailService struct {
 	auth   smtp.Auth
 }
 
+// EmailService handles email operations
+type mailtrapResponse struct {
+	Success bool `json:"success"`
+}
+
 // NewEmailService creates a new email service
 func NewEmailService(cfg *config.Config) *EmailService {
 	auth := smtp.PlainAuth(
@@ -46,7 +52,9 @@ func NewEmailService(cfg *config.Config) *EmailService {
 }
 
 // SendRegistrationConfirmation sends a confirmation email when a user registers for a project
-func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project) error {
+func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project) {
+	ctx, cancel := context.WithTimeout(context.Background(), 24*time.Hour)
+	defer cancel()
 	subject := fmt.Sprintf("Serve Day Project Confirmation")
 
 	// Format dates
@@ -73,8 +81,23 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		ProjectDateFull: project.ProjectDate,
 	}
 
-	// Send the email
-	return s.sendEmail(user.Email, subject, Registration, data)
+	ticker := time.NewTicker(1 * time.Minute)
+	defer ticker.Stop()
+
+	for attempt := 1; ; attempt++ {
+		select {
+		case <-ctx.Done():
+			log.Printf("Email failed after 24 hours: %v", data)
+			return
+		case <-ticker.C:
+			err := s.sendEmail(ctx, user.Email, subject, Registration, data)
+			if err == nil {
+				log.Printf("Email succeeded on attempt %d to %s", attempt, user.Email)
+				return
+			}
+			log.Printf("Email Attempt %d failed: %v", attempt, err)
+		}
+	}
 }
 
 // SendReminderEmail sends a reminder email for an upcoming project
@@ -117,12 +140,13 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 		DaysLeft:     daysLeft,
 	}
 
+	ctx := context.Background()
 	// Send the email
-	return s.sendEmail(registration.User.Email, subject, templateStr, data)
+	return s.sendEmail(ctx, registration.User.Email, subject, templateStr, data)
 }
 
 // sendEmail is a helper function to send emails
-func (s *EmailService) sendEmail(to, subject, templateStr string, data interface{}) error {
+func (s *EmailService) sendEmail(ctx context.Context, to, subject, templateStr string, data interface{}) error {
 	// Parse template
 	p := filepath.Join("templates", templateStr)
 	name := path.Base(p)
@@ -159,7 +183,7 @@ func (s *EmailService) sendEmail(to, subject, templateStr string, data interface
 	apiURL := s.Config.MailHost
 
 	// Create HTTP request
-	req, err := http.NewRequest(http.MethodPost, "https://"+apiURL, bytes.NewBuffer(jsonPayload))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://"+apiURL, bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		return fmt.Errorf("failed to create email request: %w", err)
 	}
@@ -181,7 +205,15 @@ func (s *EmailService) sendEmail(to, subject, templateStr string, data interface
 	if err != nil {
 		return fmt.Errorf("error reading response body: %w", err)
 	}
-	fmt.Println(string(body))
+
+	var mtr mailtrapResponse
+	if err = json.Unmarshal(body, &mtr); err != nil {
+		return fmt.Errorf("error unmarshaling response")
+	}
+
+	if !mtr.Success {
+		return fmt.Errorf("email call completed but not successful: %v", string(body))
+	}
 
 	log.Printf("Email sent to %s: %s", to, subject)
 	return nil

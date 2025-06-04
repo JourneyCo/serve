@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -275,26 +274,10 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Send confirmation email
 	if project != nil {
-		var wg sync.WaitGroup
-		wg.Add(2)
-		go func() {
-			defer wg.Done()
-			err = h.EmailService.SendRegistrationConfirmation(user, project)
-			if err != nil {
-				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
-				log.Println(err)
-			}
-		}()
-		go func() {
-			defer wg.Done()
-			err = h.TextService.SendRegistrationConfirmation(user, project)
-			if err != nil {
-				log.Println("error sending registration email to: ", user.FirstName, " ", user.LastName)
-				log.Println(err)
-			}
-		}()
-
-		wg.Wait() // wait for email and text to both send
+		go h.EmailService.SendRegistrationConfirmation(user, project)
+		if user.TextPermission {
+			go h.TextService.SendRegistrationConfirmation(user, project)
+		}
 	}
 
 	middleware.RespondWithJSON(w, http.StatusCreated, registration)
