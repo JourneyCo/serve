@@ -11,6 +11,7 @@
           - tmux
           - nginx
           - docker
+          - postgresql15
   
     - name: setup nginx location
       become: true
@@ -109,7 +110,7 @@
 
     - name: Clone repo
       ansible.builtin.git:
-        repo: "git@github.com:scarrington76/serve.git"
+        repo: "git@github.com:journeyco/serve.git"
         dest: /home/ec2-user/serve
         accept_hostkey: true
 
