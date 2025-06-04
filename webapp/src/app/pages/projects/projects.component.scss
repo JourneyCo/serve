@@ -45,16 +45,19 @@
 .instructions-section {
   flex: 1;
   max-width: 350px;
+  align-self: flex-start;
 
   h4 {
     margin: 0 0 10px 0;
     font-size: 1.1rem;
     color: var(--journeyBlue);
+    text-align: left;
   }
 
   ul {
     margin: 0;
     padding-left: 20px;
+    text-align: left;
 
     li {
       margin-bottom: 5px;
