@@ -43,12 +43,15 @@
 
       <mat-card-content>
         <div class="project-details">
-<!--          <div>-->
-<!--            <strong>Date:</strong> {{ serve_date | date:'fullDate' }}-->
-<!--          </div>-->
+          <div>
+            <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
+          </div>
           <div>
             <strong>Time:</strong> {{ project.time }}
           </div>
+            <div>
+                <strong>Address:</strong> {{ project.location_address }}
+            </div>
             <div>
                 <strong>Ages:</strong> {{ project.ages }}
             </div>
