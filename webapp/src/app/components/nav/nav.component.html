@@ -9,34 +9,29 @@
 
     <div class="nav-links">
       <!-- Always visible links -->
-      <a
-        mat-button
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+      <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         <mat-icon>home</mat-icon>
         <span>Serve Day Home</span>
       </a>
 
-        <a mat-button routerLink="/projects" routerLinkActive="active">
-          <mat-icon>view_list</mat-icon>
-          <span>Browse Projects</span>
-        </a>
+      <a mat-button routerLink="/projects" routerLinkActive="active">
+        <mat-icon>view_list</mat-icon>
+        <span>Browse Projects</span>
+      </a>
 
-        <a mat-button (click)="findMyProject()" routerLinkActive="active">
-            <mat-icon>view_list</mat-icon>
-            <span>My Project</span>
-        </a>
+      <a mat-button (click)="findMyProject()" routerLinkActive="active">
+        <mat-icon>search</mat-icon>
+        <span>Find My Project</span>
+      </a>
 
-<!--      &lt;!&ndash; Authenticated user links &ndash;&gt;-->
-<!--        @if (isAuthenticated$ | async) {-->
-<!--        <a mat-button routerLink="/profile" routerLinkActive="active">-->
-<!--          <mat-icon>account_circle</mat-icon>-->
-<!--          <span>Profile</span>-->
-<!--        </a>-->
+      <!--      &lt;!&ndash; Authenticated user links &ndash;&gt;-->
+      <!--        @if (isAuthenticated$ | async) {-->
+      <!--        <a mat-button routerLink="/profile" routerLinkActive="active">-->
+      <!--          <mat-icon>account_circle</mat-icon>-->
+      <!--          <span>Profile</span>-->
+      <!--        </a>-->
 
-<!--        }-->
+      <!--        }-->
     </div>
 
 
