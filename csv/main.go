@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-var TotalProjectsOnSheet = 56
+var TotalProjectsOnSheet = 55
 var serveDay = time.Date(2025, 7, 12, 0, 0, 0, 0, time.UTC)
 var serveDayPostgresStyle = serveDay.Format("2006-01-02 15:04:05-07:00") // "2025-07-12 00:00:00+00:00"
 
@@ -203,8 +203,7 @@ func GeocodeAddress(address string) (float64, float64) {
 
 	// Check if the response has results
 	if placesResponse.Status != "OK" || len(placesResponse.Results) == 0 {
-		log.Print("got here")
-		log.Fatal("could not get result")
+		return 39.491482, -104.874878
 	}
 
 	// Get the first result
