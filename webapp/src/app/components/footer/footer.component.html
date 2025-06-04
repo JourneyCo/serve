@@ -4,7 +4,7 @@
     <div class="footer-content">
       <span class="copyright">© 2025 Journey Serve Day</span>
 
-    @if (router.url === '/admin') {
+<!--    @if (router.url === '/admin') {-->
       <div class="auth-buttons">
         @if (isAuthenticated$ | async) {
           @if (isAdmin | async) {
@@ -24,7 +24,7 @@
           </button>
         }
       </div>
-    }
+<!--    }-->
 
     </div>
   </div>
