@@ -7,12 +7,23 @@
       </mat-card-header>
 
       <mat-card-content>
-      <div class="filter-container">
-        <mat-form-field appearance="outline">
-          <mat-label>Filter</mat-label>
-          <input matInput (keyup)="applyFilter($event)" placeholder="Search projects...">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
+      <div class="header-controls">
+        <div class="filter-container">
+          <mat-form-field appearance="outline">
+            <mat-label>Filter</mat-label>
+            <input matInput (keyup)="applyFilter($event)" placeholder="Search projects...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="instructions-section">
+          <h4>Instructions</h4>
+          <ul>
+            <li>Review the list below to pick a project</li>
+            <li>Click a project row for more details and to Register</li>
+            <li>After registering, to make updates, click Find Project, enter your email and click Edit or Cancel</li>
+          </ul>
+        </div>
       </div>
 
       <!-- View Toggle Buttons -->
@@ -149,18 +160,5 @@
     </mat-card>
   </div>
 
-  <div class="sidebar">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Instructions</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <ul>
-          <li>Review the list below to pick a project</li>
-          <li>Click a project row for more details and to Register</li>
-          <li>After registering, to make updates, click Find Project, enter your email and click Edit or Cancel</li>
-        </ul>
-      </mat-card-content>
-    </mat-card>
-  </div>
+  
 </div>

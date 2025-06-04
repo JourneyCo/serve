@@ -18,27 +18,50 @@
 
 .project-list-container {
   padding: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+.header-controls {
   display: flex;
-  gap: 20px;
+  gap: 30px;
+  margin-bottom: 20px;
+  align-items: flex-start;
 }
 
-.main-content {
-  flex: 2;
-}
-
-.sidebar {
+.filter-container {
   flex: 1;
   min-width: 300px;
 }
 
-@media (max-width: 968px) {
-  .project-list-container {
-    flex-direction: column;
+.instructions-section {
+  flex: 1;
+  
+  h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    color: var(--journeyBlue);
   }
+  
+  ul {
+    margin: 0;
+    padding-left: 20px;
+    
+    li {
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+  }
+}
 
-  .sidebar {
+@media (max-width: 968px) {
+  .header-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .filter-container {
     min-width: unset;
   }
 }
