@@ -62,14 +62,24 @@
   gap: 16px;
 
   button {
-    padding: 12px 24px;
-    font-size: 1.1rem;
     background-color: var(--journeyDarkBlue);
+    line-height: 1rem;
 
     mat-icon {
       margin-right: 8px;
     }
   }
+  @media (max-width: 768px) {
+    .button {
+     font-size: 0.8rem;
+    }
+  }
+  @media (min-width: 769px) {
+    .button, .mdc-button {
+      font-size: 1.1rem;
+    }
+  }
+
 }
 
 .flex-container {
@@ -89,3 +99,4 @@
   height: auto;
   object-fit: cover;
 }
+
