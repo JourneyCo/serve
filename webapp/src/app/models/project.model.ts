@@ -27,4 +27,5 @@ export interface Project {
   types?: Accessory[];
   created_at: string;
   updated_at: string;
+  encoded_address?: string;
 }

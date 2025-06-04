@@ -159,6 +159,7 @@ export class ProjectDetailComponent implements OnInit {
         if (this.project.website != null) {
           this.project.website = this.linkifyService.linkify(this.project.website, options);
         }
+        this.project.encoded_address = encodeURIComponent(this.project.location_address || "");
 
         // if the user is signed in, then we will check to see if they are already registered
         // note - you can hit this page without being signed in
