@@ -12,6 +12,8 @@ import { Project, User } from '@models';
 import {HelperService, ProjectService, UserService} from '@services';
 import {AuthService} from '@auth0/auth0-angular';
 import {RecaptchaModule, ReCaptchaV3Service} from 'ng-recaptcha-2';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Component({
   selector: 'app-registration',
@@ -31,6 +33,7 @@ export class RegistrationComponent implements OnInit {
   registrationForm: FormGroup;
   project: Project;
   user: User | null = null;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -41,7 +44,7 @@ export class RegistrationComponent implements OnInit {
     private helper: HelperService,
     private auth0: AuthService,
     private dialog: MatDialog,
-    private recaptchaV3Service: ReCaptchaV3Service
+    private cookieService: CookieService,
   ) {
     this.registrationForm = this.fb.group({
       email: ['', Validators.email],
@@ -80,40 +83,53 @@ export class RegistrationComponent implements OnInit {
       // this.recaptchaV3Service.execute('submitRegistration').subscribe({
       //     next: (token) => {
       //       console.log(this.registrationForm.value);
-            if (this.registrationForm.valid && this.project) {
-              this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
-                next: (response) => {
-                  if (response.status === 208) {
-                    this.dialog.open(AlreadyRegisteredDialogComponent, {
-                      width: '400px',
-                      disableClose: true
-                    });
-                  } else if (response.status === 201 || response.status === 200) {
-                    this.dialog.open(RegistrationCompleteDialogComponent, {
-                      width: '400px',
-                      disableClose: true
-                    });
-                  }
-                },
-                error: (error: any) => {
-                  if (error.status === 409) {
-                    this.dialog.open(AlreadyRegisteredElsewhereDialogComponent, {
-                      width: '400px',
-                      disableClose: true
-                    });
-                  } else {
-                    console.error('Error registering:', error);
-                    this.helper.showError('Error registering for project');
-                  }
-                },
-              });
-            }
-          // },
-          // error: (error: any) => {
-          //     console.error('Error procesing captcha:', error);
-          //     this.helper.showError('Error registering for project');
-          // },
-      // });
+    this.loading = true;
+    if (this.registrationForm.valid && this.project) {
+      this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
+        next: (response) => {
+          this.loading = false;
+          this.cookieService.set("servedayemail", this.registrationForm.value.email, {
+            expires: 180,
+            secure: true,
+            path: '/',
+          });
+          this.cookieService.set("servedayproject", String(this.project.id), {
+            expires: 180,
+            secure: true,
+            path: '/',
+          });
+          if (response.status === 208) {
+            this.dialog.open(AlreadyRegisteredDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
+          } else if (response.status === 201 || response.status === 200) {
+            this.dialog.open(RegistrationCompleteDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
+          }
+        },
+        error: (error: any) => {
+          this.loading = false;
+          if (error.status === 409) {
+            this.dialog.open(AlreadyRegisteredElsewhereDialogComponent, {
+              width: '400px',
+              disableClose: true
+            });
+          } else {
+            console.error('Error registering:', error);
+            this.helper.showError('Error registering for project');
+          }
+        },
+      });
+    }
+  // },
+  // error: (error: any) => {
+  //     console.error('Error procesing captcha:', error);
+  //     this.helper.showError('Error registering for project');
+  // },
+// });
   }
 
   onCancel(): void {

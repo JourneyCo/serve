@@ -61,7 +61,10 @@
 
           <div class="button-row">
             <button mat-button type="button" (click)="onCancel()">Cancel</button>
-            <button mat-raised-button color="primary" type="submit">Register</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+                <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                <span *ngIf="!loading">Register</span>
+            </button>
           </div>
         </form>
       }

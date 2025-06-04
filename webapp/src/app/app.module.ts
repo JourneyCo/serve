@@ -10,6 +10,7 @@ import { environment as env } from '../environments/environment';
 import {NgxLinkifyjsModule} from 'ngx-linkifyjs-v2';
 import {provideEnvironmentNgxMask} from 'ngx-mask';
 import {RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module} from 'ng-recaptcha-2';
+import {CookieService} from 'ngx-cookie-service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -25,5 +26,6 @@ export const appConfig: ApplicationConfig = {
         RecaptchaV3Module
     ),
     provideHttpClient(withInterceptors([authHttpInterceptorFn])),
+      CookieService
   ]
 };
