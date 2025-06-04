@@ -31,8 +31,14 @@ MAIL_PASS=${mailtrap_pass}
 # Clearstream Text config
 CS_API_KEY=${clearstream_api_key}
 CS_TEXT_FROM=${clearstream_text_from}
+
 # Google Maps API config
 GOOGLE_MAPS_API_KEY=${google_key}
+
+# Recaptcha
+RECAPTCHA_PROJECT=${recaptcha_project}
+RECAPTCHA_KEY=${recaptcha_key}
+RECAPTCHA_ACTION=${recaptcha_action}
 EOF
 chown ec2-user:ec2-user /home/ec2-user/serve/server/.env
 systemctl start nginx

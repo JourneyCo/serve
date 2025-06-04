@@ -117,3 +117,13 @@ variable "clearstream_text_from" {
 variable "google_key" {
   type = string
 }
+
+variable "recaptcha_project" {
+  type = string
+}
+variable "recaptcha_key" {
+  type = string
+}
+variable "recaptcha_action" {
+  type = string
+}
