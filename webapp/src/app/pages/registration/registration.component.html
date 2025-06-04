@@ -28,7 +28,7 @@
               <mat-form-field appearance="outline">
                   <mat-label>Number of Guests</mat-label>
                   <input matInput type="number" formControlName="guest_count" min="0" [max]="project.max_capacity-project.current_registrations-1">
-                  <mat-hint>Enter the number of guests you'll bring (0-10)</mat-hint>
+                  <mat-hint>Enter the number of guests (not including yourself) you'll bring (0-10)</mat-hint>
                   <mat-error *ngIf="registrationForm.get('guest_count')?.hasError('max')">
                       # of volunteers is greater than capacity
                   </mat-error>

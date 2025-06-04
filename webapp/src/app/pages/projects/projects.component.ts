@@ -1,12 +1,12 @@
 import {AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { RouterModule, Router } from "@angular/router";
-import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
-import { HelperService, ProjectService } from '@services';
-import { Project } from '@models';
-import { MaterialModule } from '@material';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import {CommonModule} from '@angular/common';
+import {Router, RouterModule} from '@angular/router';
+import {GoogleMapsModule, MapAdvancedMarker, MapInfoWindow} from '@angular/google-maps';
+import {HelperService, ProjectService} from '@services';
+import {Project} from '@models';
+import {MaterialModule} from '@material';
+import {MatTableDataSource} from '@angular/material/table';
+import {MatSort} from '@angular/material/sort';
 
 @Component({
   selector: "app-project-list",
@@ -91,7 +91,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   loadProjects(): void {
     this.isLoading = true;
     this.projectService.getProjects().subscribe({
-      next: (projects) => {
+      next: (data) => {
+        let projects = this.sortProjects(data);
         this.dataSource.data = projects;
 
         // Create markers for projects with valid coordinates
@@ -218,5 +219,20 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
   // }
   trackByFn(index: number, project: Project): number {
     return project.id;
+  }
+
+  sortProjects(p_list: Project[]) {
+    return p_list.sort((a, b) => {
+    const aFull = a.current_registrations >= a.max_capacity;
+    const bFull = b.current_registrations >= b.max_capacity;
+
+    // If both projects are either full or not full, sort alphabetically by name
+    if (aFull === bFull) {
+      return a.title.localeCompare(b.title);
+    }
+
+    // Projects that are full go to the bottom
+    return aFull ? 1 : -1;
+  });
   }
 }
