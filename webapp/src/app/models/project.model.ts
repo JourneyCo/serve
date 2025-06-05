@@ -8,7 +8,7 @@ export interface Project {
   rich_description?: string;
   website?: string;
   time: string
-  project_date: string;
+  project_date: Date;
   max_capacity: number;
   current_registrations: number;
   area: string | null;
