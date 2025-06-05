@@ -24,9 +24,8 @@ AUTH0_CLIENT_SECRET=${auth0_client_secret}
 MAIL_HOST=${mailtrap_host}
 MAIL_KEY=${mailtrap_key}
 MAIL_FROM=${mailtrap_from}
-MAIL_PORT=${mailtrap_port}
-MAIL_USER=${mailtrap_user}
-MAIL_PASS=${mailtrap_pass}
+MAIL_REPLYTO_EMAIL=${mailtrap_replyto_email}
+MAIL_REPLYTO_NAME=${mailtrap_replyto_name}
 
 # Clearstream Text config
 CS_API_KEY=${clearstream_api_key}

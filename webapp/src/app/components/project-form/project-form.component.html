@@ -7,12 +7,7 @@
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Project Title</mat-label>
-          <input
-                  matInput
-                  formControlName="title"
-                  placeholder="Enter project title"
-                  required
-          />
+          <input matInput formControlName="title" placeholder="Enter project title" required />
           @if (projectForm.get("title")?.hasError("required")) {
           <mat-error> Title is required </mat-error>
           }
@@ -26,43 +21,29 @@
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Full Description</mat-label>
-          <textarea
-                  matInput
-                  formControlName="description"
-                  placeholder="Enter detailed project description"
-                  rows="4"
-                  required
-          ></textarea>
-            @if (projectForm.get("description")?.hasError("required")) {
-                <mat-error> Description is required </mat-error>
-            }
-            @if (projectForm.get("description")?.hasError("minlength")) {
-                <mat-error> Description must be at least 10 characters </mat-error>
-            }
+          <textarea matInput formControlName="description" placeholder="Enter detailed project description" rows="4"
+            required></textarea>
+          @if (projectForm.get("description")?.hasError("required")) {
+          <mat-error> Description is required </mat-error>
+          }
+          @if (projectForm.get("description")?.hasError("minlength")) {
+          <mat-error> Description must be at least 10 characters </mat-error>
+          }
         </mat-form-field>
       </div>
 
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Website</mat-label>
-          <input
-                  matInput
-                  formControlName="website"
-                  placeholder="Enter website URL"
-          />
+          <input matInput formControlName="website" placeholder="Enter website URL" />
         </mat-form-field>
       </div>
 
       <div class="form-row time-row">
         <mat-form-field appearance="outline">
           <mat-label>Time</mat-label>
-          <textarea
-                  matInput
-                  formControlName="time"
-                  placeholder="Enter a period of time (9:00AM - 9:30AM)"
-                  rows="1"
-                  required
-          ></textarea>
+          <textarea matInput formControlName="time" placeholder="Enter a period of time (9:00AM - 9:30AM)" rows="1"
+            required></textarea>
           @if (projectForm.get("time")?.hasError("required")) {
           <mat-error> Time is required </mat-error>
           }
@@ -72,18 +53,11 @@
       <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Maximum Capacity</mat-label>
-          <input
-                  matInput
-                  type="number"
-                  formControlName="max_capacity"
-                  min="1"
-                  max="1000"
-                  required
-          />
+          <input matInput type="number" formControlName="max_capacity" min="1" max="1000" required />
         </mat-form-field>
       </div>
 
-      <div class="form-row">
+      <!-- <div class="form-row">
         <mat-form-field appearance="outline">
           <mat-label>Serve Day Leader</mat-label>
           <mat-select formControlName="serve_lead_id" required>
@@ -96,6 +70,20 @@
           @if (projectForm.get("serve_lead_id")?.hasError("required")) {
           <mat-error> Serve Day Leader is required </mat-error>
           }
+        </mat-form-field>
+      </div> -->
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Serve Day Leader Name</mat-label>
+          <input matInput formControlName="serve_lead_name" required />
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Serve Day Leader Email</mat-label>
+          <input matInput placeholder="Enter Serve Day Leader's Email" formControlName="serve_lead_email" required />
         </mat-form-field>
       </div>
 
@@ -111,9 +99,9 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Ages</mat-label>
         <mat-select formControlName="ages" multiple>
-            <mat-option *ngFor="let age of ageList" [value]="age">
-                {{ age }}
-            </mat-option>
+          <mat-option *ngFor="let age of ageList" [value]="age">
+            {{ age }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -130,12 +118,7 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Area</mat-label>
-          <input
-                  matInput
-                  formControlName="area"
-                  placeholder="e.g., Castle Pines, Highlands Ranch, etc."
-                  required
-          />
+          <input matInput formControlName="area" placeholder="e.g., Castle Pines, Highlands Ranch, etc." required />
           @if (projectForm.get("area")?.hasError("required")) {
           <mat-error>Area is required</mat-error>
           }
@@ -145,21 +128,12 @@
       <div class="form-row">
         <mat-form-field appearance="outline" class="location-field">
           <mat-label>Location Address</mat-label>
-          <input
-                  matInput
-                  formControlName="location_address"
-                  placeholder="e.g., 123 Main St, San Francisco, CA"
-                  required
-          />
+          <input matInput formControlName="location_address" placeholder="e.g., 123 Main St, San Francisco, CA"
+            required />
           @if (projectForm.get("location_address")?.value && !geocoding) {
-          <button
-                  type="button"
-                  matSuffix
-                  mat-icon-button
-                  (click)="geocodeLocation(projectForm.get('location_address')?.value)"
-                  aria-label="Geocode address"
-                  matTooltip="Find coordinates for this address"
-          >
+          <button type="button" matSuffix mat-icon-button
+            (click)="geocodeLocation(projectForm.get('location_address')?.value)" aria-label="Geocode address"
+            matTooltip="Find coordinates for this address">
             <mat-icon>pin_drop</mat-icon>
           </button>
           }
@@ -175,12 +149,7 @@
       <div class="form-row coordinates-row">
         <mat-form-field appearance="outline">
           <mat-label>Latitude</mat-label>
-          <input
-                  matInput
-                  required
-                  formControlName="latitude"
-                  placeholder="e.g., 37.7749"
-          />
+          <input matInput required formControlName="latitude" placeholder="e.g., 37.7749" />
           @if (projectForm.get("latitude")?.hasError("pattern")) {
           <mat-error> Please enter a valid latitude value </mat-error>
           }
@@ -191,12 +160,7 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Longitude</mat-label>
-          <input
-                  matInput
-                  required
-                  formControlName="longitude"
-                  placeholder="e.g., -122.4194"
-          />
+          <input matInput required formControlName="longitude" placeholder="e.g., -122.4194" />
           @if (projectForm.get("longitude")?.hasError("pattern")) {
           <mat-error> Please enter a valid longitude value </mat-error>
           }
@@ -211,12 +175,7 @@
       <button mat-button mat-dialog-close [disabled]="submitting">
         Cancel
       </button>
-      <button
-              mat-raised-button
-              color="primary"
-              type="submit"
-              [disabled]="projectForm.invalid || submitting"
-      >
+      <button mat-raised-button color="primary" type="submit" [disabled]="projectForm.invalid || submitting">
         <mat-icon>save</mat-icon>
         @if (!submitting) {
         <span>{{ data.isEdit ? "Update" : "Create" }}</span>

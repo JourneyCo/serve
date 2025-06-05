@@ -1,244 +1,218 @@
 <div class="project-detail-container">
   @if (isLoading) {
-    <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading project details...</p>
-    </div>
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading project details...</p>
+  </div>
   }
 
   @if (!isLoading && !project) {
-    <div class="error-container">
-      <mat-icon color="warn">error</mat-icon>
-      <h2>Project Not Found</h2>
-      <p>The project you're looking for doesn't exist or has been removed.</p>
-      <button mat-raised-button routerLink="/projects">
-        Browse Available Projects
-      </button>
-    </div>
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <h2>Project Not Found</h2>
+    <p>The project you're looking for doesn't exist or has been removed.</p>
+    <button mat-raised-button routerLink="/projects">
+      Browse Available Projects
+    </button>
+  </div>
   }
 
   @if (!isLoading && project) {
-    <mat-card class="project-card">
-      <mat-card-header>
-          <mat-card-title>
-                <div>
-                  <button mat-button class="backButton" routerLink="/projects">
-                      <mat-icon>arrow_back</mat-icon> Back to Projects
-                  </button>
-                </div>
-              <h4 class="project-title-row mt-2">
-                  {{ project.title }}
-              </h4>
-          </mat-card-title>
-        <mat-card-subtitle>
-          @if (project.serve_lead) {
-            <div class="lead-subtitle">
-              <span class="lead-label">Serve Day Lead:</span>
-              <span>{{ project.serve_lead.first_name }} {{ project.serve_lead.last_name }}</span>
-              <span><a href="mailto:{{ project.serve_lead.email }}">{{project.serve_lead.email}}</a></span>
-            </div>
-          }
-        </mat-card-subtitle>
-      </mat-card-header>
-
-      <mat-card-content>
-        <div class="project-details">
-          <div>
-            <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
-          </div>
-          <div>
-            <strong>Time:</strong> {{ project.time }}
-          </div>
-            <div>
-                <strong>Address:</strong>
-                <a href="https://www.google.com/maps/dir/?api=1&destination={{this.project.encoded_address}}" target="_blank" rel="noopener noreferrer">
-                    {{ project.location_address }}
-                </a>
-            </div>
-            <div>
-                <strong>Ages:</strong> {{ project.ages }}
-            </div>
-            @if (project.website) {
-            <div>
-                <strong>Website:  </strong><span [innerHTML]="project.website"></span>
-            </div>
-            }
+  <mat-card class="project-card">
+    <mat-card-header>
+      <mat-card-title>
+        <div>
+          <button mat-button class="backButton" routerLink="/projects">
+            <mat-icon>arrow_back</mat-icon> Back to Projects
+          </button>
         </div>
-
-          @if (!myproject) {
-              <div class="mt-2">
-                  <button
-                          mat-raised-button
-                          class="darkbutton"
-                          (click)="openRegistrationForm()"
-                          [disabled]="loadingRegistration || isProjectFull()"
-                  >
-                      <mat-icon>event_available</mat-icon>
-                      <span>Register</span>
-                  </button>
-              </div>
-          }
-
-
-        <div class="project-capacity">
-          <h6>Registration Capacity</h6>
-          <div class="capacity-indicator">
-            <div class="capacity-bar-container">
-              <div class="capacity-bar"
-                   [ngClass]="getCapacityStatusClass(project)"
-                   [style.width.%]="getCapacityPercentage()"></div>
-            </div>
-            <div class="capacity-details">
-              <span class="capacity-text">
-                <strong>{{project.current_registrations}}</strong> / {{project.max_capacity}}
-              </span>
-              <span class="capacity-status" [ngClass]="getCapacityStatusClass(project)">
-                <ng-container *ngIf="project.current_registrations >= project.max_capacity">
-                  Full
-                </ng-container>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="project-description">
-          <h6>About This Project</h6>
-          <div class="full-description">
-            <p><span [innerHTML]="project.rich_description ? project.rich_description : project.description"></span></p>
-          </div>
-        </div>
-
-        @if (project.types && project.types.length > 0) {
-        <div class="project-tools">
-          <mat-chip-set>
-            @for (type of project.types; track type.id) {
-            <mat-chip>{{ types[type.id] }}</mat-chip>
-            }
-          </mat-chip-set>
+        <h4 class="project-title-row mt-2">
+          {{ project.title }}
+        </h4>
+      </mat-card-title>
+      <mat-card-subtitle>
+        @if (project.serve_lead) {
+        <div class="lead-subtitle">
+          <span class="lead-label">Serve Day Lead:</span>
+          <span>{{ project.serve_lead_name }}</span>
+          <span><a href="mailto:{{ project.serve_lead_email }}">{{project.serve_lead_email}}</a></span>
         </div>
         }
+      </mat-card-subtitle>
+    </mat-card-header>
 
-        <!-- Area Section - Only shown if lat/long is provided -->
-        @if (project.latitude && project.longitude) {
-          <div class="project-area">
-            @if (project.area) {
-              <p><strong>Location:</strong> {{ project.area }}</p>
-            }
-
-            @if (project.latitude && project.longitude) {
-              <!-- Google Maps component -->
-              <div class="map-container">
-                <google-map [options]="mapOptions" height="300px" width="100%">
-                  @if (markerPosition) {
-                    <map-marker
-                      [position]="markerPosition"
-                      [options]="markerOptions"
-                    ></map-marker>
-                  }
-                </google-map>
-              </div>
-
-              <div class="map-actions">
-                <a
-                  href="https://maps.google.com/?q={{ project.latitude }},{{
-                    project.longitude
-                  }}"
-                  target="_blank"
-                  mat-raised-button
-                  class="getDirections"
-                >
-                  <mat-icon>directions</mat-icon> Get Directions
-                </a>
-              </div>
-            }
-          </div>
-        }
-
-        <div class="registration-status">
-          @if (myproject) {
-            <div class="registered-message">
-              <mat-icon>check_circle</mat-icon>
-              <span>You are registered for this project</span>
-            </div>
-          }
-
-          @if (registrationError) {
-            <div class="error-message">
-              <mat-icon color="warn">error</mat-icon>
-              <span>{{ registrationError }}</span>
-            </div>
-          }
+    <mat-card-content>
+      <div class="project-details">
+        <div>
+          <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
         </div>
-      </mat-card-content>
+        <div>
+          <strong>Time:</strong> {{ project.time }}
+        </div>
+        <div>
+          <strong>Address:</strong>
+          <a href="https://www.google.com/maps/dir/?api=1&destination={{this.project.encoded_address}}" target="_blank"
+            rel="noopener noreferrer">
+            {{ project.location_address }}
+          </a>
+        </div>
+        <div>
+          <strong>Ages:</strong> {{ project.ages }}
+        </div>
+        @if (project.website) {
+        <div>
+          <strong>Website: </strong><span [innerHTML]="project.website"></span>
+        </div>
+        }
+      </div>
 
-      <mat-card-actions align="end">
-        <button mat-button class="backButton" routerLink="/projects">
-          <mat-icon>arrow_back</mat-icon> Back to Projects
+      @if (!myproject) {
+      <div class="mt-2">
+        <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
+          [disabled]="loadingRegistration || isProjectFull()">
+          <mat-icon>event_available</mat-icon>
+          <span>Register</span>
         </button>
-
-        @if (!myproject) {
-          <button
-            mat-raised-button
-            class="darkbutton"
-            (click)="openRegistrationForm()"
-            [disabled]="loadingRegistration || isProjectFull()"
-          >
-            <mat-icon>event_available</mat-icon>
-            <span>Register</span>
-          </button>
-        } @else {
-          <button
-            mat-raised-button
-            class="darkbutton"
-            (click)="openEditGuestCountDialog()"
-            [disabled]="loadingRegistration"
-            disabled
-          >
-            <mat-icon>edit</mat-icon>
-            <span>Edit Registration</span>
-          </button>
-        }
-
-        @if (myproject) {
-          <button
-            mat-raised-button
-            color="warn"
-            (click)="openCancellationDialog()"
-            [disabled]="loadingRegistration"
-          >
-            <mat-icon>event_busy</mat-icon>
-            @if (!loadingRegistration) {
-              <span>Cancel Registration</span>
-            }
-            @if (loadingRegistration) {
-              <span>Cancelling...</span>
-            }
-          </button>
-        }
-
-  <!-- Cancellation Dialog Template -->
-  <ng-template #cancellationDialog>
-    <div class="cancellation-dialog">
-      <h2 mat-dialog-title>Cancel Registration</h2>
-      <mat-dialog-content>
-        <p>Are you sure you want to cancel your registration for {{ project.title }}?</p>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>No, Keep Registration</button>
-        <button mat-raised-button color="warn" (click)="confirmCancellation()">
-          Yes, Cancel Registration
-        </button>
-      </mat-dialog-actions>
-    </div>
-  </ng-template>
-      </mat-card-actions>
-    </mat-card>
-
-    <!-- Admin Panel - Only visible to admins -->
-    @if (isAdmin | async) {
-      @if (project) {
-      <app-admin-project-panel [project]="project"></app-admin-project-panel>
+      </div>
       }
-    }
+
+
+      <div class="project-capacity">
+        <h6>Registration Capacity</h6>
+        <div class="capacity-indicator">
+          <div class="capacity-bar-container">
+            <div class="capacity-bar" [ngClass]="getCapacityStatusClass(project)"
+              [style.width.%]="getCapacityPercentage()"></div>
+          </div>
+          <div class="capacity-details">
+            <span class="capacity-text">
+              <strong>{{project.current_registrations}}</strong> / {{project.max_capacity}}
+            </span>
+            <span class="capacity-status" [ngClass]="getCapacityStatusClass(project)">
+              <ng-container *ngIf="project.current_registrations >= project.max_capacity">
+                Full
+              </ng-container>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-description">
+        <h6>About This Project</h6>
+        <div class="full-description">
+          <p><span [innerHTML]="project.rich_description ? project.rich_description : project.description"></span></p>
+        </div>
+      </div>
+
+      @if (project.types && project.types.length > 0) {
+      <div class="project-tools">
+        <mat-chip-set>
+          @for (type of project.types; track type.id) {
+          <mat-chip>{{ types[type.id] }}</mat-chip>
+          }
+        </mat-chip-set>
+      </div>
+      }
+
+      <!-- Area Section - Only shown if lat/long is provided -->
+      @if (project.latitude && project.longitude) {
+      <div class="project-area">
+        @if (project.area) {
+        <p><strong>Location:</strong> {{ project.area }}</p>
+        }
+
+        @if (project.latitude && project.longitude) {
+        <!-- Google Maps component -->
+        <div class="map-container">
+          <google-map [options]="mapOptions" height="300px" width="100%">
+            @if (markerPosition) {
+            <map-marker [position]="markerPosition" [options]="markerOptions"></map-marker>
+            }
+          </google-map>
+        </div>
+
+        <div class="map-actions">
+          <a href="https://maps.google.com/?q={{ project.latitude }},{{
+                    project.longitude
+                  }}" target="_blank" mat-raised-button class="getDirections">
+            <mat-icon>directions</mat-icon> Get Directions
+          </a>
+        </div>
+        }
+      </div>
+      }
+
+      <div class="registration-status">
+        @if (myproject) {
+        <div class="registered-message">
+          <mat-icon>check_circle</mat-icon>
+          <span>You are registered for this project</span>
+        </div>
+        }
+
+        @if (registrationError) {
+        <div class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ registrationError }}</span>
+        </div>
+        }
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button class="backButton" routerLink="/projects">
+        <mat-icon>arrow_back</mat-icon> Back to Projects
+      </button>
+
+      @if (!myproject) {
+      <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
+        [disabled]="loadingRegistration || isProjectFull()">
+        <mat-icon>event_available</mat-icon>
+        <span>Register</span>
+      </button>
+      } @else {
+      <button mat-raised-button class="darkbutton" (click)="openEditGuestCountDialog()" [disabled]="loadingRegistration"
+        disabled>
+        <mat-icon>edit</mat-icon>
+        <span>Edit Registration</span>
+      </button>
+      }
+
+      @if (myproject) {
+      <button mat-raised-button color="warn" (click)="openCancellationDialog()" [disabled]="loadingRegistration">
+        <mat-icon>event_busy</mat-icon>
+        @if (!loadingRegistration) {
+        <span>Cancel Registration</span>
+        }
+        @if (loadingRegistration) {
+        <span>Cancelling...</span>
+        }
+      </button>
+      }
+
+      <!-- Cancellation Dialog Template -->
+      <ng-template #cancellationDialog>
+        <div class="cancellation-dialog">
+          <h2 mat-dialog-title>Cancel Registration</h2>
+          <mat-dialog-content>
+            <p>Are you sure you want to cancel your registration for {{ project.title }}?</p>
+          </mat-dialog-content>
+          <mat-dialog-actions align="end">
+            <button mat-button mat-dialog-close>No, Keep Registration</button>
+            <button mat-raised-button color="warn" (click)="confirmCancellation()">
+              Yes, Cancel Registration
+            </button>
+          </mat-dialog-actions>
+        </div>
+      </ng-template>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Admin Panel - Only visible to admins -->
+  @if (isAdmin | async) {
+  @if (project) {
+  <app-admin-project-panel [project]="project"></app-admin-project-panel>
+  }
+  }
   }
 </div>

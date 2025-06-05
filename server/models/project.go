@@ -27,6 +27,8 @@ type Project struct {
 	Latitude        float64            `json:"latitude"`
 	Longitude       float64            `json:"longitude"`
 	ServeLeadID     string             `json:"serve_lead_id"`
+	ServeLeadName   string             `json:"serve_lead_name"`
+	ServeLeadEmail  string             `json:"serve_lead_email"`
 	ServeLead       *User              `json:"serve_lead,omitempty"`
 	Types           []ProjectAccessory `json:"types,omitempty"`
 	Ages            string             `json:"ages,omitempty"`
@@ -102,7 +104,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
-                p.created_at, p.updated_at, p.ages,
+                p.serve_lead_name, p.serve_lead_email, p.created_at, p.updated_at, p.ages,
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
@@ -114,7 +116,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.Website, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
-		&p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.CurrentReg,
+		&p.ServeLeadName, &p.ServeLeadEmail, &p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.CurrentReg,
 	)
 
 	if err != nil {
@@ -157,8 +159,8 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 
 	query := `
                 INSERT INTO projects (google_id, title, description, website, time, project_date, max_capacity, 
-                                    area, location_address, latitude, longitude, serve_lead_id)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                                    area, location_address, latitude, longitude, serve_lead_id, serve_lead_name, serve_lead_email)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id, created_at, updated_at
         `
 
@@ -177,6 +179,8 @@ func CreateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Latitude,
 		project.Longitude,
 		project.ServeLeadID,
+		project.ServeLeadName,
+		project.ServeLeadEmail,
 	).Scan(&project.ID, &project.CreatedAt, &project.UpdatedAt)
 	if err != nil {
 		log.Println("error creating project: ", err)

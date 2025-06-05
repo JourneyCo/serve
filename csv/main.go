@@ -62,6 +62,8 @@ func main() {
 
 		}
 
+		splitProjectLead := strings.Split(record[9], "\n")
+
 		lat, long := GeocodeAddress(record[13])
 
 		p := Project{
@@ -76,6 +78,8 @@ func main() {
 			Website:         record[17],
 			Latitude:        lat,
 			Longitude:       long,
+			ServeLeadName:   splitProjectLead[0],
+			ServeLeadEmail:  splitProjectLead[1],
 		}
 
 		projects = append(projects, p)
@@ -105,14 +109,14 @@ func main() {
 		return
 	}
 
-	sqlStmt := `INSERT INTO projects (google_id, title, description, time, project_date, max_capacity, area, latitude, longitude, serve_lead_id, location_address, website, ages) VALUES `
+	sqlStmt := `INSERT INTO projects (google_id, title, description, time, project_date, max_capacity, area, latitude, longitude, serve_lead_id, serve_lead_name, serve_lead_email, location_address, website, ages) VALUES `
 
 	for _, val := range projects {
 		vals := fmt.Sprintf(
-			"(%d, '%s', '%s', '%s', '%s', %d, '%s', %f, %f, '%s', '%s', '%s', '%s'), ", val.GoogleID, val.Title,
+			"(%d, '%s', '%s', '%s', '%s', %d, '%s', %f, %f, '%s', '%s', '%s', '%s', '%s', '%s'), ", val.GoogleID, val.Title,
 			val.Description,
 			val.Time, serveDayPostgresStyle, val.MaxCapacity, val.Area, val.Latitude, val.Longitude,
-			"example-user-123", val.LocationAddress, val.Website, val.Ages,
+			"example-user-123", val.ServeLeadName, val.ServeLeadEmail, val.LocationAddress, val.Website, val.Ages,
 		)
 		sqlStmt += vals
 	}
@@ -225,6 +229,8 @@ type Project struct {
 	Latitude        float64   `json:"latitude"`
 	Longitude       float64   `json:"longitude"`
 	ServeLeadID     string    `json:"serve_lead_id"`
+	ServeLeadName   string    `json:"serve_lead_name"`
+	ServeLeadEmail  string    `json:"serve_lead_email"`
 	Types           []string  `json:"types,omitempty"` // Type
 	Ages            string    `json:"ages,omitempty"`
 	CreatedAt       time.Time `json:"created_at"`

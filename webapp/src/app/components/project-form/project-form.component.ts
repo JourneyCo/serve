@@ -12,10 +12,10 @@ import {
   MAT_DIALOG_DATA,
 } from "@angular/material/dialog";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
-import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
+import { ProjectService, GoogleMapsService, UserService, HelperService } from '@services';
 import { Project, Types, Ages } from "@models";
 import { MatSelectModule } from "@angular/material/select";
-import {MaterialModule} from '@material';
+import { MaterialModule } from '@material';
 
 interface DialogData {
   projectID: number | null;
@@ -55,13 +55,13 @@ export class ProjectFormComponent implements OnInit {
 
 
   constructor(
-      private fb: FormBuilder,
-      private projectService: ProjectService,
-      private mapsService: GoogleMapsService,
-      private userService: UserService,
-      private dialogRef: MatDialogRef<ProjectFormComponent>,
-      private helper: HelperService,
-      @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private fb: FormBuilder,
+    private projectService: ProjectService,
+    private mapsService: GoogleMapsService,
+    private userService: UserService,
+    private dialogRef: MatDialogRef<ProjectFormComponent>,
+    private helper: HelperService,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
     this.dialogTitle = data.isEdit ? "Edit Project" : "Create New Project";
     this.minDate = new Date();
@@ -129,6 +129,8 @@ export class ProjectFormComponent implements OnInit {
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
       ],
       serve_lead_id: [this.project?.serve_lead_id || ""],
+      serve_lead_name: [this.project?.serve_lead_name || ""],
+      serve_lead_email: [this.project?.serve_lead_email || ""],
       ages: [this.project?.ages || "", Validators.required],
       types: [this.project?.types?.map((c) => c.id) || []],
     });
@@ -156,6 +158,8 @@ export class ProjectFormComponent implements OnInit {
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       serve_lead_id: formValues.serve_lead_id,
+      serve_lead_name: formValues.serve_lead_name,
+      serve_lead_email: formValues.serve_lead_email,
       ages: formValues.ages,
       types: formValues.types,
       location_address: formValues.location_address,
@@ -165,8 +169,8 @@ export class ProjectFormComponent implements OnInit {
     };
 
     const request = this.data.isEdit
-        ? this.projectService.updateProject(project)
-        : this.projectService.createProject(project);
+      ? this.projectService.updateProject(project)
+      : this.projectService.createProject(project);
 
     request.subscribe({
       next: (result) => {
@@ -182,13 +186,13 @@ export class ProjectFormComponent implements OnInit {
   }
   setupLocationGeocoding(): void {
     this.projectForm
-        .get("area")
-        ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
-        .subscribe((value) => {
-          if (value && value.length > 5) {
-            this.geocodeLocation(value);
-          }
-        });
+      .get("area")
+      ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
+      .subscribe((value) => {
+        if (value && value.length > 5) {
+          this.geocodeLocation(value);
+        }
+      });
   }
 
   geocodeLocation(address: string): void {
@@ -199,29 +203,29 @@ export class ProjectFormComponent implements OnInit {
     this.geocoding = true;
 
     this.mapsService
-        .geocodeAddressClientSide(address)
-        .pipe(
-            finalize(() => {
-              this.geocoding = false;
-            }),
-        )
-        .subscribe({
-          next: (result) => {
-            if (result) {
-              this.projectForm.patchValue({
-                latitude: result.latitude,
-                longitude: result.longitude,
-              });
+      .geocodeAddressClientSide(address)
+      .pipe(
+        finalize(() => {
+          this.geocoding = false;
+        }),
+      )
+      .subscribe({
+        next: (result) => {
+          if (result) {
+            this.projectForm.patchValue({
+              latitude: result.latitude,
+              longitude: result.longitude,
+            });
 
-              this.helper.showSuccess("Location geocoded successfully");
-            }
-          },
-          error: (error) => {
-            console.error("Geocoding error:", error);
-            this.helper.showError(
-              "Failed to geocode address: " + (error.message || "Unknown error"),
-            );
-          },
-        });
+            this.helper.showSuccess("Location geocoded successfully");
+          }
+        },
+        error: (error) => {
+          console.error("Geocoding error:", error);
+          this.helper.showError(
+            "Failed to geocode address: " + (error.message || "Unknown error"),
+          );
+        },
+      });
   }
 }
