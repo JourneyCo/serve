@@ -94,15 +94,11 @@ variable "mailtrap_from" {
   type = string
 }
 
-variable "mailtrap_port" {
-  type = number
-}
-
-variable "mailtrap_user" {
+variable "mailtrap_replyto_email" {
   type = string
 }
 
-variable "mailtrap_pass" {
+variable "mailtrap_replyto_name" {
   type = string
 }
 

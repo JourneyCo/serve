@@ -1,4 +1,4 @@
-import {Accessory} from './accessories';
+import { Accessory } from './accessories';
 
 export interface Project {
   id: number;
@@ -16,6 +16,8 @@ export interface Project {
   latitude: number | null;
   longitude: number | null;
   serve_lead_id: string | null;
+  serve_lead_name: string | null;
+  serve_lead_email: string | null;
   serve_lead?: {
     id: string;
     first_name: string;
