@@ -397,7 +397,7 @@ This project will involve a lot of different ways to serve in preparation for VB
 
 Shift 1 will be from 10 am to 12 pm at Journey Castle Pines. Volunteers will need to be 13 years and older.
 ', '10am - 12pm', '2025-07-12 00:00:00+00:00', 25, 'Journey Church (Castle Pines)', 39.491482, -104.874878, 'example-user-123', 'Nicole Cecil', 'nicoleacecil@gmail.com', '9009 Clydesdale Road
-Castle Pines, CO 80108', 'N/A', '12 Years and Older'), (55, 'Vacation Bible School Prep (Shift 2)', 'Vacation Bible School (VBS) is one of Journey's largest Kids Ministry's events of the year. There are over 300 kids signed up for this week-long experience at the Journey Castle Pines location.
+Castle Pines, CO 80108', 'N/A', '12 Years and Older'), (55, 'Vacation Bible School Prep (Shift 2)', 'Vacation Bible School (VBS) is one of Journey''s largest Kids Ministry''s events of the year. There are over 300 kids signed up for this week-long experience at the Journey Castle Pines location.
 
 This project will involve a lot of different ways to serve in preparation for VBS. There will be opportunities to decorate, clean, organize, sort, and simply be available in any way to help transform Journey into an environment for kids to take their next steps with Jesus.
 
