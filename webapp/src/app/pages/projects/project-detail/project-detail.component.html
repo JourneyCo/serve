@@ -44,17 +44,23 @@
     <mat-card-content>
       <div class="project-details">
         <div>
-          <strong>Date:</strong> {{ serve_date | date:'fullDate' }}
+          <!-- <strong>Date:</strong> {{ project.project_date | date:'fullDate' }} -->
+          <strong>Date:</strong> {{ project.project_date | date:'fullDate' }}
         </div>
         <div>
           <strong>Time:</strong> {{ project.time }}
         </div>
         <div>
           <strong>Address:</strong>
+          @if (project.location_address != 'TBD. Communicated week prior to project.') {
           <a href="https://www.google.com/maps/dir/?api=1&destination={{this.project.encoded_address}}" target="_blank"
             rel="noopener noreferrer">
             {{ project.location_address }}
           </a>
+          }
+          @else {
+          {{ project.location_address}}
+          }
         </div>
         <div>
           <strong>Ages:</strong> {{ project.ages }}
