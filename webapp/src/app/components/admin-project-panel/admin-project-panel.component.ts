@@ -33,7 +33,6 @@ export class AdminProjectPanelComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(this.project);
     this.loadRegistrations(this.project.id);
     this.registrationSubscription = this.registrationChange.registrationChange$.subscribe(() => {
       this.loadRegistrations(this.project.id);
@@ -45,7 +44,6 @@ export class AdminProjectPanelComponent implements OnInit {
     this.projectService.getProjectRegistrations(project).subscribe({
       next: (registrations) => {
         this.registrationsDataSource.data = registrations;
-        console.log(registrations);
         this.processingAction = false;
       },
       error: (error) => {

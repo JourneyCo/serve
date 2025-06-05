@@ -25,7 +25,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
 import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
-import {Project, Ages, Types} from '@models';
+import {Project, Ages, Type} from '@models';
 import { MatSelectModule } from "@angular/material/select";
 import {environment} from "../../../../environments/environment";
 
@@ -69,12 +69,11 @@ export class ProjectFormComponent implements OnInit {
   get sortedUsers() {
     return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
   }
-  ageList = Ages;
-  ageKeys = Object.keys(Ages);
+  agesList = Ages;
   serve_day: string = environment.serveDay
-  typeList = Types;
-  typeKeys = Object.keys(Types);
   types: Record<number, string> = {};
+  typeEntries: [string, string][];
+  allTypes: Type[];
 
   constructor(
       private fb: FormBuilder,
@@ -95,6 +94,7 @@ export class ProjectFormComponent implements OnInit {
     this.loadUsers();
     this.initForm();
     this.setupLocationGeocoding();
+    this.loadTypes();
   }
 
   loadUsers(): void {
@@ -134,7 +134,8 @@ export class ProjectFormComponent implements OnInit {
       serve_lead_name: [project?.serve_lead_name || "", Validators.required],
       location_address: [project?.location_address || "", Validators.required],
       area: [project?.area || "", Validators.required],
-      categories: [project?.types?.map((c) => c.id) || []],
+      categories: [project?.types?.map(type => type.id) || []],
+      ages: [project?.ages || "All Ages", Validators.required],
     });
   }
 
@@ -157,7 +158,6 @@ export class ProjectFormComponent implements OnInit {
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       ages: formValues.ages,
-      types: formValues.categories,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.data.project?.created_at || new Date().toISOString(),
@@ -165,10 +165,10 @@ export class ProjectFormComponent implements OnInit {
       area: formValues.area,
       serve_lead_name: formValues.serve_lead_name,
       serve_lead_email: formValues.serve_lead_email,
-      google_id: 0
+      google_id: 0,
+      types: formValues.categories
     };
 
-    console.log(project);
     const request = this.data.isEdit
         ? this.projectService.updateProject(project)
         : this.projectService.createProject(project);
@@ -252,11 +252,13 @@ export class ProjectFormComponent implements OnInit {
   loadTypes(): void {
     this.projectService.getTypes().subscribe({
       next: (typesData) => {
+        this.allTypes = typesData
         // Convert array to Record<number, string> format
         this.types = {};
         typesData.forEach(type => {
           this.types[type.id] = type.name;
         });
+        this.typeEntries = Object.entries(this.types);
       },
       error: (error: any) => {
         console.error("Error loading types:", error);

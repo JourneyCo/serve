@@ -8,7 +8,6 @@ import {AuthService, HelperService, ProjectService, RegistrationService, ServeCo
 import {Observable, Subscription} from 'rxjs';
 import {Ages, Project, Registration, User} from '@models';
 import {
-  AdminProjectPanelComponent,
   EditGuestCountDialogComponent
 } from '@components';
 import { CancellationSuccessDialogComponent } from '../../../components/dialogs/cancellation-success-dialog/cancellation-success-dialog.component';
@@ -198,7 +197,6 @@ export class ProjectDetailComponent implements OnInit {
     if ((!this.userEmail || this.userEmail == "") && this.currentUser && this.currentUser.email) {
         this.userEmail = this.currentUser?.email
       } else {
-      console.log("no user email exists")
       return
     }
     this.projectService.getUserRegistrations(this.userEmail).subscribe({

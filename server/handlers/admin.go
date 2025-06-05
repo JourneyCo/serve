@@ -189,11 +189,20 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if input.Title == "" || input.Description == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+	if input.Title == "" || input.Description == "" || input.Time == "" || input.MaxCapacity <= 0 {
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
 		)
 		return
+	}
+
+	// hard code
+	if input.ProjectDate == "" { // default to serve day
+		input.ProjectDate = "2025-07-12T00:00:00Z"
+	}
+
+	if input.ServeLeadID == "" { // default to serve day
+		input.ServeLeadID = "example-user-123"
 	}
 
 	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
@@ -259,8 +268,9 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
+
 	// Validate input
-	if input.Title == "" || input.Description == "" || input.Time == "" || input.ProjectDate == "" || input.MaxCapacity <= 0 {
+	if input.Title == "" || input.Description == "" || input.Time == "" || input.MaxCapacity <= 0 {
 		log.Println("missing required fields")
 		middleware.RespondWithError(
 			w, http.StatusBadRequest, "All fields are required and max capacity must be greater than 0",
@@ -287,6 +297,18 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
 	project.Ages = input.Ages
+
+	if len(input.Types) > 0 {
+		var typeList []models.ProjectAccessory
+		for _, val := range input.Types {
+			a := models.ProjectAccessory{
+				ID:   val,
+				Name: "",
+			}
+			typeList = append(typeList, a)
+		}
+		project.Types = typeList
+	}
 
 	leads, err := json.Marshal(input.Leads)
 	if err != nil {

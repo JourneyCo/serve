@@ -3,31 +3,13 @@ export type Accessory = {
     value: string
 }
 
-export const Types: Record<number, string> = {
-    1: "Arts & Crafts",
-    2: "Community Outreach",
-    3: "Español",
-    4: "Family/Kid Friendly",
-    5: "Food Prep & Distribution",
-    6: "Indoors",
-    7: "Landscaping",
-    8: "Minor Home Repairs",
-    9: "Outdoor",
-    10: "Painting",
-    11: "Prayer & Visitations",
-    12: "Skilled Construction",
-    13: "Sorting/Assembly",
-    14: "Block Party",
-    15: "Kids Ministry",
-    16: "Yard Work",
-    17: "Kid Friendly",
-    18: "Collection/Drop Off",
-    19: "Food Prep/Distribution",
-
-} as const;
+export type Type = {
+    id: number,
+    name: string
+}
 
 export const Ages = [
-    'All ages',
+    'All Ages',
     "Families with Small Children ONLY",
     "Families with Young Children",
     "1 Year and Older",

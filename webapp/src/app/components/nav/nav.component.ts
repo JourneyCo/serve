@@ -51,7 +51,6 @@ export class NavComponent {
       if (email) {
         this.projectService.getMyProject(email).subscribe({
           next: (registration) => {
-            console.log(registration)
             if (registration && registration.project_id) {
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigate(['/projects', registration.project_id], {

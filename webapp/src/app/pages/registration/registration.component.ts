@@ -11,7 +11,6 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { Project, User } from '@models';
 import {HelperService, ProjectService, UserService} from '@services';
 import {AuthService} from '@auth0/auth0-angular';
-import {RecaptchaModule, ReCaptchaV3Service} from 'ng-recaptcha-2';
 import {ServeCookie} from '@services';
 
 
@@ -23,7 +22,6 @@ import {ServeCookie} from '@services';
     ReactiveFormsModule,
     MaterialModule,
     NgxMaskDirective,
-      RecaptchaModule,
       ReactiveFormsModule
   ],
   templateUrl: './registration.component.html',
@@ -80,9 +78,6 @@ export class RegistrationComponent implements OnInit {
   }
 
   onSubmit(): void {
-      // this.recaptchaV3Service.execute('submitRegistration').subscribe({
-      //     next: (token) => {
-      //       console.log(this.registrationForm.value);
     this.loading = true;
     if (this.registrationForm.valid && this.project) {
       this.projectService.registerForProject(this.project.id, this.registrationForm.value).subscribe({
@@ -116,12 +111,7 @@ export class RegistrationComponent implements OnInit {
         },
       });
     }
-  // },
-  // error: (error: any) => {
-  //     console.error('Error procesing captcha:', error);
-  //     this.helper.showError('Error registering for project');
-  // },
-// });
+
   }
 
   onCancel(): void {

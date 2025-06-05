@@ -100,20 +100,22 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Categories</mat-label>
         <mat-select formControlName="categories" multiple>
-          @for (key of typeKeys; track key) {
-          <mat-option [value]="+key">{{ typeList[+key] }}</mat-option>
-          }
+            @for (type of allTypes; track type.id) {
+                <mat-option [value]="type.id">{{ type.name }}</mat-option>
+            }
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Ages</mat-label>
-        <mat-select formControlName="ages" multiple>
-          @for (key of ageKeys; track key) {
-          <mat-option [value]="+key">{{ ageList[+key] }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ages</mat-label>
+            <mat-select formControlName="ages">
+                @for (age of agesList; track age) {
+                    <mat-option [value]="age">
+                        {{ age }}
+                    </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
 
       <!-- Location Information Section -->
       <div class="section-label">

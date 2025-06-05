@@ -21,7 +21,6 @@ export class EditGuestCountDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { registration: Registration, project: Project },
     private fb: FormBuilder
   ) {
-    console.log(data.project)
     this.form = this.fb.group({
       guest_count: [data.registration.guest_count, [Validators.required, Validators.min(0)]]
     });
