@@ -233,6 +233,6 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     // Projects that are full go to the bottom
     return aFull ? 1 : -1;
-  });
+    });
   }
 }

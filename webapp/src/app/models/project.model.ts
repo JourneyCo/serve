@@ -11,13 +11,13 @@ export interface Project {
   project_date: string;
   max_capacity: number;
   current_registrations: number;
-  area: string | null;
+  area?: string;
   location_address: string | null;
   latitude: number | null;
   longitude: number | null;
-  serve_lead_id: string | null;
-  serve_lead_name: string | null;
-  serve_lead_email: string | null;
+  serve_lead_id?: string;
+  serve_lead_email?: string;
+  serve_lead_name?: string;
   serve_lead?: {
     id: string;
     first_name: string;
@@ -30,4 +30,5 @@ export interface Project {
   created_at: string;
   updated_at: string;
   encoded_address?: string;
+  leads?: string;
 }

@@ -33,6 +33,7 @@ export class AdminProjectPanelComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log(this.project);
     this.loadRegistrations(this.project.id);
     this.registrationSubscription = this.registrationChange.registrationChange$.subscribe(() => {
       this.loadRegistrations(this.project.id);
@@ -44,6 +45,7 @@ export class AdminProjectPanelComponent implements OnInit {
     this.projectService.getProjectRegistrations(project).subscribe({
       next: (registrations) => {
         this.registrationsDataSource.data = registrations;
+        console.log(registrations);
         this.processingAction = false;
       },
       error: (error) => {
@@ -88,6 +90,7 @@ export class AdminProjectPanelComponent implements OnInit {
         this.projectService.updateRegistration(registration.id, { guest_count: result }).subscribe({
           next: () => {
             this.loadRegistrations(this.project.id);
+            this.loadProject();
             this.helper.showSuccess('Guest count updated successfully');
             this.processingAction = false;
             this.registrationChange.triggerRegistrationChange();
@@ -100,5 +103,13 @@ export class AdminProjectPanelComponent implements OnInit {
         });
       }
     });
+  }
+
+  loadProject() {
+    this.projectService.getProject(this.project.id).subscribe({
+      next: (data) => {
+        this.project = data;
+      }
+    })
   }
 }

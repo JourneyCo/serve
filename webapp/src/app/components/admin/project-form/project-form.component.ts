@@ -6,7 +6,7 @@ import {
   FormGroup,
   Validators,
   FormsModule,
-} from "@angular/forms";
+} from '@angular/forms';
 import {
   MatDialogRef,
   MAT_DIALOG_DATA,
@@ -25,7 +25,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
 import { ProjectService, GoogleMapsService, UserService } from "@services";
-import { Project, Ages } from "@models";
+import {Project, Ages, Types} from '@models';
 import { MatSelectModule } from "@angular/material/select";
 import {environment} from "../../../../environments/environment";
 
@@ -72,6 +72,8 @@ export class ProjectFormComponent implements OnInit {
   ageList = Ages;
   ageKeys = Object.keys(Ages);
   serve_day: string = environment.serveDay
+  typeList = Types;
+  typeKeys = Object.keys(Types);
 
   constructor(
       private fb: FormBuilder,
@@ -116,7 +118,7 @@ export class ProjectFormComponent implements OnInit {
       ],
       project_date: [defaultDate],
       time: [project?.time || "", Validators.required],
-      max_capacity: [
+           max_capacity: [
         project?.max_capacity || 10,
         [Validators.required, Validators.min(1), Validators.max(1000)],
       ],
@@ -128,7 +130,11 @@ export class ProjectFormComponent implements OnInit {
         project?.longitude || null,
         [Validators.pattern(/^-?[0-9]+(\.[0-9]+)?$/)],
       ],
-      categories: [project?.types?.map((c) => c.id) || []],
+      serve_lead_email: [project?.serve_lead_email || "", [Validators.email, Validators.required]],
+      serve_lead_name: [project?.serve_lead_name || "", Validators.required],
+      location_address: [project?.location_address || "", Validators.required],
+      area: [project?.area || "", Validators.required],
+      // categories: [project?.types?.map((c) => c.id) || []],
     });
   }
 
@@ -151,13 +157,14 @@ export class ProjectFormComponent implements OnInit {
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       ages: formValues.ages,
-      types: formValues.categories,
+      // types: formValues.categories,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.data.project?.created_at || new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      area: null,
-      serve_lead_id: null,
+      area: formValues.area,
+      serve_lead_name: formValues.serve_lead_name,
+      serve_lead_email: formValues.serve_lead_email,
       google_id: 0
     };
 
@@ -200,7 +207,7 @@ export class ProjectFormComponent implements OnInit {
 
   setupLocationGeocoding(): void {
     this.projectForm
-        .get("location_name")
+        .get("location_address")
         ?.valueChanges.pipe(debounceTime(800), distinctUntilChanged())
         .subscribe((value) => {
           if (value && value.length > 5) {

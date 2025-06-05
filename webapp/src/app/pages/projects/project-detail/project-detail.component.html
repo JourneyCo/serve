@@ -66,7 +66,7 @@
         }
       </div>
 
-      @if (!myproject) {
+      @if (!myproject && !admin_route) {
       <div class="mt-2">
         <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
           [disabled]="loadingRegistration || isProjectFull()">
@@ -160,11 +160,12 @@
     </mat-card-content>
 
     <mat-card-actions align="end">
-      <button mat-button class="backButton" routerLink="/projects">
+      <button mat-button class="backButton" [routerLink]="admin_route ? '/admin' : '/projects'">
         <mat-icon>arrow_back</mat-icon> Back to Projects
       </button>
 
-      @if (!myproject) {
+      @if (!admin_route) {
+        @if (!myproject) {
       <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
         [disabled]="loadingRegistration || isProjectFull()">
         <mat-icon>event_available</mat-icon>
@@ -189,6 +190,7 @@
         }
       </button>
       }
+    }
 
       <!-- Cancellation Dialog Template -->
       <ng-template #cancellationDialog>
@@ -208,11 +210,6 @@
     </mat-card-actions>
   </mat-card>
 
-  <!-- Admin Panel - Only visible to admins -->
-  @if (isAdmin | async) {
-  @if (project) {
-  <app-admin-project-panel [project]="project"></app-admin-project-panel>
-  }
-  }
+
   }
 </div>

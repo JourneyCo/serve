@@ -23,40 +23,16 @@
 
       <div class="form-row">
         <mat-form-field appearance="outline">
-          <mat-label>Short Description</mat-label>
+          <mat-label>Description</mat-label>
           <textarea
                   matInput
-                  formControlName="short_description"
+                  formControlName="description"
                   placeholder="Enter a brief summary"
                   rows="2"
                   required
           ></textarea>
-          @if (projectForm.get("short_description")?.hasError("required")) {
-          <mat-error> Short description is required </mat-error>
-          }
-          @if (projectForm.get("short_description")?.hasError("maxlength")) {
-          <mat-error>
-            Short description cannot exceed 200 characters
-          </mat-error>
-          }
-        </mat-form-field>
-      </div>
-
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Full Description</mat-label>
-          <textarea
-                  matInput
-                  formControlName="description"
-                  placeholder="Enter detailed project description"
-                  rows="4"
-                  required
-          ></textarea>
           @if (projectForm.get("description")?.hasError("required")) {
-          <mat-error> Description is required </mat-error>
-          }
-          @if (projectForm.get("description")?.hasError("minlength")) {
-          <mat-error> Description must be at least 10 characters </mat-error>
+          <mat-error> Short description is required </mat-error>
           }
         </mat-form-field>
       </div>
@@ -91,27 +67,41 @@
         </mat-form-field>
       </div>
 
-      <div class="form-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Lead User</mat-label>
-          <mat-select formControlName="lead_user_id" required>
-            @for (user of sortedUsers; track user.id) {
-            <mat-option [value]="user.id"
-            >{{ user.last_name }}, {{ user.first_name }}</mat-option
-            >
-            }
-          </mat-select>
-          @if (projectForm.get("lead_user_id")?.hasError("required")) {
-          <mat-error> Lead User is required </mat-error>
-          }
-        </mat-form-field>
-      </div>
+        <div class="form-row">
+            <mat-form-field appearance="outline">
+                <mat-label>Serve Lead Name</mat-label>
+                <input
+                        matInput
+                        formControlName="serve_lead_name"
+                        placeholder="e.g., Doug Jones"
+                        required
+                />
+                @if (projectForm.get("serve_lead_name")?.hasError("required")) {
+                    <mat-error>Serve Lead Name is required</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Serve Lead Email</mat-label>
+                <input
+                        matInput
+                        formControlName="serve_lead_email"
+                        placeholder="e.g., djones@hotmail.com"
+                        required
+                />
+                @if (projectForm.get("serve_lead_email")?.hasError("required")) {
+                    <mat-error>Serve Lead Email is required</mat-error>
+                }
+            </mat-form-field>
+        </div>
 
 <!--      <mat-form-field appearance="outline" class="full-width">-->
 <!--        <mat-label>Categories</mat-label>-->
 <!--        <mat-select formControlName="categories" multiple>-->
-<!--          @for (key of categoryKeys; track key) {-->
-<!--          <mat-option [value]="+key">{{ categoryList[+key] }}</mat-option>-->
+<!--          @for (key of typeKeys; track key) {-->
+<!--          <mat-option [value]="+key">{{ typeList[+key] }}</mat-option>-->
 <!--          }-->
 <!--        </mat-select>-->
 <!--      </mat-form-field>-->
@@ -130,21 +120,21 @@
         <h3>Location Information</h3>
         <p class="helper-text">
           Enter a location address and coordinates will be automatically
-          generated, or click the map pin icon to manually trigger geocoding.
+          generated.
         </p>
       </div>
 
       <div class="form-row">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Location Name</mat-label>
+          <mat-label>Area</mat-label>
           <input
                   matInput
-                  formControlName="location_name"
-                  placeholder="e.g., Community Center, Main Campus"
+                  formControlName="area"
+                  placeholder="e.g., Castle Rock, Highlands Ranch, etc."
                   required
           />
-          @if (projectForm.get("location_name")?.hasError("required")) {
-          <mat-error>Location name is required</mat-error>
+          @if (projectForm.get("area")?.hasError("required")) {
+          <mat-error>Area is required</mat-error>
           }
         </mat-form-field>
       </div>
@@ -154,16 +144,16 @@
           <mat-label>Location Address</mat-label>
           <input
                   matInput
-                  formControlName="location_name"
+                  formControlName="location_address"
                   placeholder="e.g., 123 Main St, San Francisco, CA"
                   required
           />
-          @if (projectForm.get("location_name")?.value && !geocoding) {
+          @if (projectForm.get("location_address")?.value && !geocoding) {
           <button
                   type="button"
                   matSuffix
                   mat-icon-button
-                  (click)="geocodeLocation(projectForm.get('location_name')?.value)"
+                  (click)="geocodeLocation(projectForm.get('location_address')?.value)"
                   aria-label="Geocode address"
                   matTooltip="Find coordinates for this address"
           >
@@ -173,8 +163,8 @@
           @if (geocoding) {
           <mat-spinner matSuffix diameter="20"> </mat-spinner>
           }
-          @if (projectForm.get("location_name")?.hasError("required")) {
-          <mat-error> Location Name is required </mat-error>
+          @if (projectForm.get("location_address")?.hasError("required")) {
+          <mat-error> Location Address is required </mat-error>
           }
         </mat-form-field>
       </div>

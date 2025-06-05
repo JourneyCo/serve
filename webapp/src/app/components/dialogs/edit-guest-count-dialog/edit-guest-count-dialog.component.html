@@ -14,6 +14,11 @@
       </mat-error>
     </mat-form-field>
   </form>
+    <p>MaxCap: {{ data.project.max_capacity}}</p>
+    <p>Current: {{ data.project.current_registrations}}</p>
+
+    <p>GuestCount: {{ data.registration.guest_count}}</p>
+
     <p>Available Guests to Register: {{ data.project.max_capacity-data.project.current_registrations + data.registration.guest_count}}</p>
 
 </mat-dialog-content>

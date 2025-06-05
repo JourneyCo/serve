@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
@@ -25,7 +25,6 @@ import {CookieService} from 'ngx-cookie-service';
     FormsModule,
     RouterModule,
     GoogleMapsModule,
-    AdminProjectPanelComponent,
     MaterialModule,
     NgxLinkifyjsModule,
   ],
@@ -34,6 +33,9 @@ import {CookieService} from 'ngx-cookie-service';
 })
 
 export class ProjectDetailComponent implements OnInit {
+  @Input() proj_id: string = '';
+  @Input() admin_route: boolean;
+
   project: Project | null = null;
   currentUser: User | null = null;
   isRegistered = false;
@@ -122,7 +124,7 @@ export class ProjectDetailComponent implements OnInit {
     this.isLoading = true;
 
     // Get the project ID from the route
-    const project_id = this.route.snapshot.paramMap.get("id");
+    const project_id = this.route.snapshot.paramMap.get("id") || this.proj_id;
     if (this.cookieService.get("servedayproject") == project_id) {
       this.myproject = true;
     }
@@ -168,6 +170,9 @@ export class ProjectDetailComponent implements OnInit {
           this.project.website = this.linkifyService.linkify(this.project.website, options);
         }
         this.project.encoded_address = encodeURIComponent(this.project.location_address || "");
+        this.project.serve_lead_name = this.project.serve_lead_name? this.project.serve_lead_name : this.project.serve_lead?.first_name + " " +
+            this.project.serve_lead?.last_name;
+        this.project.serve_lead_email = this.project.serve_lead_email || this.project.serve_lead?.email;
 
         // if the user is signed in, then we will check to see if they are already registered
         // note - you can hit this page without being signed in

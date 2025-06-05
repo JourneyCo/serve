@@ -1,22 +1,42 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { RouterLink } from "@angular/router";
-import { MatDialog } from "@angular/material/dialog";
-import { MatTabGroup } from "@angular/material/tabs";
-import { MatTableDataSource } from "@angular/material/table";
-import { MatSort } from "@angular/material/sort";
-import {HelperService, ProjectService} from '@services';
-import {Project, Registration} from '@models';
-import { ProjectFormComponent } from '@components';
-import {MaterialModule} from '@material';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {MatTabGroup, MatTabsModule} from '@angular/material/tabs';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatSort, MatSortModule} from '@angular/material/sort';
+import {MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatCardModule} from '@angular/material/card';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {ProjectService} from '@services';
+import {Project} from '@models';
+import {ProjectFormComponent} from '../../components/admin/project-form/project-form.component';
 
 @Component({
-  selector: "app-admin",
+  selector: "app-admin-dashboard",
   standalone: true,
   imports: [
     CommonModule,
     RouterLink,
-    MaterialModule,
+    MatDialogModule,
+    MatTabsModule,
+    MatTableModule,
+    MatSortModule,
+    MatSnackBarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
+    MatTooltipModule,
   ],
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
@@ -27,20 +47,17 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   // Column definitions
   projectColumns: string[] = [
-    "id", "google_id",
     "title",
     "time",
     "capacity",
     "actions",
   ];
 
-  registrationsDataSource = new MatTableDataSource<Registration>([]);
-
   // Loading states
   loadingProjects = true;
   processingAction = false;
 
-  // ViewChild references for table sorting and pagination
+  // ViewChild references for table sorting
   @ViewChild("projectsSort") projectsSort!: MatSort;
   @ViewChild("usersSort") usersSort!: MatSort;
   @ViewChild("tabGroup") tabGroup!: MatTabGroup;
@@ -48,17 +65,15 @@ export class AdminComponent implements OnInit, AfterViewInit {
   constructor(
     private projectService: ProjectService,
     private dialog: MatDialog,
-    private helper: HelperService
-
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit(): void {
     this.loadProjects();
-    this.loadRegistrations();
   }
 
   ngAfterViewInit(): void {
-    // Set up sorting and pagination after view init
+    // Set up sorting after view init
     setTimeout(() => {
       this.projectsDataSource.sort = this.projectsSort;
     });
@@ -66,32 +81,17 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   loadProjects(): void {
     this.loadingProjects = true;
-    this.projectService.getProjects().subscribe({
-      next: (projects) => {
-        this.projectsDataSource.data = projects;
+    this.projectService.getProjects().subscribe(
+      (data) => {
+        this.projectsDataSource.data = this.sortProjects(data);
         this.loadingProjects = false;
       },
-      error: (error) => {
+      (error) => {
         console.error("Error loading projects:", error);
-        this.helper.showError("Failed to load projects");
+        this.showError("Failed to load projects");
         this.loadingProjects = false;
       },
-    });
-  }
-
-  loadRegistrations(): void {
-    this.processingAction = true;
-    this.projectService.getAllRegistrations().subscribe({
-      next: (registrations) => {
-        this.registrationsDataSource.data = registrations;
-        this.processingAction = false;
-      },
-      error: (error) => {
-        console.error("Error loading registrations:", error);
-        this.helper.showError("Failed to load registrations");
-        this.processingAction = false;
-      }
-    });
+    );
   }
 
   applyProjectFilter(event: Event): void {
@@ -102,13 +102,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
   createProject(): void {
     const dialogRef = this.dialog.open(ProjectFormComponent, {
       width: "600px",
-      data: { projectID: null, isEdit: false },
+      data: { project: null, isEdit: false },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadProjects();
-        this.helper.showSuccess("Project created successfully");
+        this.showSuccess("Project created successfully");
       }
     });
   }
@@ -116,13 +116,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
   editProject(project: Project): void {
     const dialogRef = this.dialog.open(ProjectFormComponent, {
       width: "600px",
-      data: { projectID: project.id, isEdit: true },
+      data: { project: { ...project }, isEdit: true },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.loadProjects();
-        this.helper.showSuccess("Project updated successfully");
+        this.showSuccess("Project updated successfully");
       }
     });
   }
@@ -137,21 +137,54 @@ export class AdminComponent implements OnInit, AfterViewInit {
     }
 
     this.processingAction = true;
-    this.projectService.deleteProject(project.id).subscribe({
-      next: () => {
+    this.projectService.deleteProject(project.id).subscribe(
+      () => {
         this.loadProjects();
         this.processingAction = false;
-        this.helper.showSuccess("Project deleted successfully");
+        this.showSuccess("Project deleted successfully");
       },
-      error: (error) => {
+      (error) => {
         console.error("Error deleting project:", error);
-        this.helper.showError("Failed to delete project");
+        this.showError("Failed to delete project");
         this.processingAction = false;
       },
-    });
+    );
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString();
   }
 
   isProjectAtCapacity(project: Project): boolean {
     return project.current_registrations >= project.max_capacity;
+  }
+
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, "Close", {
+      duration: 3000,
+      panelClass: ["success-snackbar"],
+    });
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(message, "Close", {
+      duration: 5000,
+      panelClass: ["error-snackbar"],
+    });
+  }
+
+  sortProjects(projects: Project[]) {
+    return projects.sort((a, b) => {
+      const aFull = a.current_registrations >= a.max_capacity;
+      const bFull = b.current_registrations >= b.max_capacity;
+
+      // If both projects are either full or not full, sort alphabetically by name
+      if (aFull === bFull) {
+        return a.title.localeCompare(b.title);
+      }
+
+      // Projects that are full go to the bottom
+      return aFull ? 1 : -1;
+    });
   }
 }
