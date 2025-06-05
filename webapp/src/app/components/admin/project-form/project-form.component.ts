@@ -24,7 +24,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
-import { ProjectService, GoogleMapsService, UserService } from "@services";
+import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
 import {Project, Ages, Types} from '@models';
 import { MatSelectModule } from "@angular/material/select";
 import {environment} from "../../../../environments/environment";
@@ -74,6 +74,7 @@ export class ProjectFormComponent implements OnInit {
   serve_day: string = environment.serveDay
   typeList = Types;
   typeKeys = Object.keys(Types);
+  types: Record<number, string> = {};
 
   constructor(
       private fb: FormBuilder,
@@ -82,6 +83,7 @@ export class ProjectFormComponent implements OnInit {
       private userService: UserService,
       private dialogRef: MatDialogRef<ProjectFormComponent>,
       private snackBar: MatSnackBar,
+      private helper: HelperService,
       @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
     this.dialogTitle = data.isEdit ? "Edit Project" : "Create New Project";
@@ -105,8 +107,6 @@ export class ProjectFormComponent implements OnInit {
   initForm(): void {
     const project = this.data.project;
 
-    const defaultDate = this.serve_day;
-
     this.projectForm = this.fb.group({
       title: [
         project?.title || "",
@@ -116,7 +116,7 @@ export class ProjectFormComponent implements OnInit {
         project?.description || "",
         [Validators.required, Validators.minLength(10)],
       ],
-      project_date: [defaultDate],
+      project_date: project?.project_date,
       time: [project?.time || "", Validators.required],
            max_capacity: [
         project?.max_capacity || 10,
@@ -134,7 +134,7 @@ export class ProjectFormComponent implements OnInit {
       serve_lead_name: [project?.serve_lead_name || "", Validators.required],
       location_address: [project?.location_address || "", Validators.required],
       area: [project?.area || "", Validators.required],
-      // categories: [project?.types?.map((c) => c.id) || []],
+      categories: [project?.types?.map((c) => c.id) || []],
     });
   }
 
@@ -157,7 +157,7 @@ export class ProjectFormComponent implements OnInit {
       latitude: formValues.latitude ? Number(formValues.latitude) : null,
       longitude: formValues.longitude ? Number(formValues.longitude) : null,
       ages: formValues.ages,
-      // types: formValues.categories,
+      types: formValues.categories,
       location_address: formValues.location_address,
       project_date: formValues.project_date,
       created_at: this.data.project?.created_at || new Date().toISOString(),
@@ -220,9 +220,7 @@ export class ProjectFormComponent implements OnInit {
     if (this.geocoding || !address) {
       return;
     }
-
     this.geocoding = true;
-
     this.mapsService
         .geocodeAddressClientSide(address)
         .pipe(
@@ -237,7 +235,6 @@ export class ProjectFormComponent implements OnInit {
                   latitude: result.latitude,
                   longitude: result.longitude,
                 });
-
                 this.snackBar.open("Location geocoded successfully", "Close", {
                   duration: 3000,
                 });
@@ -250,5 +247,21 @@ export class ProjectFormComponent implements OnInit {
               );
             },
         );
+  }
+
+  loadTypes(): void {
+    this.projectService.getTypes().subscribe({
+      next: (typesData) => {
+        // Convert array to Record<number, string> format
+        this.types = {};
+        typesData.forEach(type => {
+          this.types[type.id] = type.name;
+        });
+      },
+      error: (error: any) => {
+        console.error("Error loading types:", error);
+        this.helper.showError("Error loading project types");
+      }
+    });
   }
 }

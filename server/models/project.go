@@ -32,6 +32,7 @@ type Project struct {
 	ServeLead       *User              `json:"serve_lead,omitempty"`
 	Types           []ProjectAccessory `json:"types,omitempty"`
 	Ages            string             `json:"ages,omitempty"`
+	Leads           []byte             `json:"leads,omitempty"`
 	CreatedAt       time.Time          `json:"created_at"`
 	UpdatedAt       time.Time          `json:"updated_at"`
 }
@@ -51,7 +52,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
                 SELECT p.id, p.google_id, p.title, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
-                p.created_at, p.updated_at, p.ages,
+                p.created_at, p.updated_at, p.ages, p.serve_lead_name, p.serve_lead_email, p.project_date,
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations,
                 COALESCE(pt.type_ids, '') as type_ids
                 FROM projects p
@@ -77,7 +78,8 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 		if err = rows.Scan(
 			&p.ID, &p.GoogleID, &p.Title, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
-			&p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.CurrentReg, &typeIDsStr,
+			&p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.ServeLeadName,
+			&p.ServeLeadEmail, &p.ProjectDate, &p.CurrentReg, &typeIDsStr,
 		); err != nil {
 			return nil, err
 		}
@@ -210,10 +212,9 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
                 UPDATE projects
                 SET google_id=$13, title = $1, description = $2, website = $3, time = $4, project_date = $5, 
                 max_capacity = $6, area = $7, location_address = $8, latitude = $9, longitude = $10,
-                updated_at = CURRENT_TIMESTAMP, ages = $11,
+                updated_at = CURRENT_TIMESTAMP, ages = $11, serve_lead_name=$14, serve_lead_email=$15, leads=$16
                 WHERE id = $12
-                RETURNING updated_at
-        `
+                RETURNING updated_at`
 	err = tx.QueryRowContext(
 		ctx,
 		query,
@@ -230,6 +231,9 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.Ages,
 		project.ID,
 		project.GoogleID,
+		project.ServeLeadName,
+		project.ServeLeadEmail,
+		project.Leads,
 	).Scan(&project.UpdatedAt)
 	if err != nil {
 		tx.Rollback()

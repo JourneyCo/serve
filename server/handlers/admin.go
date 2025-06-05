@@ -33,6 +33,9 @@ type ProjectInput struct {
 	LocationAddress string  `json:"location_address"`
 	Latitude        float64 `json:"latitude"`
 	Longitude       float64 `json:"longitude"`
+	ServeLeadName   string  `json:"serve_lead_name"`
+	ServeLeadEmail  string  `json:"serve_lead_email"`
+	Leads           []byte  `json:"leads"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
@@ -284,6 +287,14 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	project.Latitude = input.Latitude
 	project.Longitude = input.Longitude
 	project.Ages = input.Ages
+
+	leads, err := json.Marshal(input.Leads)
+	if err != nil {
+		log.Println("error marshaling leads")
+		middleware.RespondWithError(w, http.StatusBadRequest, "invalid leads")
+		return
+	}
+	project.Leads = leads
 
 	if err = models.UpdateProject(ctx, h.DB, project); err != nil {
 		log.Println("internal server error updating project")

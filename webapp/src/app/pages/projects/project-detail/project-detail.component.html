@@ -22,7 +22,7 @@
     <mat-card-header>
       <mat-card-title>
         <div>
-          <button mat-button class="backButton" routerLink="/projects">
+          <button mat-button class="backButton" [routerLink]="admin_route ? '/admin' : '/projects'">>
             <mat-icon>arrow_back</mat-icon> Back to Projects
           </button>
         </div>

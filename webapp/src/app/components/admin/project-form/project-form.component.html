@@ -97,14 +97,14 @@
             </mat-form-field>
         </div>
 
-<!--      <mat-form-field appearance="outline" class="full-width">-->
-<!--        <mat-label>Categories</mat-label>-->
-<!--        <mat-select formControlName="categories" multiple>-->
-<!--          @for (key of typeKeys; track key) {-->
-<!--          <mat-option [value]="+key">{{ typeList[+key] }}</mat-option>-->
-<!--          }-->
-<!--        </mat-select>-->
-<!--      </mat-form-field>-->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Categories</mat-label>
+        <mat-select formControlName="categories" multiple>
+          @for (key of typeKeys; track key) {
+          <mat-option [value]="+key">{{ typeList[+key] }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Ages</mat-label>
