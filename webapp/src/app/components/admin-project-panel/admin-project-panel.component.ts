@@ -9,10 +9,11 @@ import {MatDialog} from '@angular/material/dialog';
 import {RegistrationService} from '@services';
 import {Subscription} from 'rxjs';
 import {MaterialModule} from '@material';
+import {PhoneNumberPipe} from '../../services/pipe.service';
 
 @Component({
   selector: 'app-admin-project-panel',
-  imports: [MatCardContent,MatCardTitle, MatCardHeader, MatTable, MatCard, MatIcon, MaterialModule],
+  imports: [MatCardContent, MatCardTitle, MatCardHeader, MatTable, MatCard, MatIcon, MaterialModule, PhoneNumberPipe],
   templateUrl: './admin-project-panel.component.html',
   styleUrl: './admin-project-panel.component.scss'
 })
