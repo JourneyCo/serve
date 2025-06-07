@@ -1,4 +1,13 @@
 @if (proj_id && project) {
 <app-project-detail [proj_id]="proj_id" [admin_route]="true"></app-project-detail>
+
+<div class="project-leads-section">
+  @if (project.leads) {
+  <div>
+    <strong>Project Leads:</strong> {{ project.leads }}
+  </div>
+  }
+</div>
+
 <app-admin-project-panel [project]="project"></app-admin-project-panel>
 }
