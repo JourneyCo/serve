@@ -1,12 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import { EditGuestCountDialogComponent } from '../dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component';
-import {HelperService, ProjectService} from '@services';
+import {EditGuestCountDialogComponent} from '../dialogs/edit-guest-count-dialog/edit-guest-count-dialog.component';
+import {HelperService, ProjectService, RegistrationService} from '@services';
 import {Project, Registration} from '@models';
 import {MatTable, MatTableDataSource} from '@angular/material/table';
 import {MatIcon} from '@angular/material/icon';
 import {MatCard, MatCardContent, MatCardHeader, MatCardTitle} from '@angular/material/card';
 import {MatDialog} from '@angular/material/dialog';
-import {RegistrationService} from '@services';
 import {Subscription} from 'rxjs';
 import {MaterialModule} from '@material';
 import {PhoneNumberPipe} from '../../services/pipe.service';
@@ -110,5 +109,14 @@ export class AdminProjectPanelComponent implements OnInit {
         this.project = data;
       }
     })
+  }
+
+  getAllEmails(): string {
+    if (!this.registrationsDataSource.data) return '';
+
+    return this.registrationsDataSource.data
+        .map(reg => reg.user?.email)
+        .filter(email => email) // Remove any undefined/null values
+        .join(',');
   }
 }

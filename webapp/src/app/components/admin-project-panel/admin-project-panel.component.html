@@ -1,12 +1,21 @@
 <mat-card class="admin-panel">
-  <mat-card-header>
-    <mat-card-title>
-      <mat-icon>admin_panel_settings</mat-icon>
-      Admin Panel - Registrations
-    </mat-card-title>
-  </mat-card-header>
+    <mat-card-header>
+        <mat-card-title>
+            <mat-icon>admin_panel_settings</mat-icon>
+            Admin Panel - Registrations
+            @if (registrationsDataSource.data?.length) {
+                <a mat-raised-button color="primary" class="ms-3"
+                   [href]="'mailto:?bcc=' + getAllEmails()"
+                   [matTooltip]="'Email all registrants'"
+                   target="_blank">
+                    <mat-icon>email</mat-icon>
+                    Email All
+                </a>
+            }
+        </mat-card-title>
+    </mat-card-header>
 
-  <mat-card-content>
+    <mat-card-content>
     @if (this.registrationsDataSource.data && this.registrationsDataSource.data.length === 0) {
     <div class="no-registrations">
       <p>No registrations found for this project.</p>
