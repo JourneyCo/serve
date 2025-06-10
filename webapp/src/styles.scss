@@ -159,9 +159,43 @@ h4 { font-size: 1.5rem;
   border-top: 3px solid var(--journeyBlue);
 }
 
+// PRIMARY Buttons
 .mat-mdc-raised-button.mat-primary {
-  background-color: var(--journeyBlue);
+  background-color: var(--journeyDarkBlue) !important;
+  color: var(--journeyWhite);
 }
+
+// other button variants that use primary color
+.mat-mdc-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-outlined-button.mat-primary {
+  color: var(--journeyDarkBlue);
+}
+
+// icon buttons
+.mat-mdc-icon-button.mat-primary {
+  color: var(--journeyDarkBlue);
+}
+
+// WARN Buttons
+.mat-mdc-raised-button.mat-warn {
+  background-color: var(--JourneyRed) !important;
+  color: var(--journeyWhite);
+}
+
+// For other button variants that use warn color
+.mat-mdc-button.mat-warn,
+.mat-mdc-unelevated-button.mat-warn,
+.mat-mdc-outlined-button.mat-warn {
+  color: var(--JourneyRed);
+}
+
+// For icon buttons
+.mat-mdc-icon-button.mat-warn {
+  color: var(--JourneyRed);
+}
+
+
 
 .mat-mdc-raised-button.mat-accent {
   background-color: var(--journeyGray);
