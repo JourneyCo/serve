@@ -274,7 +274,7 @@ func (h *ProjectHandler) RegisterForProject(w http.ResponseWriter, r *http.Reque
 
 	// Send confirmation email
 	if project != nil {
-		go h.EmailService.SendRegistrationConfirmation(user, project)
+		go h.EmailService.SendRegistrationConfirmation(user, project, reg.GuestCount)
 		if user.TextPermission {
 			go h.TextService.SendRegistrationConfirmation(user, project)
 		}

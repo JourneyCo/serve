@@ -52,7 +52,7 @@ func NewEmailService(cfg *config.Config) *EmailService {
 }
 
 // SendRegistrationConfirmation sends a confirmation email when a user registers for a project
-func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project) {
+func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *models.Project, guests int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 24*time.Hour)
 	defer cancel()
 	subject := fmt.Sprintf("Serve Day Project Confirmation")
@@ -70,6 +70,7 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		ProjectDate     string
 		Time            string
 		ProjectDateFull time.Time
+		Guests          int
 	}{
 		Name:            fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		ProjectTitle:    project.Title,
@@ -79,6 +80,7 @@ func (s *EmailService) SendRegistrationConfirmation(user *models.User, project *
 		ProjectDate:     projectDateFormatted,
 		Time:            project.Time,
 		ProjectDateFull: project.ProjectDate,
+		Guests:          guests,
 	}
 
 	ticker := time.NewTicker(1 * time.Minute)

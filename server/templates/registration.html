@@ -18,13 +18,14 @@
         </div>
         <div class="content">
             <p>Hello {{.Name}},</p>
-            <p>Thank you for registering for the project: <strong>{{.ProjectTitle}}</strong>.</p>
+            <p>Thank you for registering for the project: <strong>{{.ProjectTitle}}</strong>. Your registration has been confirmed
+             for yourself plus {{.Guests}} guests.</p>
             <p>Project Details:</p>
             <ul>
                 <li><strong>Project:</strong> {{.ProjectTitle}}</li>
                 <li><strong>Description:</strong> {{.ProjectDesc}}</li>
                 <li><strong>Area:</strong> {{.Area}}</li>
-                <li><strong>Address:</strong> {{.Address}}</li>
+                <li><strong>Address:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{.Address}}" target="_blank">{{.Address}}</a></li>
                 <li><strong>Date:</strong> {{.ProjectDate}}</li>
                 <li><strong>Time:</strong> {{.Time}}</li>
             </ul>
