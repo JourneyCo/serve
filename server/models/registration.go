@@ -65,7 +65,7 @@ func RegisterForProject(db *sql.DB, userID string, projectID int, guestCount int
 
 	// Check if there's enough capacity
 	if currentCount+totalSpots > maxCapacity {
-		return nil, errors.New("Capacity not available for total # of volunteers requested")
+		return nil, errors.New("capacity not available for total # of volunteers requested")
 	}
 
 	// Check if user is already registered for this project
@@ -186,7 +186,7 @@ func GetProjectRegistrations(ctx context.Context, db *sql.DB, projectID int) ([]
 		var r Registration
 		r.User = &User{}
 
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.User.Email, &r.User.FirstName, &r.User.LastName, &r.User.Phone, &r.User.TextPermission,
@@ -198,7 +198,7 @@ func GetProjectRegistrations(ctx context.Context, db *sql.DB, projectID int) ([]
 		registrations = append(registrations, r)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
@@ -212,7 +212,7 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 									r.created_at, r.updated_at,
 									u.email, u.first_name, u.last_name,
 									p.title, p.description, p.time, p.project_date,
-									p.area, p.latitude, p.longitude
+									p.area, p.latitude, p.longitude, p.serve_lead_name, p.serve_lead_email
 									FROM registrations r
 									JOIN users u ON r.user_id = u.id
 									JOIN projects p ON r.project_id = p.id
@@ -233,12 +233,13 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 		r.User = &User{}
 		r.Project = &Project{}
 
-		if err := rows.Scan(
+		if err = rows.Scan(
 			&r.ID, &r.UserID, &r.ProjectID, &r.Status, &r.GuestCount, &r.LeadInterest,
 			&r.CreatedAt, &r.UpdatedAt,
 			&r.User.Email, &r.User.FirstName, &r.User.LastName,
 			&r.Project.Title, &r.Project.Description, &r.Project.Time, &r.Project.ProjectDate,
-			&r.Project.Area, &r.Project.Latitude, &r.Project.Longitude,
+			&r.Project.Area, &r.Project.Latitude, &r.Project.Longitude, &r.Project.ServeLeadName,
+			&r.Project.ServeLeadEmail,
 		); err != nil {
 			return nil, err
 		}
@@ -248,7 +249,7 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 		registrations = append(registrations, r)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 

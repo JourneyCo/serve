@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -32,9 +33,17 @@ type Project struct {
 	ServeLead       *User              `json:"serve_lead,omitempty"`
 	Types           []ProjectAccessory `json:"types,omitempty"`
 	Ages            string             `json:"ages,omitempty"`
-	Leads           []byte             `json:"leads,omitempty"`
+	Leads           json.RawMessage    `json:"leads,omitempty"`
 	CreatedAt       time.Time          `json:"created_at"`
 	UpdatedAt       time.Time          `json:"updated_at"`
+	LeadsData       []Lead             `json:"leads_data"`
+}
+
+type Lead struct {
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Phone  string `json:"phone"`
+	Active bool   `json:"active"`
 }
 
 const (
@@ -52,7 +61,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 	query := `
                 SELECT p.id, p.google_id, p.title, p.description, p.website, p.time, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude,
-                p.created_at, p.updated_at, p.ages, p.serve_lead_name, p.serve_lead_email, p.project_date,
+                p.created_at, p.updated_at, p.ages, p.serve_lead_name, p.serve_lead_email, p.project_date, p.leads,
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations,
                 COALESCE(pt.type_ids, '') as type_ids
                 FROM projects p
@@ -79,7 +88,7 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 			&p.ID, &p.GoogleID, &p.Title, &p.Description, &p.Website, &p.Time,
 			&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude,
 			&p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.ServeLeadName,
-			&p.ServeLeadEmail, &p.ProjectDate, &p.CurrentReg, &typeIDsStr,
+			&p.ServeLeadEmail, &p.ProjectDate, &p.Leads, &p.CurrentReg, &typeIDsStr,
 		); err != nil {
 			return nil, err
 		}
@@ -106,7 +115,7 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 	query := `
                 SELECT p.id, p.title, p.description, p.website, p.time, p.project_date, 
                 p.max_capacity, p.area, p.location_address, p.latitude, p.longitude, p.serve_lead_id,
-                p.serve_lead_name, p.serve_lead_email, p.created_at, p.updated_at, p.ages,
+                p.serve_lead_name, p.serve_lead_email, p.created_at, p.updated_at, p.ages, p.leads,
                 COALESCE(COUNT(CASE WHEN r.status = 'registered' THEN 1 END) + SUM(CASE WHEN r.status = 'registered' THEN r.guest_count ELSE 0 END), 0) as current_registrations
                 FROM projects p
                 LEFT JOIN registrations r ON p.id = r.project_id
@@ -115,10 +124,11 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
         `
 
 	var p Project
+	var leadsJSON []byte
 	err := db.QueryRowContext(ctx, query, id).Scan(
 		&p.ID, &p.Title, &p.Description, &p.Website, &p.Time, &p.ProjectDate,
 		&p.MaxCapacity, &p.Area, &p.LocationAddress, &p.Latitude, &p.Longitude, &p.ServeLeadID,
-		&p.ServeLeadName, &p.ServeLeadEmail, &p.CreatedAt, &p.UpdatedAt, &p.Ages, &p.CurrentReg,
+		&p.ServeLeadName, &p.ServeLeadEmail, &p.CreatedAt, &p.UpdatedAt, &p.Ages, &leadsJSON, &p.CurrentReg,
 	)
 
 	if err != nil {
@@ -126,6 +136,18 @@ func GetProjectByID(ctx context.Context, db *sql.DB, id int) (*Project, error) {
 			return nil, nil // Project not found
 		}
 		return nil, err
+	}
+
+	// Initialize empty leads slice
+	emptyLeads := json.RawMessage("[]")
+	p.Leads = emptyLeads
+
+	// Unmarshal leads if we have any
+	if len(leadsJSON) > 0 {
+		if err := json.Unmarshal(leadsJSON, &p.Leads); err != nil {
+			log.Printf("Error unmarshaling leads: %v", err)
+			// Keep empty slice on error
+		}
 	}
 
 	// Get types for this project
@@ -208,6 +230,18 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		return err
 	}
 
+	// Ensure leads is initialized
+	if project.Leads == nil {
+		emptyLeads := json.RawMessage("[]")
+		project.Leads = emptyLeads
+	}
+
+	// Marshal leads to JSON
+	leadsJSON, err := json.Marshal(project.Leads)
+	if err != nil {
+		return fmt.Errorf("error marshaling leads: %w", err)
+	}
+
 	query := `
                 UPDATE projects
                 SET google_id=$13, title = $1, description = $2, website = $3, time = $4, project_date = $5, 
@@ -233,7 +267,7 @@ func UpdateProject(ctx context.Context, db *sql.DB, project *Project) error {
 		project.GoogleID,
 		project.ServeLeadName,
 		project.ServeLeadEmail,
-		project.Leads,
+		leadsJSON,
 	).Scan(&project.UpdatedAt)
 	if err != nil {
 		tx.Rollback()
@@ -346,4 +380,8 @@ func DeleteProjectAssociations(ctx context.Context, tx *sql.Tx, projectID int) e
 	}
 
 	return nil
+}
+
+func (l *Lead) Scan(value interface{}) error {
+	return json.Unmarshal(value.([]byte), l)
 }

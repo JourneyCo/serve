@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log"
 	"math"
@@ -12,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"serve/config"
+	"serve/handlers/dto"
 	"serve/middleware"
 	"serve/models"
 	"serve/services"
@@ -68,7 +70,48 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, projects)
+	var response []dto.Project
+	for _, project := range projects {
+		proj := dto.Project{
+			ID:              project.ID,
+			GoogleID:        project.GoogleID,
+			Title:           project.Title,
+			Description:     project.Description,
+			Website:         project.Website,
+			Time:            project.Time,
+			ProjectDate:     project.ProjectDate,
+			MaxCapacity:     project.MaxCapacity,
+			CurrentReg:      project.CurrentReg,
+			Area:            project.Area,
+			LocationAddress: project.LocationAddress,
+			Latitude:        project.Latitude,
+			Longitude:       project.Latitude,
+			ServeLeadID:     project.ServeLeadID,
+			ServeLeadName:   project.ServeLeadName,
+			ServeLeadEmail:  project.ServeLeadEmail,
+			ServeLead:       project.ServeLead,
+			Types:           project.Types,
+			Ages:            project.Ages,
+			CreatedAt:       project.CreatedAt,
+			UpdatedAt:       project.UpdatedAt,
+		}
+
+		if len(project.Leads) > 0 {
+			var leads []dto.Lead
+			if err := json.Unmarshal(project.Leads, &leads); err != nil {
+				log.Printf("Error unmarshaling leads JSONB: %v", err)
+				proj.Leads = make([]dto.Lead, 0) // Use empty array on error
+			} else {
+				proj.Leads = leads
+			}
+		} else {
+			proj.Leads = make([]dto.Lead, 0) // Initialize empty array if no leads
+		}
+
+		response = append(response, proj)
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, response)
 }
 
 // GetMyProject returns the project for a user that has already signed up
@@ -138,9 +181,55 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		if err == nil && serveLead != nil {
 			project.ServeLead = serveLead
 		}
+		if err != nil {
+			middleware.RespondWithError(w, http.StatusInternalServerError, "serve lead query error")
+			return
+		}
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, project)
+	proj := dto.Project{
+		ID:              project.ID,
+		GoogleID:        project.GoogleID,
+		Title:           project.Title,
+		Description:     project.Description,
+		Website:         project.Website,
+		Time:            project.Time,
+		ProjectDate:     project.ProjectDate,
+		MaxCapacity:     project.MaxCapacity,
+		CurrentReg:      project.CurrentReg,
+		Area:            project.Area,
+		LocationAddress: project.LocationAddress,
+		Latitude:        project.Latitude,
+		Longitude:       project.Longitude,
+		ServeLeadID:     project.ServeLeadID,
+		ServeLeadName:   project.ServeLeadName,
+		ServeLeadEmail:  project.ServeLeadEmail,
+		ServeLead:       project.ServeLead,
+		Types:           project.Types,
+		Ages:            project.Ages,
+		CreatedAt:       project.CreatedAt,
+		UpdatedAt:       project.UpdatedAt,
+	}
+
+	if len(project.Leads) > 0 {
+		// First handle empty JSON cases
+		rawLeads := string(project.Leads)
+		if rawLeads == "{}" || rawLeads == "[]" || rawLeads == "null" {
+			proj.Leads = make([]dto.Lead, 0)
+		} else {
+			var leads []dto.Lead
+			if err := json.Unmarshal(project.Leads, &leads); err != nil {
+				log.Printf("Error unmarshaling leads in GetProjectByID: %v", err)
+				proj.Leads = make([]dto.Lead, 0)
+			} else {
+				proj.Leads = leads
+			}
+		}
+	} else {
+		proj.Leads = make([]dto.Lead, 0)
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, proj)
 }
 
 // RegisterForProject registers a user for a project

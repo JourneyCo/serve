@@ -18,6 +18,13 @@ type AdminHandler struct {
 	DB *sql.DB
 }
 
+type Lead struct {
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Phone  string `json:"phone"`
+	Active bool   `json:"active"`
+}
+
 // ProjectInput represents the input for creating or updating a project
 type ProjectInput struct {
 	GoogleID        *int    `json:"google_id"`
@@ -35,7 +42,7 @@ type ProjectInput struct {
 	Longitude       float64 `json:"longitude"`
 	ServeLeadName   string  `json:"serve_lead_name"`
 	ServeLeadEmail  string  `json:"serve_lead_email"`
-	Leads           []byte  `json:"leads"`
+	Leads           []Lead  `json:"leads"`
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers

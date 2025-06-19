@@ -117,7 +117,24 @@
             </mat-select>
         </mat-form-field>
 
-      <!-- Location Information Section -->
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Project Leads</mat-label>
+            <mat-select [formControlName]="'leads'" multiple (selectionChange)="onLeadSelectionChange($event)">
+                @for (person of registrants; track person.email) {
+                    <mat-option [value]="person">
+                        {{ person.name }} ({{ person.email }})
+                    </mat-option>
+                }
+                @empty {
+                    <mat-option disabled>No registrants available</mat-option>
+                }
+            </mat-select>
+
+        </mat-form-field>
+
+
+
+        <!-- Location Information Section -->
       <div class="section-label">
         <h3>Location Information</h3>
         <p class="helper-text">

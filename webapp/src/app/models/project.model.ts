@@ -30,5 +30,12 @@ export interface Project {
   created_at: string;
   updated_at: string;
   encoded_address?: string;
-  leads?: string;
+  leads?: Lead[];
+}
+
+export type Lead = {
+  name?: string,
+  email?: string
+  phone?: string
+  active: boolean
 }

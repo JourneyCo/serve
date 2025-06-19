@@ -72,7 +72,24 @@
         }
           @if (admin_route) {
               <div>
-                  <strong>Project Leads: </strong> {{ project.leads }}
+                  <strong>Project Leads:</strong>
+                  <ul>
+                      <li *ngFor="let lead of project.leads || []">
+                          {{ lead.name }}
+                          <span *ngIf="lead.email || lead.phone">
+                          (
+                          <ng-container *ngIf="lead.email">
+                            <a [href]="'mailto:' + lead.email">{{ lead.email }}</a>
+                          </ng-container>
+                          <ng-container *ngIf="lead.email && lead.phone"> | </ng-container>
+                          <ng-container *ngIf="lead.phone">
+                            {{ lead.phone | phoneNumber }}
+                          </ng-container>
+                          )
+                        </span>
+                      </li>
+                  </ul>
+
               </div>
           }
       </div>

@@ -60,7 +60,7 @@ func (s *Scheduler) processReminders() {
 	// Process reminders for different intervals
 	s.processReminderForDays(14) // 2 weeks before
 	s.processReminderForDays(7)  // 1 week before
-	s.processReminderForDays(1)  // 1 day before
+	// s.processReminderForDays(1)  // 1 day before // NOT using per Cory
 
 	log.Println("Finished processing email reminders")
 }
@@ -75,23 +75,29 @@ func (s *Scheduler) processReminderForDays(days int) {
 
 	log.Printf("Found %d registrations for %d days reminder", len(registrations), days)
 
-	// send emails
+	// send emails - we are rate limited to 200 emails per hour by mailtrap, so we will limit ourselves to 150
+	// just to be safe. This is in case additional people register or obtain emails in the hour while we are
+	// sending registration emails
+	ticker := time.NewTicker(24 * time.Second) // 3600/180 = 24s per email
+	defer ticker.Stop()
+
 	for _, reg := range registrations {
 		if err := s.EmailService.SendReminderEmail(&reg, days); err != nil {
 			log.Printf("Error sending %d days reminder email to %s: %v", days, reg.User.Email, err)
 		}
+		<-ticker.C // Wait for the next tick before sending the next email
 	}
 
-	// send text messages
-	var list []models.Registration
-	for _, reg := range registrations {
-		if reg.User.TextPermission { // exclude users who do not want texts
-			list = append(list, reg)
-		}
-	}
-	if err := s.TextService.SendReminderText(list, days); err != nil {
-		log.Printf(
-			"Error sending %d days reminder text: %v", days, err,
-		)
-	}
+	// send text messages - not doing this in 2025
+	// var list []models.Registration
+	// for _, reg := range registrations {
+	// 	if reg.User.TextPermission { // exclude users who do not want texts
+	// 		list = append(list, reg)
+	// 	}
+	// }
+	// if err := s.TextService.SendReminderText(list, days); err != nil {
+	// 	log.Printf(
+	// 		"Error sending %d days reminder text: %v", days, err,
+	// 	)
+	// }
 }

@@ -12,4 +12,5 @@ export interface Registration {
   updated_at: string;
   user?: User;
   project?: Project;
+  lead?: boolean;
 }

@@ -127,19 +127,23 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 
 	// Create email data
 	data := struct {
-		Name         string
-		ProjectTitle string
-		ProjectDesc  string
-		ProjectDate  string
-		Time         string
-		DaysLeft     int
+		Name             string
+		ProjectTitle     string
+		ProjectDesc      string
+		ProjectDate      string
+		Time             string
+		DaysLeft         int
+		ServeLeaderName  string
+		ServeLeaderEmail string
 	}{
-		Name:         fmt.Sprintf("%s %s", registration.User.FirstName, registration.User.LastName),
-		ProjectTitle: registration.Project.Title,
-		ProjectDesc:  registration.Project.Description,
-		ProjectDate:  projectDateFormatted,
-		Time:         registration.Project.Time,
-		DaysLeft:     daysLeft,
+		Name:             fmt.Sprintf("%s %s", registration.User.FirstName, registration.User.LastName),
+		ProjectTitle:     registration.Project.Title,
+		ProjectDesc:      registration.Project.Description,
+		ProjectDate:      projectDateFormatted,
+		Time:             registration.Project.Time,
+		DaysLeft:         daysLeft,
+		ServeLeaderEmail: registration.Project.ServeLeadEmail,
+		ServeLeaderName:  registration.Project.ServeLeadName,
 	}
 
 	ctx := context.Background()
@@ -170,8 +174,8 @@ func (s *EmailService) sendEmail(ctx context.Context, to, subject, templateStr s
 		"text":    "You are confirmed for Serve Day",
 		"html":    htmlBody.String(),
 		"reply_to": map[string]string{
-			"email": "scarrington@gmail.com",
-			"name":  "Scott Carrington",
+			"email": "Sara Wiest",
+			"name":  "sarawiest@journeycolorado.com",
 		},
 	}
 	jsonPayload, err := json.Marshal(payload)

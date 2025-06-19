@@ -14,6 +14,7 @@ import { CancellationSuccessDialogComponent } from '../../../components/dialogs/
 import {MaterialModule} from '@material';
 import {NgxLinkifyjsModule, NgxLinkifyjsService} from 'ngx-linkifyjs-v2';
 import {CookieService} from 'ngx-cookie-service';
+import {PhoneNumberPipe} from '../../../services/pipe.service';
 
 
 @Component({
@@ -26,6 +27,7 @@ import {CookieService} from 'ngx-cookie-service';
     GoogleMapsModule,
     MaterialModule,
     NgxLinkifyjsModule,
+    PhoneNumberPipe,
   ],
   templateUrl: "./project-detail.component.html",
   styleUrls: ["./project-detail.component.scss"],
@@ -135,23 +137,8 @@ export class ProjectDetailComponent implements OnInit {
     }
     this.projectID = Number(project_id);
 
-    // Get current user and check if admin
-    this.authService.getCurrentUser().subscribe({
-      next: (user) => {
-        this.currentUser = user;
-        if (user) {
-          this.userEmail = user?.email
-        }
-
-        // Load project data
-        this.loadProjectDetails(+project_id);
-      },
-      error: (error: any) => {
-        console.error("Error getting user:", error);
-        this.helper.showError("Error loading user information");
-        this.isLoading = false;
-      },
-    });
+    // Load project data
+    this.loadProjectDetails(+project_id);
   }
 
   loadProjectDetails(project_id: number): void {
@@ -159,7 +146,6 @@ export class ProjectDetailComponent implements OnInit {
     this.projectService.getProject(project_id).subscribe({
       next: (data: Project) => {
         this.project = data;
-
         // linkify anything in the project description
         const options = {
           target: { url: '_blank' }

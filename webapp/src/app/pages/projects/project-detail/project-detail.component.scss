@@ -151,7 +151,7 @@
     padding: 16px;
     background-color: var(--journeyWhite);
     border-radius: 8px;
-    border-left: 4px solid #f57c00;
+    border-left: var(--journeyDarkBlue);
 
     h3 {
       margin-bottom: 12px;
@@ -177,7 +177,7 @@
       color: var(--journeyDarkBlue);
 
       strong {
-        color: #f57c00;
+        color: var(--journeyDarkBlue);
       }
     }
 

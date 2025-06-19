@@ -24,9 +24,9 @@ import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatChipsModule } from "@angular/material/chips";
 import { debounceTime, distinctUntilChanged, finalize } from "rxjs/operators";
-import {ProjectService, GoogleMapsService, UserService, HelperService} from '@services';
-import {Project, Ages, Type} from '@models';
-import { MatSelectModule } from "@angular/material/select";
+import {ProjectService, GoogleMapsService, HelperService} from '@services';
+import {Project, Ages, Type, Registration, Lead} from '@models';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {environment} from "../../../../environments/environment";
 
 interface DialogData {
@@ -54,7 +54,7 @@ interface DialogData {
     MatChipsModule,
     MatOption,
     FormsModule,
-    MatSelectModule,
+    MatSelectModule
   ],
   templateUrl: "./project-form.component.html",
   styleUrls: ["./project-form.component.scss"],
@@ -64,45 +64,33 @@ export class ProjectFormComponent implements OnInit {
   submitting = false;
   geocoding = false;
   dialogTitle: string;
-  minDate: Date;
-  users: any[] = [];
-  get sortedUsers() {
-    return [...this.users].sort((a, b) => a.last_name.localeCompare(b.last_name));
-  }
   agesList = Ages;
   serve_day: string = environment.serveDay
   types: Record<number, string> = {};
   typeEntries: [string, string][];
   allTypes: Type[];
+  registrants: Lead[] = [];
+
+
 
   constructor(
       private fb: FormBuilder,
       private projectService: ProjectService,
       private mapsService: GoogleMapsService,
-      private userService: UserService,
       private dialogRef: MatDialogRef<ProjectFormComponent>,
       private snackBar: MatSnackBar,
       private helper: HelperService,
       @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
     this.dialogTitle = data.isEdit ? "Edit Project" : "Create New Project";
-    this.minDate = new Date();
-    this.minDate.setHours(0, 0, 0, 0);
   }
 
   ngOnInit(): void {
-    this.loadUsers();
     this.initForm();
     this.setupLocationGeocoding();
     this.loadTypes();
   }
 
-  loadUsers(): void {
-    this.userService.getAllUsers().subscribe(
-        (users) => (this.users = users),
-        (error) => console.error("Error loading users:", error),
-    );
-  }
 
   initForm(): void {
     const project = this.data.project;
@@ -136,7 +124,43 @@ export class ProjectFormComponent implements OnInit {
       area: [project?.area || "", Validators.required],
       categories: [project?.types?.map(type => type.id) || []],
       ages: [project?.ages || "All Ages", Validators.required],
+      leads: [[]],
     });
+
+    if (project) {
+      // Load registrants and update form after they're loaded
+      this.projectService.getProjectRegistrations(project.id).subscribe({
+        next: (data: Registration[]) => {
+          this.registrants = data
+              .filter(reg => reg.user?.first_name && reg.user?.last_name)
+              .map(reg => ({
+                name: `${reg.user!.first_name} ${reg.user!.last_name}`,
+                phone: reg.user!.phone,
+                email: reg.user!.email,
+                active: false
+              }));
+
+          // Set active status for existing leads
+          if (project.leads && project.leads.length > 0) {
+            project.leads.forEach((l) => {
+              const lead = this.registrants.find(person => person.email === l.email);
+              if (lead) {
+                lead.active = true;
+              }
+            });
+          }
+
+          // Update form control with initially selected leads
+          const selectedLeads = this.registrants.filter(lead => lead.active);
+          this.projectForm.patchValue({ leads: selectedLeads });
+        },
+        error: (error: any) => {
+          console.error("Error loading registration details:", error);
+          this.helper.showError("Error loading registration details");
+        },
+      });
+    }
+
   }
 
   onSubmit(): void {
@@ -145,8 +169,10 @@ export class ProjectFormComponent implements OnInit {
     }
 
     this.submitting = true;
-
     const formValues = this.projectForm.value;
+
+    // Filter only active leads for submission
+    const selectedLeads = this.registrants.filter(lead => lead.active);
 
     const project: Project = {
       id: this.data.project?.id || 0,
@@ -166,8 +192,10 @@ export class ProjectFormComponent implements OnInit {
       serve_lead_name: formValues.serve_lead_name,
       serve_lead_email: formValues.serve_lead_email,
       google_id: 0,
-      types: formValues.categories
+      types: formValues.categories,
+      leads: selectedLeads
     };
+
 
     const request = this.data.isEdit
         ? this.projectService.updateProject(project)
@@ -266,4 +294,24 @@ export class ProjectFormComponent implements OnInit {
       }
     });
   }
+
+  // Update the method signature to handle MatSelectChange
+  onLeadSelectionChange(event: MatSelectChange): void {
+    const selectedLeads = event.value as Lead[];
+
+    // Reset all leads to inactive first
+    this.registrants.forEach(lead => lead.active = false);
+
+    // Set active state for selected leads
+    selectedLeads.forEach(selected => {
+      const lead = this.registrants.find(r => r.email === selected.email);
+      if (lead) {
+        lead.active = true;
+      }
+    });
+
+    // Update form control with selected leads
+    this.projectForm.patchValue({ leads: selectedLeads });
+  }
+
 }

@@ -14,24 +14,33 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Project Reminder - 2 Weeks</h1>
+        <h1>Serve Day Project Reminder - 2 Weeks</h1>
     </div>
     <div class="content">
         <p>Hello {{.Name}},</p>
-        <p>This is a friendly reminder that your registered project <strong>{{.ProjectTitle}}</strong> starts in 2 weeks on {{.ProjectDate}} at {{.StartTime}}.</p>
+        <p>This is a friendly reminder that your registered Serve Day project <strong>{{.ProjectTitle}}</strong> starts in 2 weeks on {{.ProjectDate}}. Your registration is confirmed
+           for yourself plus {{.Guests}} guests.</p>
+        <p>One of our Serve Day Leads will be emailing you this week with more details and instructions about your specific project. If you added any guest numbers to your registration, please forward any communication you receive to them.</p>
         <p>Project Details:</p>
         <ul>
             <li><strong>Project:</strong> {{.ProjectTitle}}</li>
             <li><strong>Description:</strong> {{.ProjectDesc}}</li>
+            <li><strong>Area:</strong> {{.Area}}</li>
+            <li><strong>Address:</strong> <a href="https://www.google.com/maps/dir/?api=1&destination={{.Address}}" target="_blank">{{.Address}}</a></li>
             <li><strong>Date:</strong> {{.ProjectDate}}</li>
             <li><strong>Time:</strong> {{.StartTime}} - {{.EndTime}}</li>
         </ul>
-        <p>Please ensure you have made all necessary preparations for the project.</p>
-        <p>If you need to cancel your registration, please do so at least 3 days before the project starts.</p>
-        <p>Thank you,<br>The Journey Serve Day Team</p>
-    </div>
-    <div class="footer">
-        <p>This is an automated message, please do not reply.</p>
+        <p>Please ensure you have made all necessary preparations for the project, which might include filling out any electronic waivers or other online documents (if the project requires it).</p>
+        <p>If you have any questions about the project, reach out to your Serve Day Lead {{.ServeLeaderName}} at {{.ServeLeaderEmail}}. </p>
+        <p>If you need to cancel or edit your registration, please do so following these instructions:</p>
+        <ul>
+            <li>Visit the Serve Day Homepage (hyperlink)</li>
+            <li>Click on Find My Project at the top right.</li>
+            <li>Enter your email address</li>
+            <li>Scroll to the bottom of the project page and click Edit or Cancel.</li>
+        </ul>
+        <p>Thank you for signing up to be a part of Serve Day!</p>
+        <p>Take Your Next Step,<br>The Journey Serve Day Team</p>
     </div>
 </div>
 </body>
