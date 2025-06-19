@@ -57,10 +57,21 @@ func (s *Scheduler) Stop() {
 func (s *Scheduler) processReminders() {
 	log.Println("Processing email reminders...")
 
-	// Process reminders for different intervals
-	s.processReminderForDays(14) // 2 weeks before
-	s.processReminderForDays(7)  // 1 week before
-	// s.processReminderForDays(1)  // 1 day before // NOT using per Cory
+	now := time.Now()
+	
+	// 2 week reminder - send on June 28th
+	twoWeekDate := time.Date(2025, time.June, 28, 0, 0, 0, 0, time.UTC)
+	if now.Year() == twoWeekDate.Year() && now.Month() == twoWeekDate.Month() && now.Day() == twoWeekDate.Day() {
+		log.Println("Sending 2-week reminders (June 28th)")
+		s.processReminderForDays(14)
+	}
+	
+	// 1 week reminder - send on July 5th
+	oneWeekDate := time.Date(2025, time.July, 5, 0, 0, 0, 0, time.UTC)
+	if now.Year() == oneWeekDate.Year() && now.Month() == oneWeekDate.Month() && now.Day() == oneWeekDate.Day() {
+		log.Println("Sending 1-week reminders (July 5th)")
+		s.processReminderForDays(7)
+	}
 
 	log.Println("Finished processing email reminders")
 }
