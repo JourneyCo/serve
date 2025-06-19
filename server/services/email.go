@@ -115,9 +115,9 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 	case 7:
 		subject = fmt.Sprintf("1 Week Until Your Project: %s", registration.Project.Title)
 		templateStr = OneWeek
-	case 1:
-		subject = fmt.Sprintf("Tomorrow: Your Project %s Begins", registration.Project.Title)
-		templateStr = OneDay
+	// case 1:
+	// 	subject = fmt.Sprintf("Tomorrow: Your Project %s Begins", registration.Project.Title)
+	// 	templateStr = OneDay
 	default:
 		return fmt.Errorf("unsupported reminder interval: %d days", daysLeft)
 	}
