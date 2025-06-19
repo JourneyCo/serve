@@ -217,11 +217,12 @@ func GetRegistrationsForReminders(db *sql.DB, days int) ([]Registration, error) 
 									JOIN users u ON r.user_id = u.id
 									JOIN projects p ON r.project_id = p.id
 									WHERE r.status = 'registered' 
-									AND p.project_date = CURRENT_DATE + $1::integer
+									AND p.project_date >= (CURRENT_DATE + $1::integer)
+  									AND p.project_date <  (CURRENT_DATE + $2::integer)
 									ORDER BY p.project_date
 					`
 
-	rows, err := db.Query(query, days)
+	rows, err := db.Query(query, days, days+1)
 	if err != nil {
 		return nil, err
 	}

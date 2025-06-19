@@ -19,10 +19,10 @@ import (
 )
 
 const (
-	OneDay       = "templates/one_day.html"
-	OneWeek      = "templates/one_week.html"
+	OneDay       = "one_day.html"
+	OneWeek      = "one_week.html"
 	Registration = "registration.html"
-	TwoWeeks     = "templates/two_week.html"
+	TwoWeeks     = "two_week.html"
 )
 
 // EmailService handles email operations
@@ -110,10 +110,10 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 	// Set subject and template based on days left
 	switch daysLeft {
 	case 14:
-		subject = fmt.Sprintf("2 Weeks Until Your Project: %s", registration.Project.Title)
+		subject = fmt.Sprintf("2 Weeks Until Your Journey Serve Day Project: %s", registration.Project.Title)
 		templateStr = TwoWeeks
 	case 7:
-		subject = fmt.Sprintf("1 Week Until Your Project: %s", registration.Project.Title)
+		subject = fmt.Sprintf("1 Week Until Your Journey Serve Day Project: %s", registration.Project.Title)
 		templateStr = OneWeek
 	// case 1:
 	// 	subject = fmt.Sprintf("Tomorrow: Your Project %s Begins", registration.Project.Title)
@@ -135,6 +135,9 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 		DaysLeft         int
 		ServeLeaderName  string
 		ServeLeaderEmail string
+		Guests           int
+		Area             string
+		Address          string
 	}{
 		Name:             fmt.Sprintf("%s %s", registration.User.FirstName, registration.User.LastName),
 		ProjectTitle:     registration.Project.Title,
@@ -144,6 +147,9 @@ func (s *EmailService) SendReminderEmail(registration *models.Registration, days
 		DaysLeft:         daysLeft,
 		ServeLeaderEmail: registration.Project.ServeLeadEmail,
 		ServeLeaderName:  registration.Project.ServeLeadName,
+		Guests:           registration.GuestCount,
+		Area:             registration.Project.Area,
+		Address:          registration.Project.LocationAddress,
 	}
 
 	ctx := context.Background()
@@ -174,8 +180,8 @@ func (s *EmailService) sendEmail(ctx context.Context, to, subject, templateStr s
 		"text":    "You are confirmed for Serve Day",
 		"html":    htmlBody.String(),
 		"reply_to": map[string]string{
-			"email": "Sara Wiest",
-			"name":  "sarawiest@journeycolorado.com",
+			"email": "sarawiest@journeycolorado.com",
+			"name":  "Sara Wiest",
 		},
 	}
 	jsonPayload, err := json.Marshal(payload)
