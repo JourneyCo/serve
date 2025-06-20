@@ -85,7 +85,7 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 			Area:            project.Area,
 			LocationAddress: project.LocationAddress,
 			Latitude:        project.Latitude,
-			Longitude:       project.Latitude,
+			Longitude:       project.Longitude,
 			ServeLeadID:     project.ServeLeadID,
 			ServeLeadName:   project.ServeLeadName,
 			ServeLeadEmail:  project.ServeLeadEmail,
