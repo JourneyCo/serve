@@ -1,12 +1,12 @@
-import {AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Router, RouterModule} from '@angular/router';
-import {GoogleMapsModule, MapAdvancedMarker, MapInfoWindow} from '@angular/google-maps';
-import {HelperService, ProjectService} from '@services';
-import {Project} from '@models';
-import {MaterialModule} from '@material';
-import {MatTableDataSource} from '@angular/material/table';
-import {MatSort} from '@angular/material/sort';
+import { AfterViewChecked, AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { GoogleMapsModule, MapAdvancedMarker, MapInfoWindow } from '@angular/google-maps';
+import { HelperService, ProjectService } from '@services';
+import { Project } from '@models';
+import { MaterialModule } from '@material';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: "app-project-list",
@@ -23,7 +23,7 @@ import {MatSort} from '@angular/material/sort';
 export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecked {
   displayedColumns: string[] = [
     "title",
-      "type",
+    "type",
     "area",
     "time",
     "capacity",
@@ -207,39 +207,39 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.infoWindow.open(marker);
   }
 
-  // centerMap(): void {
-  //   if (this.markers.length > 0) {
-  //     // Recalculate center and zoom to fit all markers
-  //     const bounds = new google.maps.LatLngBounds();
-  //     this.markers.forEach((marker) => {
-  //       bounds.extend(marker.position);
-  //     });
-  //
-  //     this.mapOptions = {
-  //       ...this.mapOptions,
-  //       center: {
-  //         lat: bounds.getCenter().lat(),
-  //         lng: bounds.getCenter().lng(),
-  //       },
-  //     };
-  //   }
-  // }
+  centerMap(): void {
+    if (this.markers.length > 0) {
+      // Recalculate center and zoom to fit all markers
+      const bounds = new google.maps.LatLngBounds();
+      this.markers.forEach((marker) => {
+        bounds.extend(marker.position);
+      });
+
+      this.mapOptions = {
+        ...this.mapOptions,
+        center: {
+          lat: bounds.getCenter().lat(),
+          lng: bounds.getCenter().lng(),
+        },
+      };
+    }
+  }
   trackByFn(index: number, project: Project): number {
     return project.id;
   }
 
   sortProjects(p_list: Project[]) {
     return p_list.sort((a, b) => {
-    const aFull = a.current_registrations >= a.max_capacity;
-    const bFull = b.current_registrations >= b.max_capacity;
+      const aFull = a.current_registrations >= a.max_capacity;
+      const bFull = b.current_registrations >= b.max_capacity;
 
-    // If both projects are either full or not full, sort alphabetically by name
-    if (aFull === bFull) {
-      return a.title.localeCompare(b.title);
-    }
+      // If both projects are either full or not full, sort alphabetically by name
+      if (aFull === bFull) {
+        return a.title.localeCompare(b.title);
+      }
 
-    // Projects that are full go to the bottom
-    return aFull ? 1 : -1;
+      // Projects that are full go to the bottom
+      return aFull ? 1 : -1;
     });
   }
 }
