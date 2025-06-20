@@ -2,7 +2,8 @@ module "db" {
   source  = "cloudposse/rds/aws"
   version = "1.1.2"
 
-  allocated_storage           = 20
+  allocated_storage           = 40
+  multi_az                    = true
   storage_type                = "gp2"
   allow_major_version_upgrade = false
   security_group_ids = [
