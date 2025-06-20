@@ -31,7 +31,7 @@ resource "aws_instance" "serve_app" {
     dev_mode               = var.dev_mode,
     serve_day              = var.serve_day,
     api_port               = var.api_port,
-    db_host                = module.db.instance_address,
+    db_host                = var.db_host,
     db_port                = var.db_port,
     db_user                = var.db_user,
     db_pass                = var.db_pass,
