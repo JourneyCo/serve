@@ -35,6 +35,10 @@ variable "serve_day" {
   default = "07-12-25"
 }
 
+variable "db_host" {
+  type = string
+}
+
 variable "api_port" {
   type    = number
   default = 8080
