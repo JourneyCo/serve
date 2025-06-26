@@ -8,9 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/mux"
 	"serve/middleware"
 	"serve/models"
+
+	"github.com/gorilla/mux"
 )
 
 // AdminHandler handles admin-related requests
@@ -205,7 +206,7 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 
 	// hard code
 	if input.ProjectDate == "" { // default to serve day
-		input.ProjectDate = "2025-07-12T00:00:00Z"
+		input.ProjectDate = "2025-07-12T08:00:00Z"
 	}
 
 	if input.ServeLeadID == "" { // default to serve day
@@ -286,6 +287,9 @@ func (h *AdminHandler) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
+	if projectDate.Hour() < 8 {
+		projectDate = projectDate.Add(time.Hour * 8)
+	}
 	if err != nil {
 		log.Println("could not parse date")
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format (use YYYY-MM-DD)")
