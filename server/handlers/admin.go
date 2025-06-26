@@ -214,6 +214,9 @@ func (h *AdminHandler) CreateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	projectDate, err := time.Parse(time.RFC3339, input.ProjectDate)
+	if projectDate.Hour() < 8 {
+		projectDate = projectDate.Add(time.Hour * 8)
+	}
 
 	if err != nil {
 		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project date format")
