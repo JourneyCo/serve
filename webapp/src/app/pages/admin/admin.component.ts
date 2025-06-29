@@ -59,6 +59,11 @@ export class AdminComponent implements OnInit, AfterViewInit {
   // Loading states
   loadingProjects = true;
   processingAction = false;
+  loadingStats = true;
+
+  // Statistics
+  totalRegistrants = 0;
+  totalGuests = 0;
 
   // ViewChild references for table sorting
   @ViewChild("projectsSort") projectsSort!: MatSort;
@@ -73,6 +78,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadProjects();
+    this.loadRegistrationStats();
   }
 
   ngAfterViewInit(): void {
@@ -194,6 +200,21 @@ export class AdminComponent implements OnInit, AfterViewInit {
       duration: 5000,
       panelClass: ["error-snackbar"],
     });
+  }
+
+  loadRegistrationStats(): void {
+    this.loadingStats = true;
+    this.projectService.getAllRegistrations().subscribe(
+      (registrations) => {
+        this.totalRegistrants = registrations.length;
+        this.totalGuests = registrations.reduce((sum, reg) => sum + (reg.guest_count || 0), 0);
+        this.loadingStats = false;
+      },
+      (error) => {
+        console.error("Error loading registration stats:", error);
+        this.loadingStats = false;
+      }
+    );
   }
 
   sortProjects(projects: Project[]) {

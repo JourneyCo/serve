@@ -91,11 +91,11 @@ export class ProjectService {
     return this.http.delete(`${this.apiUrl}/admin/registrations/${id}`);
   }
 
-  getAllRegistrations(): Observable<Registration[]> {
-    return this.http.get<Registration[]>(`${this.apiUrl}/admin/registrations`);
+  updateProjectActiveStatus(projectId: number, status: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/projects/${projectId}/${status}`, {});
   }
 
-  updateProjectActiveStatus(id: number, status: 'active' | 'inactive'): Observable<any> {
-    return this.http.put(`${this.apiUrl}/admin/projects/${id}/${status}`, {});
+  getAllRegistrations(): Observable<Registration[]> {
+    return this.http.get<Registration[]>(`${this.apiUrl}/admin/registrations`);
   }
 }

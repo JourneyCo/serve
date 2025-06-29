@@ -1,6 +1,35 @@
 <div class="admin-dashboard">
   <div class="admin-header">
-    <h1>Serve Lead Dashboard</h1>
+    <div class="header-content">
+      <h1>Serve Lead Dashboard</h1>
+      <div class="stats-tiles">
+        @if (loadingStats) {
+          <div class="loading-stats">
+            <mat-spinner diameter="24"></mat-spinner>
+          </div>
+        }
+        @if (!loadingStats) {
+          <mat-card class="stat-tile">
+            <mat-card-content>
+              <div class="stat-number">{{ totalRegistrants }}</div>
+              <div class="stat-label">Total Registrants</div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-tile">
+            <mat-card-content>
+              <div class="stat-number">{{ totalGuests }}</div>
+              <div class="stat-label">Total Guests</div>
+            </mat-card-content>
+          </mat-card>
+          <mat-card class="stat-tile">
+            <mat-card-content>
+              <div class="stat-number">{{ totalRegistrants + totalGuests }}</div>
+              <div class="stat-label">Total Attendees</div>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    </div>
   </div>
 
   <mat-tab-group #tabGroup>
