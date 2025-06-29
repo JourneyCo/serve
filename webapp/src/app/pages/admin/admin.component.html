@@ -1,6 +1,6 @@
 <div class="admin-dashboard">
   <div class="admin-header">
-    <h1>Project Lead Dashboard</h1>
+    <h1>Serve Lead Dashboard</h1>
   </div>
 
   <mat-tab-group #tabGroup>
@@ -63,6 +63,18 @@
                     {{ project.current_registrations }} /
                     {{ project.max_capacity }}
                   </span>
+                </td>
+              </ng-container>
+
+              <!-- Active Column -->
+              <ng-container matColumnDef="active">
+                <th mat-header-cell *matHeaderCellDef>Active</th>
+                <td mat-cell *matCellDef="let project">
+                   <mat-slide-toggle
+                      [checked]="project.is_active"
+                      (change)="updateProjectActiveStatus(project, $event)"
+                    >
+                   </mat-slide-toggle>
                 </td>
               </ng-container>
 

@@ -14,6 +14,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {ProjectService} from '@services';
 import {Project} from '@models';
 import {ProjectFormComponent} from '../../components/admin/project-form/project-form.component';
@@ -37,6 +38,7 @@ import {ProjectFormComponent} from '../../components/admin/project-form/project-
     MatProgressSpinnerModule,
     MatDividerModule,
     MatTooltipModule,
+    MatSlideToggleModule,
   ],
   templateUrl: "./admin.component.html",
   styleUrls: ["./admin.component.scss"],
@@ -50,6 +52,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
     "title",
     "time",
     "capacity",
+    "active",
     "actions",
   ];
 
@@ -147,6 +150,26 @@ export class AdminComponent implements OnInit, AfterViewInit {
         console.error("Error deleting project:", error);
         this.showError("Failed to delete project");
         this.processingAction = false;
+      },
+    );
+  }
+
+  toggleProjectActiveStatus(project: Project, event: any): void {
+    const newStatus = event.checked ? 'active' : 'inactive';
+    
+    this.processingAction = true;
+    this.projectService.updateProjectActiveStatus(project.id, newStatus).subscribe(
+      () => {
+        project.active = event.checked;
+        this.processingAction = false;
+        this.showSuccess(`Project ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`);
+      },
+      (error) => {
+        console.error("Error updating project status:", error);
+        this.showError("Failed to update project status");
+        this.processingAction = false;
+        // Revert the toggle state on error
+        event.source.checked = !event.checked;
       },
     );
   }
