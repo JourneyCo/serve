@@ -387,6 +387,11 @@ func (h *AdminHandler) UpdateProjectActiveStatus(w http.ResponseWriter, r *http.
 	}
 
 	status := vars["status"]
+	if status != "active" && status != "inactive" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Status must be either 'active' or 'inactive'")
+		return
+	}
+	
 	active := status == "active"
 
 	// Check if project exists
