@@ -161,7 +161,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   toggleProjectActiveStatus(project: Project, event: any): void {
-    const newStatus = event.checked ? 'active' : 'inactive';
+    const newStatus: 'active' | 'inactive' = event.checked ? 'active' : 'inactive';
     
     this.processingAction = true;
     this.projectService.updateProjectActiveStatus(project.id, newStatus).subscribe(

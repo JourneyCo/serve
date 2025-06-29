@@ -91,7 +91,7 @@ export class ProjectService {
     return this.http.delete(`${this.apiUrl}/admin/registrations/${id}`);
   }
 
-  updateProjectActiveStatus(projectId: number, status: string): Observable<any> {
+  updateProjectActiveStatus(projectId: number, status: 'active' | 'inactive'): Observable<any> {
     return this.http.put(`${this.apiUrl}/admin/projects/${projectId}/${status}`, {});
   }
 
