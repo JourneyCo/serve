@@ -96,11 +96,13 @@
                        [style.width.%]="getCapacityPercentage(project)"></div>
                 </div>
                 <div class="capacity-details">
+                    @if (project.status === 'open') {
                   <span class="capacity-text">
                     <strong>{{project.current_registrations}}</strong> / {{project.max_capacity}}
                   </span>
+                    }
                   <span class="capacity-status" [ngClass]="getCapacityStatusClass(project)">
-                    <ng-container *ngIf="project.current_registrations >= project.max_capacity">
+                    <ng-container *ngIf="project.current_registrations >= project.max_capacity || project.status !== 'open'">
                       Full
                     </ng-container>
                   </span>

@@ -159,6 +159,10 @@ export class ProjectDetailComponent implements OnInit {
             this.project.serve_lead?.last_name;
         this.project.serve_lead_email = this.project.serve_lead_email || this.project.serve_lead?.email;
 
+        if (this.project.status !== 'open' && !this.admin_route) {
+          this.project.max_capacity = this.project.current_registrations;
+        }
+
         // if the user is signed in, then we will check to see if they are already registered
         // note - you can hit this page without being signed in
         if (this.userSignedIn) {

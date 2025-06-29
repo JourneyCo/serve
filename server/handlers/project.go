@@ -94,6 +94,7 @@ func (h *ProjectHandler) GetProjects(w http.ResponseWriter, r *http.Request) {
 			Ages:            project.Ages,
 			CreatedAt:       project.CreatedAt,
 			UpdatedAt:       project.UpdatedAt,
+			Status:          project.Status,
 		}
 
 		if len(project.Leads) > 0 {
@@ -209,6 +210,7 @@ func (h *ProjectHandler) GetProject(w http.ResponseWriter, r *http.Request) {
 		Ages:            project.Ages,
 		CreatedAt:       project.CreatedAt,
 		UpdatedAt:       project.UpdatedAt,
+		Status:          project.Status,
 	}
 
 	if len(project.Leads) > 0 {

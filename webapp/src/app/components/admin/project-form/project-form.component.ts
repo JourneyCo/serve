@@ -193,7 +193,7 @@ export class ProjectFormComponent implements OnInit {
       serve_lead_email: formValues.serve_lead_email,
       google_id: 0,
       types: formValues.categories,
-      leads: selectedLeads
+      leads: selectedLeads,
     };
 
 

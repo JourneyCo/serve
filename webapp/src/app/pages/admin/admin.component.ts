@@ -52,18 +52,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
     "title",
     "time",
     "capacity",
-    "active",
+    "status",
     "actions",
   ];
 
   // Loading states
   loadingProjects = true;
   processingAction = false;
-  loadingStats = true;
-
-  // Statistics
-  totalRegistrants = 0;
-  totalGuests = 0;
 
   // ViewChild references for table sorting
   @ViewChild("projectsSort") projectsSort!: MatSort;
@@ -78,7 +73,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadProjects();
-    this.loadRegistrationStats();
   }
 
   ngAfterViewInit(): void {
@@ -93,6 +87,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
     this.projectService.getProjects().subscribe(
       (data) => {
         this.projectsDataSource.data = this.sortProjects(data);
+        console.log(this.projectsDataSource.data);
         this.loadingProjects = false;
       },
       (error) => {
@@ -161,14 +156,14 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   toggleProjectActiveStatus(project: Project, event: any): void {
-    const newStatus: 'active' | 'inactive' = event.checked ? 'active' : 'inactive';
+    const newStatus: 'open' | 'in_review' = event.checked ? 'open' : 'in_review';
     
     this.processingAction = true;
     this.projectService.updateProjectActiveStatus(project.id, newStatus).subscribe(
-      () => {
-        project.active = event.checked;
+      (data) => {
+        project.status = data.status;
         this.processingAction = false;
-        this.showSuccess(`Project ${newStatus === 'active' ? 'activated' : 'deactivated'} successfully`);
+        this.showSuccess(`Project ${newStatus === 'open' ? 'activated' : 'deactivated'} successfully`);
       },
       (error) => {
         console.error("Error updating project status:", error);
@@ -200,21 +195,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
       duration: 5000,
       panelClass: ["error-snackbar"],
     });
-  }
-
-  loadRegistrationStats(): void {
-    this.loadingStats = true;
-    this.projectService.getAllRegistrations().subscribe(
-      (registrations) => {
-        this.totalRegistrants = registrations.length;
-        this.totalGuests = registrations.reduce((sum, reg) => sum + (reg.guest_count || 0), 0);
-        this.loadingStats = false;
-      },
-      (error) => {
-        console.error("Error loading registration stats:", error);
-        this.loadingStats = false;
-      }
-    );
   }
 
   sortProjects(projects: Project[]) {

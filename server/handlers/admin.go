@@ -387,12 +387,10 @@ func (h *AdminHandler) UpdateProjectActiveStatus(w http.ResponseWriter, r *http.
 	}
 
 	status := vars["status"]
-	if status != "active" && status != "inactive" {
-		middleware.RespondWithError(w, http.StatusBadRequest, "Status must be either 'active' or 'inactive'")
+	if status != "open" && status != "in_review" {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Status must be either 'open' or 'in_review'")
 		return
 	}
-	
-	active := status == "active"
 
 	// Check if project exists
 	project, err := models.GetProjectByID(ctx, h.DB, id)
@@ -407,15 +405,17 @@ func (h *AdminHandler) UpdateProjectActiveStatus(w http.ResponseWriter, r *http.
 	}
 
 	// Update the active status
-	if err := models.UpdateProjectActiveStatus(ctx, h.DB, id, active); err != nil {
+	if err := models.UpdateProjectActiveStatus(ctx, h.DB, id, status); err != nil {
 		log.Printf("Error updating project active status: %v", err)
 		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project status")
 		return
 	}
 
-	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{
-		"message": fmt.Sprintf("Project status updated to %s successfully", status),
-	})
+	middleware.RespondWithJSON(
+		w, http.StatusOK, map[string]string{
+			"message": fmt.Sprintf("Project status updated to %s successfully", status),
+		},
+	)
 }
 
 func applyAccessories(input ProjectInput, project *models.Project) *models.Project {

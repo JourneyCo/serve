@@ -97,9 +97,9 @@
       @if (!myproject && !admin_route) {
       <div class="mt-2">
         <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
-          [disabled]="loadingRegistration || isProjectFull()">
+          [disabled]="loadingRegistration || isProjectFull() || project.status !== 'open'">
           <mat-icon>event_available</mat-icon>
-          <span>Register</span>
+            <span>{{project.status === 'open' ? 'Register' : 'Registration Closed'}}</span>
         </button>
       </div>
       }
@@ -195,9 +195,9 @@
       @if (!admin_route) {
         @if (!myproject) {
       <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
-        [disabled]="loadingRegistration || isProjectFull()">
+        [disabled]="loadingRegistration || isProjectFull() || project.status !== 'open'">
         <mat-icon>event_available</mat-icon>
-        <span>Register</span>
+        <span>{{project.status === 'open' ? 'Register' : 'Registration Closed'}}</span>
       </button>
       } @else {
       <button mat-raised-button class="darkbutton" (click)="openEditGuestCountDialog()" [disabled]="loadingRegistration"

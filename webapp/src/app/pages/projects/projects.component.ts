@@ -93,6 +93,8 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.projectService.getProjects().subscribe({
       next: (data) => {
         let projects = this.sortProjects(data);
+
+
         this.dataSource.data = projects;
 
         // Create markers for projects with valid coordinates
@@ -230,16 +232,22 @@ export class ProjectsComponent implements OnInit, AfterViewInit, AfterViewChecke
 
   sortProjects(p_list: Project[]) {
     return p_list.sort((a, b) => {
-      const aFull = a.current_registrations >= a.max_capacity;
-      const bFull = b.current_registrations >= b.max_capacity;
-
-      // If both projects are either full or not full, sort alphabetically by name
-      if (aFull === bFull) {
-        return a.title.localeCompare(b.title);
+      // 1. Status: 'open' comes first
+      const aOpen = a.status === 'open';
+      const bOpen = b.status === 'open';
+      if (aOpen !== bOpen) {
+        return aOpen ? -1 : 1;
       }
 
-      // Projects that are full go to the bottom
-      return aFull ? 1 : -1;
+      // 2. Fullness: not-full comes before full
+      const aFull = a.current_registrations >= a.max_capacity;
+      const bFull = b.current_registrations >= b.max_capacity;
+      if (aFull !== bFull) {
+        return aFull ? 1 : -1;
+      }
+
+      // 3. Alphabetical by title
+      return a.title.localeCompare(b.title);
     });
   }
 }

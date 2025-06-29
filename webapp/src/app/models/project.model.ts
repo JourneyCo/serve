@@ -27,7 +27,7 @@ export interface Project {
   };
   ages?: string;
   types?: Accessory[];
-  active: boolean;
+  status?: string;
   created_at: string;
   updated_at: string;
   encoded_address?: string;
