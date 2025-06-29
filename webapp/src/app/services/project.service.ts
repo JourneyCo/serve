@@ -94,4 +94,8 @@ export class ProjectService {
   getAllRegistrations(): Observable<Registration[]> {
     return this.http.get<Registration[]>(`${this.apiUrl}/admin/registrations`);
   }
+
+  updateProjectActiveStatus(id: number, status: 'active' | 'inactive'): Observable<any> {
+    return this.http.put(`${this.apiUrl}/admin/projects/${id}/${status}`, {});
+  }
 }
