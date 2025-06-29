@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -59,6 +60,7 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	router.HandleFunc("/projects/{id:[0-9]+}", handler.DeleteProject).Methods(http.MethodDelete)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.UpdateRegistrationGuestCount).Methods(http.MethodPut)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
+	router.HandleFunc("/projects/{id:[0-9]+}/{status}", handler.UpdateProjectActiveStatus).Methods(http.MethodPut)
 }
 
 // GetAllRegistrations returns all registrations across all projects
@@ -372,6 +374,43 @@ func (h *AdminHandler) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{"message": "Project deleted successfully"})
+}
+
+// UpdateProjectActiveStatus updates the active status of a project
+func (h *AdminHandler) UpdateProjectActiveStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusBadRequest, "Invalid project ID")
+		return
+	}
+
+	status := vars["status"]
+	active := status == "active"
+
+	// Check if project exists
+	project, err := models.GetProjectByID(ctx, h.DB, id)
+	if err != nil {
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve project")
+		return
+	}
+
+	if project == nil {
+		middleware.RespondWithError(w, http.StatusNotFound, "Project not found")
+		return
+	}
+
+	// Update the active status
+	if err := models.UpdateProjectActiveStatus(ctx, h.DB, id, active); err != nil {
+		log.Printf("Error updating project active status: %v", err)
+		middleware.RespondWithError(w, http.StatusInternalServerError, "Failed to update project status")
+		return
+	}
+
+	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{
+		"message": fmt.Sprintf("Project status updated to %s successfully", status),
+	})
 }
 
 func applyAccessories(input ProjectInput, project *models.Project) *models.Project {
