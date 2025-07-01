@@ -96,9 +96,13 @@ func (h *UserHandler) GetUserRegistrations(w http.ResponseWriter, r *http.Reques
 	params := r.URL.Query()
 	email := params.Get("email")
 
+	if email == "" {
+		middleware.RespondWithError(w, http.StatusPreconditionRequired, "Failed to get user information")
+	}
+
 	// Get user ID from the token
 	user, err := models.GetUserByEmail(ctx, h.DB, email)
-	if err != nil {
+	if err != nil || user == nil {
 		middleware.RespondWithError(w, http.StatusUnauthorized, "Failed to get user information")
 		return
 	}

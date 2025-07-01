@@ -163,7 +163,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
       (data) => {
         project.status = data.status;
         this.processingAction = false;
-        this.showSuccess(`Project ${newStatus === 'open' ? 'activated' : 'deactivated'} successfully`);
+        this.showSuccess(`Project ${newStatus === 'open' ? 'activated' : 'closed'} successfully`);
       },
       (error) => {
         console.error("Error updating project status:", error);

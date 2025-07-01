@@ -159,10 +159,6 @@ export class ProjectDetailComponent implements OnInit {
             this.project.serve_lead?.last_name;
         this.project.serve_lead_email = this.project.serve_lead_email || this.project.serve_lead?.email;
 
-        if (this.project.status !== 'open' && !this.admin_route) {
-          this.project.max_capacity = this.project.current_registrations;
-        }
-
         // if the user is signed in, then we will check to see if they are already registered
         // note - you can hit this page without being signed in
         if (this.userSignedIn) {
@@ -216,7 +212,7 @@ export class ProjectDetailComponent implements OnInit {
 
   openEditGuestCountDialog(): void {
     if (!this.project) return;
-
+  console.log(this.userEmail);
     this.projectService.getUserRegistrations(this.userEmail).subscribe({
       next: (registration) => {
         if (registration) {
@@ -242,6 +238,12 @@ export class ProjectDetailComponent implements OnInit {
                 },
               })}
           });
+        }
+      },
+      error: (error: any) => {
+        if (error.status === 428) {
+          this.helper.showError("Registration not found. Please try again.");
+          this.router.navigate(['/']);
         }
       }
     });
@@ -291,6 +293,12 @@ export class ProjectDetailComponent implements OnInit {
     return this.project
       ? this.project.current_registrations >= this.project.max_capacity
       : false;
+  }
+
+  isProjectOpen(): boolean {
+    return this.project
+        ? this.project.status === 'open'
+        : false;
   }
 
   getCapacityPercentage(): number {

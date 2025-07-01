@@ -94,17 +94,35 @@
           }
       </div>
 
-      @if (!myproject && !admin_route) {
-      <div class="mt-2">
-        <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
-          [disabled]="loadingRegistration || isProjectFull() || project.status !== 'open'">
-          <mat-icon>event_available</mat-icon>
-            <span>{{project.status === 'open' ? 'Register' : 'Registration Closed'}}</span>
-        </button>
-      </div>
-      }
-
-
+        @if (!admin_route) {
+            @if (myproject) {
+                <button mat-raised-button class="darkbutton" (click)="openEditGuestCountDialog()" [disabled]="loadingRegistration">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit Registration</span>
+                </button>
+                <button mat-raised-button color="warn" (click)="openCancellationDialog()" [disabled]="loadingRegistration">
+                    <mat-icon>event_busy</mat-icon>
+                    @if (!loadingRegistration) {
+                        <span>Cancel Registration</span>
+                    }
+                    @if (loadingRegistration) {
+                        <span>Cancelling...</span>
+                    }
+                </button>
+            } @else if (!myproject && isProjectOpen() && !isProjectFull()) {
+                <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
+                        [disabled]="loadingRegistration">
+                    <mat-icon>event_available</mat-icon>
+                    <span>Register</span>
+                </button>
+            } @else if (!myproject && !isProjectOpen()) {
+                <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()" disabled>
+                    <mat-icon>event_available</mat-icon>
+                    <span>Registration Closed</span>
+                </button>
+            }
+        }
+        
       <div class="project-capacity">
         <h6>Registration Capacity</h6>
         <div class="capacity-indicator">
@@ -192,33 +210,35 @@
         <mat-icon>arrow_back</mat-icon> Back to Projects
       </button>
 
-      @if (!admin_route) {
-        @if (!myproject) {
-      <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
-        [disabled]="loadingRegistration || isProjectFull() || project.status !== 'open'">
-        <mat-icon>event_available</mat-icon>
-        <span>{{project.status === 'open' ? 'Register' : 'Registration Closed'}}</span>
-      </button>
-      } @else {
-      <button mat-raised-button class="darkbutton" (click)="openEditGuestCountDialog()" [disabled]="loadingRegistration"
-        disabled>
-        <mat-icon>edit</mat-icon>
-        <span>Edit Registration</span>
-      </button>
-      }
 
-      @if (myproject) {
-      <button mat-raised-button color="warn" (click)="openCancellationDialog()" [disabled]="loadingRegistration">
-        <mat-icon>event_busy</mat-icon>
-        @if (!loadingRegistration) {
-        <span>Cancel Registration</span>
+        @if (!admin_route) {
+            @if (myproject) {
+                <button mat-raised-button class="darkbutton" (click)="openEditGuestCountDialog()" [disabled]="loadingRegistration">
+                    <mat-icon>edit</mat-icon>
+                    <span>Edit Registration</span>
+                </button>
+            <button mat-raised-button color="warn" (click)="openCancellationDialog()" [disabled]="loadingRegistration">
+                <mat-icon>event_busy</mat-icon>
+                @if (!loadingRegistration) {
+                    <span>Cancel Registration</span>
+                }
+                @if (loadingRegistration) {
+                    <span>Cancelling...</span>
+                }
+            </button>
+            } @else if (!myproject && isProjectOpen() && !isProjectFull()) {
+                <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()"
+                        [disabled]="loadingRegistration">
+                    <mat-icon>event_available</mat-icon>
+                    <span>Register</span>
+                </button>
+            } @else if (!myproject && !isProjectOpen()) {
+                <button mat-raised-button class="darkbutton" (click)="openRegistrationForm()" disabled>
+                    <mat-icon>event_available</mat-icon>
+                    <span>Registration Closed</span>
+                </button>
+            }
         }
-        @if (loadingRegistration) {
-        <span>Cancelling...</span>
-        }
-      </button>
-      }
-    }
 
       <!-- Cancellation Dialog Template -->
       <ng-template #cancellationDialog>
