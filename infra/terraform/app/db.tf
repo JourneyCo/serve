@@ -3,7 +3,7 @@ module "db" {
   version = "1.1.2"
 
   allocated_storage           = 40
-  multi_az                    = true
+  multi_az                    = false
   storage_type                = "gp2"
   allow_major_version_upgrade = false
   security_group_ids = [
