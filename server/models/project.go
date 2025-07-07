@@ -102,9 +102,6 @@ func GetAllProjects(ctx context.Context, db *sql.DB) ([]Project, error) {
 				}
 			}
 		}
-
-		// TODO: Remove hardcoding
-		p.ProjectDate = time.Date(2025, 7, 12, 0, 0, 0, 0, time.UTC)
 		projects = append(projects, p)
 	}
 
