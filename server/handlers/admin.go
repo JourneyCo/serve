@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 
 	"serve/middleware"
 	"serve/models"
+	"serve/services"
 
 	"github.com/gorilla/mux"
 )
@@ -437,7 +439,6 @@ func applyAccessories(input ProjectInput, project *models.Project) *models.Proje
 
 // SendThankYouEmails triggers sending thank you emails to all users
 func (h *AdminHandler) SendThankYouEmails(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
 
 	// Start the email sending process in a goroutine so the endpoint responds quickly
 	go func() {
@@ -446,7 +447,9 @@ func (h *AdminHandler) SendThankYouEmails(w http.ResponseWriter, r *http.Request
 		}
 	}()
 
-	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{
-		"message": "Thank you email sending process started successfully",
-	})
+	middleware.RespondWithJSON(
+		w, http.StatusOK, map[string]string{
+			"message": "Thank you email sending process started successfully",
+		},
+	)
 }
