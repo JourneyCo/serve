@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -233,7 +234,7 @@ func (s *EmailService) sendEmail(ctx context.Context, to, subject, templateStr s
 
 }
 
-// SendThankYouToAllUsers sends thank you emails to all users in the database
+// SendThankYouToAllUsers sends thank-you emails to all users in the database
 func (s *EmailService) SendThankYouToAllUsers(ctx context.Context, db *sql.DB) error {
 	// Get all users from the database
 	users, err := models.GetAllUsers(ctx, db)
@@ -277,7 +278,9 @@ func (s *EmailService) SendThankYouToAllUsers(ctx context.Context, db *sql.DB) e
 }
 
 // sendEmailWithRetry sends an email with retry logic
-func (s *EmailService) sendEmailWithRetry(ctx context.Context, to, subject, templateStr string, data interface{}) error {
+func (s *EmailService) sendEmailWithRetry(
+	ctx context.Context, to, subject, templateStr string, data interface{},
+) error {
 	maxRetries := 3
 	baseDelay := 1 * time.Second
 
@@ -294,7 +297,7 @@ func (s *EmailService) sendEmailWithRetry(ctx context.Context, to, subject, temp
 		// Exponential backoff
 		delay := baseDelay * time.Duration(1<<uint(attempt-1))
 		log.Printf("Attempt %d failed for %s, retrying in %v: %v", attempt, to, delay, err)
-		
+
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
