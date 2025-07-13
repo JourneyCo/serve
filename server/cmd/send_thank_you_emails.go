@@ -1,11 +1,9 @@
-
 package main
 
 import (
 	"context"
 	"flag"
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
 	"serve/config"
