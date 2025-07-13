@@ -22,6 +22,7 @@ const (
 	OneDay       = "one_day.html"
 	OneWeek      = "one_week.html"
 	Registration = "registration.html"
+	ThankYou     = "thank_you.html"
 	TwoWeeks     = "two_week.html"
 )
 
