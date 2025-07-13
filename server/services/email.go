@@ -232,3 +232,76 @@ func (s *EmailService) sendEmail(ctx context.Context, to, subject, templateStr s
 	return nil
 
 }
+
+// SendThankYouToAllUsers sends thank you emails to all users in the database
+func (s *EmailService) SendThankYouToAllUsers(ctx context.Context, db *sql.DB) error {
+	// Get all users from the database
+	users, err := models.GetAllUsers(ctx, db)
+	if err != nil {
+		return fmt.Errorf("failed to get users: %w", err)
+	}
+
+	log.Printf("Sending thank you emails to %d users", len(users))
+
+	subject := "Serve Day - Thank you"
+
+	// Rate limit to 150 emails per hour (24 seconds between emails)
+	ticker := time.NewTicker(24 * time.Second)
+	defer ticker.Stop()
+
+	for i, user := range users {
+		// Create email data
+		data := struct {
+			Name string
+		}{
+			Name: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+		}
+
+		// Send email with retry logic
+		err := s.sendEmailWithRetry(ctx, user.Email, subject, ThankYou, data)
+		if err != nil {
+			log.Printf("Failed to send thank you email to %s: %v", user.Email, err)
+			continue
+		}
+
+		log.Printf("Sent thank you email %d/%d to %s", i+1, len(users), user.Email)
+
+		// Wait for rate limit except for the last email
+		if i < len(users)-1 {
+			<-ticker.C
+		}
+	}
+
+	log.Printf("Finished sending thank you emails")
+	return nil
+}
+
+// sendEmailWithRetry sends an email with retry logic
+func (s *EmailService) sendEmailWithRetry(ctx context.Context, to, subject, templateStr string, data interface{}) error {
+	maxRetries := 3
+	baseDelay := 1 * time.Second
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		err := s.sendEmail(ctx, to, subject, templateStr, data)
+		if err == nil {
+			return nil
+		}
+
+		if attempt == maxRetries {
+			return fmt.Errorf("failed after %d attempts: %w", maxRetries, err)
+		}
+
+		// Exponential backoff
+		delay := baseDelay * time.Duration(1<<uint(attempt-1))
+		log.Printf("Attempt %d failed for %s, retrying in %v: %v", attempt, to, delay, err)
+		
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(delay):
+			// Continue to next attempt
+		}
+	}
+
+	return nil
+}
