@@ -81,7 +81,7 @@ func main() {
 	adminRouter := api.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(middleware.AuthMiddleware(cfg))
 	adminRouter.Use(middleware.AdminMiddleware)
-	handlers.RegisterAdminRoutes(adminRouter, db)
+	handlers.RegisterAdminRoutes(adminRouter, db, emailService)
 
 	// Geocoding routes
 	geocodingHandler := &handlers.GeocodingHandler{

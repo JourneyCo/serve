@@ -17,7 +17,8 @@ import (
 
 // AdminHandler handles admin-related requests
 type AdminHandler struct {
-	DB *sql.DB
+	DB           *sql.DB
+	EmailService *services.EmailService
 }
 
 type Lead struct {
@@ -48,9 +49,10 @@ type ProjectInput struct {
 }
 
 // RegisterAdminRoutes registers the routes for admin handlers
-func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
+func RegisterAdminRoutes(router *mux.Router, db *sql.DB, emailService *services.EmailService) {
 	handler := &AdminHandler{
-		DB: db,
+		DB:           db,
+		EmailService: emailService,
 	}
 
 	router.HandleFunc("/users", handler.GetAllUsers).Methods(http.MethodGet)
@@ -61,6 +63,7 @@ func RegisterAdminRoutes(router *mux.Router, db *sql.DB) {
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.UpdateRegistrationGuestCount).Methods(http.MethodPut)
 	router.HandleFunc("/registrations/{id:[0-9]+}", handler.DeleteRegistration).Methods(http.MethodDelete)
 	router.HandleFunc("/projects/{id:[0-9]+}/{status}", handler.UpdateProjectActiveStatus).Methods(http.MethodPut)
+	router.HandleFunc("/send-thank-you-emails", handler.SendThankYouEmails).Methods(http.MethodPost)
 }
 
 // GetAllRegistrations returns all registrations across all projects
@@ -430,4 +433,20 @@ func applyAccessories(input ProjectInput, project *models.Project) *models.Proje
 	project.Types = types
 
 	return project
+}
+
+// SendThankYouEmails triggers sending thank you emails to all users
+func (h *AdminHandler) SendThankYouEmails(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	// Start the email sending process in a goroutine so the endpoint responds quickly
+	go func() {
+		if err := h.EmailService.SendThankYouToAllUsers(context.Background(), h.DB); err != nil {
+			log.Printf("Failed to send thank you emails: %v", err)
+		}
+	}()
+
+	middleware.RespondWithJSON(w, http.StatusOK, map[string]string{
+		"message": "Thank you email sending process started successfully",
+	})
 }
